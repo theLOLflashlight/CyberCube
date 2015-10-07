@@ -19,10 +19,16 @@ namespace Cyber_Cube
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
+        SpriteFont font;
+
+        private readonly InputState mInput = new InputState();
+        private Cube mCube = new Cube();
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
+            IsMouseVisible = true;
         }
 
         /// <summary>
@@ -46,6 +52,7 @@ namespace Cyber_Cube
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch( GraphicsDevice );
+            font = Content.Load<SpriteFont>( "MessageFont" );
 
             // TODO: use this.Content to load your game content here
         }
@@ -66,6 +73,32 @@ namespace Cyber_Cube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
+            mInput.Update( gameTime );
+
+            if ( mInput.Keyboard.IsKeyDown( Keys.Right )
+                 && mInput.OldKeyboard.IsKeyUp( Keys.Right ) )
+            {
+                mCube.RotateRight();
+            }
+
+            if ( mInput.Keyboard.IsKeyDown( Keys.Left )
+                 && mInput.OldKeyboard.IsKeyUp( Keys.Left ) )
+            {
+                mCube.RotateLeft();
+            }
+
+            if ( mInput.Keyboard.IsKeyDown( Keys.Up )
+                 && mInput.OldKeyboard.IsKeyUp( Keys.Up ) )
+            {
+                mCube.RotateUp();
+            }
+
+            if ( mInput.Keyboard.IsKeyDown( Keys.Down )
+                 && mInput.OldKeyboard.IsKeyUp( Keys.Down ) )
+            {
+                mCube.RotateDown();
+            }
+
             // Allows the game to exit
             if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
                 this.Exit();
@@ -82,6 +115,12 @@ namespace Cyber_Cube
         protected override void Draw( GameTime gameTime )
         {
             GraphicsDevice.Clear( Color.CornflowerBlue );
+
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString( font, mCube.CurrentFace.Name, new Vector2( 0, 0 ), Color.White );
+            spriteBatch.End();
+
 
             // TODO: Add your drawing code here
 
