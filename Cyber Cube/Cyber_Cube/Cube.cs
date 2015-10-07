@@ -9,7 +9,7 @@ namespace Cyber_Cube
     /// <summary>
     /// Represents an entire level. Contains the 6 faces of the cube.
     /// </summary>
-    public class Cube
+    public partial class Cube
     {
 
         public class Face
@@ -43,88 +43,190 @@ namespace Cyber_Cube
         private Face mTopFace = new Face( "Top" );
         private Face mBottomFace = new Face( "Bottom" );
 
-        private Dictionary< Complex, Face > mFaces = new Dictionary< Complex, Face >( 6 );
+        public Face CurrentFace { get; private set; }
 
-        private Complex z;
+        public CompassDirections Up { get; private set; }
 
-        public Complex Z
-        {
-            get
-            {
-                return z;
-            }
-
-            private set
-            {
-                z = value != value // Check for NaN as a result from division by zero.
-                    ? double.PositiveInfinity
-                    : value;
-            }
-        }
-
-        public Face CurrentFace
-        {
-            get
-            {
-                return mFaces[ Z ];
-            }
-        }
-
-        public void RotateRight()
-        {
-            Z = -Complex.ImaginaryOne * Z;
-        }
-
-        public void RotateLeft()
-        {
-            Z = Complex.ImaginaryOne * Z;
-        }
-
-        public void RotateUp()
-        {
-            Z = (Z + 1) / (Z - 1);
-        }
-
-        public void RotateDown()
-        {
-            Z = -((Z - 1) / (Z + 1));
-        }
+        /*
+        Picture the cube laid out as:
+            T
+            F
+          L X R
+            B
+        where:
+            T = top
+            F = front
+            L = left
+            X = bottom
+            R = right
+            B = back
+        the adjacent faces will be labeled with respect to this diagram.
+        */
 
         public Cube()
         {
-            mFaces[ double.PositiveInfinity ] = mTopFace;
-            mFaces[ 0 ]                       = mBottomFace;
-            mFaces[ 1 ]                       = mFrontFace;
-            mFaces[ Complex.ImaginaryOne ]    = mLeftFace;
-            mFaces[ -1 ]                      = mBackFace;
-            mFaces[ -Complex.ImaginaryOne ]   = mRightFace;
+            CurrentFace = mFrontFace;
+            Up = CompassDirections.North;
 
-            Z = 1;
-
-            /*mFrontFace.NorthFace = mTopFace;
+            mFrontFace.NorthFace = mTopFace;
             mFrontFace.EastFace = mRightFace;
             mFrontFace.SouthFace = mBottomFace;
             mFrontFace.WestFace = mLeftFace;
 
-            mBackFace.NorthFace = mTopFace;
-            mBackFace.EastFace = mLeftFace;
-            mBackFace.SouthFace = mBottomFace;
-            mBackFace.WestFace = mRightFace;
+            mBackFace.NorthFace = mBottomFace;
+            mBackFace.EastFace = mRightFace;
+            mBackFace.SouthFace = mTopFace;
+            mBackFace.WestFace = mLeftFace;
 
-            mLeftFace.NorthFace = mTopFace;
-            mLeftFace.EastFace = mFrontFace;
-            mLeftFace.SouthFace = mBottomFace;
-            mLeftFace.WestFace = mBackFace;
+            mLeftFace.NorthFace = mFrontFace;
+            mLeftFace.EastFace = mBottomFace;
+            mLeftFace.SouthFace = mBackFace;
+            mLeftFace.WestFace = mTopFace;
 
-            mRightFace.NorthFace = mTopFace;
-            mRightFace.EastFace = mBackFace;
-            mRightFace.SouthFace = mBottomFace;
-            mRightFace.WestFace = mFrontFace;
+            mRightFace.NorthFace = mFrontFace;
+            mRightFace.EastFace = mTopFace;
+            mRightFace.SouthFace = mBackFace;
+            mRightFace.WestFace = mBottomFace;
 
-            //mFace.NorthFace = mFace;
-            //mFace.EastFace = mFace;
-            //mFace.SouthFace = mFace;
-            //mFace.WestFace = mFace;*/
+            mTopFace.NorthFace = mBackFace;
+            mTopFace.EastFace = mRightFace;
+            mTopFace.SouthFace = mFrontFace;
+            mTopFace.WestFace = mLeftFace;
+
+            mBottomFace.NorthFace = mFrontFace;
+            mBottomFace.EastFace = mRightFace;
+            mBottomFace.SouthFace = mBackFace;
+            mBottomFace.WestFace = mLeftFace;
+        }
+
+        private static CompassDirections FaceAdjacency( Face source, Face target )
+        {
+            if ( source.NorthFace == target )
+                return CompassDirections.North;
+
+            if ( source.EastFace == target )
+                return CompassDirections.East;
+
+            if ( source.SouthFace == target )
+                return CompassDirections.South;
+
+            if ( source.WestFace == target )
+                return CompassDirections.West;
+
+            throw new Exception( "Faces are not connected." );
+        }
+
+        public void RotateRight()
+        {
+            switch ( Up )
+            {
+            case CompassDirections.North:
+                RotateEast();
+                break;
+            case CompassDirections.East:
+                RotateSouth();
+                break;
+            case CompassDirections.South:
+                RotateWest();
+                break;
+            case CompassDirections.West:
+                RotateNorth();
+                break;
+            }
+        }
+
+        public void RotateLeft()
+        {
+            switch ( Up )
+            {
+            case CompassDirections.North:
+                RotateWest();
+                break;
+            case CompassDirections.East:
+                RotateNorth();
+                break;
+            case CompassDirections.South:
+                RotateEast();
+                break;
+            case CompassDirections.West:
+                RotateSouth();
+                break;
+            }
+        }
+
+        public void RotateUp()
+        {
+            switch ( Up )
+            {
+            case CompassDirections.North:
+                RotateNorth();
+                break;
+            case CompassDirections.East:
+                RotateEast();
+                break;
+            case CompassDirections.South:
+                RotateSouth();
+                break;
+            case CompassDirections.West:
+                RotateWest();
+                break;
+            }
+        }
+
+        public void RotateDown()
+        {
+            switch ( Up )
+            {
+            case CompassDirections.North:
+                RotateSouth();
+                break;
+            case CompassDirections.East:
+                RotateWest();
+                break;
+            case CompassDirections.South:
+                RotateNorth();
+                break;
+            case CompassDirections.West:
+                RotateEast();
+                break;
+            }
+        }
+
+
+        private void RotateNorth()
+        {
+            Face nextFace = CurrentFace.NorthFace;
+            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+
+            Up = NewUpDirection( CompassDirections.North, backTrack );
+            CurrentFace = nextFace;
+        }
+
+        private void RotateEast()
+        {
+            Face nextFace = CurrentFace.EastFace;
+            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+
+            Up = NewUpDirection( CompassDirections.East, backTrack );
+            CurrentFace = nextFace;
+        }
+
+        private void RotateSouth()
+        {
+            Face nextFace = CurrentFace.SouthFace;
+            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+
+            Up = NewUpDirection( CompassDirections.South, backTrack );
+            CurrentFace = nextFace;
+        }
+
+        private void RotateWest()
+        {
+            Face nextFace = CurrentFace.WestFace;
+            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+
+            Up = NewUpDirection( CompassDirections.West, backTrack );
+            CurrentFace = nextFace;
         }
 
     }
