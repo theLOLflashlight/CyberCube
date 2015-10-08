@@ -36,5 +36,25 @@ namespace Cyber_Cube
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
         }
 
+        public bool Keyboard_WasKeyPressed( Keys key )
+        {
+            return Keyboard.IsKeyDown( key ) && OldKeyboard.IsKeyUp( key );
+        }
+
+        public bool Keyboard_WasKeyReleased( Keys key )
+        {
+            return Keyboard.IsKeyUp( key ) && OldKeyboard.IsKeyDown( key );
+        }
+
+        public bool GamePad_WasButtonPressed( Buttons button )
+        {
+            return GamePad.IsButtonDown( button ) && OldGamePad.IsButtonUp( button );
+        }
+
+        public bool GamePad_WasButtonReleased( Buttons button )
+        {
+            return GamePad.IsButtonUp( button ) && OldGamePad.IsButtonDown( button );
+        }
+
     }
 }

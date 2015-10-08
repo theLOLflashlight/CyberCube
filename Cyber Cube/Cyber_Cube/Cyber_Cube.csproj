@@ -60,7 +60,8 @@
   <ItemGroup>
     <Compile Include="CompassDirections.cs" />
     <Compile Include="Cube.cs" />
-    <Compile Include="CubeNewUpDirection.cs" />
+    <Compile Include="CubeRotation.cs" />
+    <Compile Include="CubeShape.cs" />
     <Compile Include="InputState.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

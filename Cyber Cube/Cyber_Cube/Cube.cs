@@ -3,13 +3,16 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using System.Numerics;
+using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace Cyber_Cube
 {
     /// <summary>
     /// Represents an entire level. Contains the 6 faces of the cube.
     /// </summary>
-    public partial class Cube
+    public partial class Cube : DrawableGameComponent
     {
 
         public class Face
@@ -43,28 +46,53 @@ namespace Cyber_Cube
         private Face mTopFace = new Face( "Top" );
         private Face mBottomFace = new Face( "Bottom" );
 
+        private SpriteFont font;
+        private SpriteBatch spriteBatch;
+
+        public BasicEffect effect;
+        public Vector3 size;
+        public Vector3 position;
+        public VertexPositionNormalTexture[] vertices;
+        public int primitiveCount;
+
+        Vector3 mRotation = Vector3.UnitZ;
+        Vector3 mScale = Vector3.One;
+        Vector3 mPosition = Vector3.Zero;
+
+        Vector3 mRotationTarget = Vector3.UnitZ;
+
+        private SpriteFont fontLarge;
+
         public Face CurrentFace { get; private set; }
 
-        public CompassDirections Up { get; private set; }
+        public Direction Up { get; private set; }
 
         /*
-        Picture the cube laid out as:
+        Picture the unfolded cube:
             T
             F
           L X R
             B
-        where:
+        Where:
             T = top
             F = front
             L = left
             X = bottom
             R = right
             B = back
-        the adjacent faces will be labeled with respect to this diagram.
+        The adjacent faces are labeled with respect to this diagram, noting the orientation of each 
+        letter (face) when folded into a cube.
         */
 
-        public Cube()
+        public Cube( Game game )
+            : base( game )
         {
+            this.size = new Vector3( 0, 0, 0 );
+            this.position = new Vector3( 0, 0, 0 );
+            this.vertices = null;
+
+            BuildShape();
+
             CurrentFace = mFrontFace;
             Up = CompassDirections.North;
 
@@ -99,134 +127,221 @@ namespace Cyber_Cube
             mBottomFace.WestFace = mLeftFace;
         }
 
-        private static CompassDirections FaceAdjacency( Face source, Face target )
+
+        public override void Initialize()
         {
-            if ( source.NorthFace == target )
-                return CompassDirections.North;
+            base.Initialize();
 
-            if ( source.EastFace == target )
-                return CompassDirections.East;
+            effect = new BasicEffect( GraphicsDevice );
+            effect.AmbientLightColor = new Vector3( 0.0f, 1.0f, 0.0f );
+            effect.DirectionalLight0.Enabled = true;
+            effect.DirectionalLight0.DiffuseColor = Vector3.One;
+            effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
+            effect.LightingEnabled = true;
 
-            if ( source.SouthFace == target )
-                return CompassDirections.South;
+            //COMP7051
+            Matrix projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
+                                            (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, 1f, 10f );
+            effect.Projection = projection;
+            Matrix V = Matrix.CreateTranslation( 0f, 0f, -10f );
+            effect.View = V;
 
-            if ( source.WestFace == target )
-                return CompassDirections.West;
-
-            throw new Exception( "Faces are not connected." );
+            //COMP7051
+            size = new Vector3( 1, 1, 1 );
+            position = new Vector3( 0, 0, 0 );
+            BuildShape();
         }
 
-        public void RotateRight()
+        protected override void LoadContent()
         {
-            switch ( Up )
+            spriteBatch = new SpriteBatch( GraphicsDevice );
+            fontLarge = Game.Content.Load<SpriteFont>( "MessageFontLarge" );
+            font = Game.Content.Load<SpriteFont>( "MessageFont" );
+
+            base.LoadContent();
+        }
+
+        public override void Update( GameTime gameTime )
+        {
+            var input = (Game as Game1).mInput;
+
+            if ( input.Keyboard_WasKeyPressed( Keys.Right ) )
+                this.RotateRight();
+
+            if ( input.Keyboard_WasKeyPressed( Keys.Left ) )
+                this.RotateLeft();
+
+            if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
+                this.RotateUp();
+
+            if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
+                this.RotateDown();
+
+
+            Vector3 lightDir = Vector3.Zero;
+
+            // Game Pad
             {
-            case CompassDirections.North:
-                RotateEast();
-                break;
-            case CompassDirections.East:
-                RotateSouth();
-                break;
-            case CompassDirections.South:
-                RotateWest();
-                break;
-            case CompassDirections.West:
-                RotateNorth();
-                break;
-            }
-        }
+                if ( input.GamePad.IsConnected )
+                {
+                    if ( input.GamePad.DPad.Left == ButtonState.Pressed )
+                        mRotation.Y -= 0.005f;
 
-        public void RotateLeft()
-        {
-            switch ( Up )
+                    if ( input.GamePad.DPad.Right == ButtonState.Pressed )
+                        mRotation.Y += 0.005f;
+
+                    float stickRY = input.GamePad.ThumbSticks.Right.Y;
+
+                    if ( stickRY != input.OldGamePad.ThumbSticks.Right.Y )
+                    {
+                        mScale = new Vector3( (stickRY + 1.0f) / 2.0f + .5f );
+                    }
+
+                    lightDir += new Vector3( input.GamePad.ThumbSticks.Left.X,
+                                             input.GamePad.ThumbSticks.Left.Y,
+                                             1.0f );
+                    lightDir.Normalize();
+                }
+                else
+                {
+                    //angle += 0.0003f * gameTime.ElapsedGameTime.Milliseconds;
+                }
+            }
+
+            bool moved = false;
+
+            // Keyboard
             {
-            case CompassDirections.North:
-                RotateWest();
-                break;
-            case CompassDirections.East:
-                RotateNorth();
-                break;
-            case CompassDirections.South:
-                RotateEast();
-                break;
-            case CompassDirections.West:
-                RotateSouth();
-                break;
-            }
-        }
+                if ( input.Keyboard.IsKeyDown( Keys.Right ) )
+                {
+                    mPosition.X += 0.015f;
+                    moved = true;
+                }
 
-        public void RotateUp()
-        {
-            switch ( Up )
+                if ( input.Keyboard.IsKeyDown( Keys.Left ) )
+                {
+                    mPosition.X -= 0.015f;
+                    moved = true;
+                }
+
+                if ( input.Keyboard.IsKeyDown( Keys.Up ) )
+                {
+                    mPosition.Y += 0.015f;
+                    moved = true;
+                }
+
+                if ( input.Keyboard.IsKeyDown( Keys.Down ) )
+                {
+                    mPosition.Y -= 0.015f;
+                    moved = true;
+                }
+            }
+
+            // Mouse
             {
-            case CompassDirections.North:
-                RotateNorth();
-                break;
-            case CompassDirections.East:
-                RotateEast();
-                break;
-            case CompassDirections.South:
-                RotateSouth();
-                break;
-            case CompassDirections.West:
-                RotateWest();
-                break;
-            }
-        }
+                int scrollWheel = input.Mouse.ScrollWheelValue - input.OldMouse.ScrollWheelValue;
 
-        public void RotateDown()
-        {
-            switch ( Up )
+                if ( scrollWheel != input.OldMouse.ScrollWheelValue )
+                {
+                    mScale += new Vector3( scrollWheel / 2000f );
+                }
+
+                lightDir += new Vector3( -input.Mouse.X + Game.Window.ClientBounds.Width / 2,
+                                         input.Mouse.Y - Game.Window.ClientBounds.Height / 2,
+                                         1.0f );
+                lightDir.Normalize();
+            }
+
+            Vector3Approach( ref mScale, Vector3.One, new Vector3( 0.005f ) );
+            if ( !moved )
             {
-            case CompassDirections.North:
-                RotateSouth();
-                break;
-            case CompassDirections.East:
-                RotateWest();
-                break;
-            case CompassDirections.South:
-                RotateNorth();
-                break;
-            case CompassDirections.West:
-                RotateEast();
-                break;
+                FloatApproach( ref mPosition.X, 0, 0.01f );
+                FloatApproach( ref mPosition.Y, 0, 0.01f );
             }
+
+            if ( mScale.X < 0 )
+                mScale.X = 0;
+            if ( mScale.Y < 0 )
+                mScale.Y = 0;
+            if ( mScale.Z < 0 )
+                mScale.Z = 0;
+
+            Vector3Approach( ref mRotation, mRotationTarget, new Vector3( 0.025f ) );
+
+            mPosition.Z = 0;
+            mPosition.Z = 5f - mPosition.Length();
+
+            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y * MathHelper.PiOver2,
+                                                      mRotation.X * MathHelper.PiOver2,
+                                                      mRotation.Z * MathHelper.PiOver2 );
+            Matrix T = Matrix.CreateTranslation( mPosition );
+            Matrix S = Matrix.CreateScale( mScale );
+            effect.World = S * R * T;
+
+            effect.DirectionalLight0.Direction = Vector3.Normalize( lightDir );
+
+            base.Update( gameTime );
         }
 
-
-        private void RotateNorth()
+        Matrix RotateVecToZAxis( Vector3 v )
         {
-            Face nextFace = CurrentFace.NorthFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+            v.Normalize();
+            Vector3 axis = Vector3.Cross( v, Vector3.UnitZ );
+            float partialAngle = (float) Math.Asin( axis.Length() );
+            float finalAngle = v.Z < 0f
+                               ? MathHelper.PiOver2 - partialAngle + MathHelper.PiOver2
+                               : partialAngle;
+            axis.Normalize();
 
-            Up = NewUpDirection( CompassDirections.North, backTrack );
-            CurrentFace = nextFace;
+            return Matrix.CreateFromAxisAngle( axis, finalAngle );
         }
 
-        private void RotateEast()
+        private static void FloatApproach( ref float variable, float target, float step )
         {
-            Face nextFace = CurrentFace.EastFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+            if ( variable > target )
+                variable -= Math.Min( variable - target, step );
 
-            Up = NewUpDirection( CompassDirections.East, backTrack );
-            CurrentFace = nextFace;
+            else if ( variable < target )
+                variable += Math.Min( target - variable, step );
         }
 
-        private void RotateSouth()
+        private static void Vector3Approach( ref Vector3 variable, Vector3 target, Vector3 step )
         {
-            Face nextFace = CurrentFace.SouthFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
-
-            Up = NewUpDirection( CompassDirections.South, backTrack );
-            CurrentFace = nextFace;
+            FloatApproach( ref variable.X, target.X, step.X );
+            FloatApproach( ref variable.Y, target.Y, step.Y );
+            FloatApproach( ref variable.Z, target.Z, step.Z );
         }
 
-        private void RotateWest()
+        public override void Draw( GameTime gameTime )
         {
-            Face nextFace = CurrentFace.WestFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
 
-            Up = NewUpDirection( CompassDirections.West, backTrack );
-            CurrentFace = nextFace;
+            if ( vertices != null )
+            {
+                RasterizerState rs = new RasterizerState();
+                rs.CullMode = CullMode.CullClockwiseFace;
+                GraphicsDevice.RasterizerState = rs;
+                foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
+                {
+                    pass.Apply();
+                    GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>( PrimitiveType.TriangleList, vertices, 0, primitiveCount );
+                }
+            }
+
+            spriteBatch.Begin();
+            spriteBatch.DrawString( fontLarge,
+                                    CurrentFace.Name,
+                                    new Vector2( Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2 ),
+                                    Color.White,
+                                    Up.ToRadians(),
+                                    fontLarge.MeasureString( CurrentFace.Name ) / 2,
+                                    1,
+                                    SpriteEffects.None,
+                                    0 );
+
+            spriteBatch.DrawString( font, mRotationTarget.ToString(), Vector2.Zero, Color.White );
+            spriteBatch.End();
+
+            base.Draw( gameTime );
         }
 
     }
