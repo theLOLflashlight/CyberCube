@@ -2,7 +2,6 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Numerics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,36 +14,12 @@ namespace Cyber_Cube
     public partial class Cube : DrawableGameComponent
     {
 
-        public class Face
-        {
-            public Face NorthFace { get; internal set; }
-            public Face EastFace { get; internal set; }
-            public Face SouthFace { get; internal set; }
-            public Face WestFace { get; internal set; }
-
-            public string Name { get; private set; }
-
-            public Face( string name )
-                : this( null, null, null, null )
-            {
-                Name = name;
-            }
-
-            public Face( Face northFace, Face eastFace, Face southFace, Face westFace )
-            {
-                NorthFace = northFace;
-                EastFace = eastFace;
-                SouthFace = southFace;
-                WestFace = westFace;
-            }
-        }
-
-        private Face mFrontFace = new Face( "Front" );
-        private Face mBackFace = new Face( "Back" );
-        private Face mLeftFace = new Face( "Left" );
-        private Face mRightFace = new Face( "Right" );
-        private Face mTopFace = new Face( "Top" );
-        private Face mBottomFace = new Face( "Bottom" );
+        private Face mFrontFace = new Face( "Front", Vector3.UnitZ, Vector3.UnitY );
+        private Face mBackFace = new Face( "Back", -Vector3.UnitZ, -Vector3.UnitY );
+        private Face mLeftFace = new Face( "Left", -Vector3.UnitX, Vector3.UnitZ );
+        private Face mRightFace = new Face( "Right", Vector3.UnitX, Vector3.UnitZ );
+        private Face mTopFace = new Face( "Top", Vector3.UnitY, -Vector3.UnitZ );
+        private Face mBottomFace = new Face( "Bottom", -Vector3.UnitY, Vector3.UnitZ );
 
         private SpriteFont font;
         private SpriteBatch spriteBatch;
@@ -55,17 +30,23 @@ namespace Cyber_Cube
         public VertexPositionNormalTexture[] vertices;
         public int primitiveCount;
 
-        Vector3 mRotation = Vector3.UnitZ;
-        Vector3 mScale = Vector3.One;
-        Vector3 mPosition = Vector3.Zero;
-
-        Vector3 mRotationTarget = Vector3.UnitZ;
-
         private SpriteFont fontLarge;
+
+        Vector3 mPosition = Vector3.Zero;
+        Vector3 mRotation = Vector3.Zero;
+        Vector3 mScale = Vector3.One;
+
+        private Camera mCamera;
 
         public Face CurrentFace { get; private set; }
 
         public Direction Up { get; private set; }
+
+        public Vector3 GetUpVector()
+        {
+            return Vector3.Transform( CurrentFace.Up,
+                Matrix.CreateFromAxisAngle( CurrentFace.Normal, Up.ToRadians() ) );
+        }
 
         /*
         Picture the unfolded cube:
@@ -90,8 +71,6 @@ namespace Cyber_Cube
             this.size = new Vector3( 0, 0, 0 );
             this.position = new Vector3( 0, 0, 0 );
             this.vertices = null;
-
-            BuildShape();
 
             CurrentFace = mFrontFace;
             Up = CompassDirections.North;
@@ -143,8 +122,13 @@ namespace Cyber_Cube
             Matrix projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
                                             (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, 1f, 10f );
             effect.Projection = projection;
-            Matrix V = Matrix.CreateTranslation( 0f, 0f, -10f );
-            effect.View = V;
+
+            mCamera = new Camera( Game,
+                                  7 * CurrentFace.Normal,
+                                  mPosition,
+                                  GetUpVector() );
+
+            effect.View = mCamera.View;
 
             //COMP7051
             size = new Vector3( 1, 1, 1 );
@@ -165,18 +149,36 @@ namespace Cyber_Cube
         {
             var input = (Game as Game1).mInput;
 
-            if ( input.Keyboard_WasKeyPressed( Keys.Right ) )
-                this.RotateRight();
+            if ( input.Keyboard_WasAnyKeyPressed( new Keys[] { Keys.Right, Keys.Left, Keys.Up, Keys.Down } ) )
+            {
+                if ( input.Keyboard_WasKeyPressed( Keys.Right ) )
+                    this.RotateRight();
 
-            if ( input.Keyboard_WasKeyPressed( Keys.Left ) )
-                this.RotateLeft();
+                if ( input.Keyboard_WasKeyPressed( Keys.Left ) )
+                    this.RotateLeft();
 
-            if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
-                this.RotateUp();
+                if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
+                    this.RotateUp();
 
-            if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
-                this.RotateDown();
+                if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
+                    this.RotateDown();
 
+
+                mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+                mCamera.AnimateUpVector( GetUpVector(), 1 );
+            }
+
+            if ( input.Keyboard_WasKeyPressed( Keys.Space ) )
+            {
+                CurrentFace = mFrontFace;
+                Up = CompassDirections.North;
+
+                mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+                mCamera.AnimateTarget( mPosition, 10 );
+                mCamera.AnimateUpVector( Vector3.Up, 1 );
+            }
+
+            mCamera.Update( gameTime );
 
             Vector3 lightDir = Vector3.Zero;
 
@@ -208,35 +210,6 @@ namespace Cyber_Cube
                 }
             }
 
-            bool moved = false;
-
-            // Keyboard
-            {
-                if ( input.Keyboard.IsKeyDown( Keys.Right ) )
-                {
-                    mPosition.X += 0.015f;
-                    moved = true;
-                }
-
-                if ( input.Keyboard.IsKeyDown( Keys.Left ) )
-                {
-                    mPosition.X -= 0.015f;
-                    moved = true;
-                }
-
-                if ( input.Keyboard.IsKeyDown( Keys.Up ) )
-                {
-                    mPosition.Y += 0.015f;
-                    moved = true;
-                }
-
-                if ( input.Keyboard.IsKeyDown( Keys.Down ) )
-                {
-                    mPosition.Y -= 0.015f;
-                    moved = true;
-                }
-            }
-
             // Mouse
             {
                 int scrollWheel = input.Mouse.ScrollWheelValue - input.OldMouse.ScrollWheelValue;
@@ -252,12 +225,8 @@ namespace Cyber_Cube
                 lightDir.Normalize();
             }
 
-            Vector3Approach( ref mScale, Vector3.One, new Vector3( 0.005f ) );
-            if ( !moved )
-            {
-                FloatApproach( ref mPosition.X, 0, 0.01f );
-                FloatApproach( ref mPosition.Y, 0, 0.01f );
-            }
+            Utils.Vector3Approach( ref mScale, Vector3.One, 0.005f );
+            Utils.Vector3Approach( ref mPosition, Vector3.Zero, 0.01f );
 
             if ( mScale.X < 0 )
                 mScale.X = 0;
@@ -266,50 +235,16 @@ namespace Cyber_Cube
             if ( mScale.Z < 0 )
                 mScale.Z = 0;
 
-            Vector3Approach( ref mRotation, mRotationTarget, new Vector3( 0.025f ) );
-
-            mPosition.Z = 0;
-            mPosition.Z = 5f - mPosition.Length();
-
-            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y * MathHelper.PiOver2,
-                                                      mRotation.X * MathHelper.PiOver2,
-                                                      mRotation.Z * MathHelper.PiOver2 );
-            Matrix T = Matrix.CreateTranslation( mPosition );
+            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
+            Matrix P = Matrix.CreateTranslation( mPosition );
             Matrix S = Matrix.CreateScale( mScale );
-            effect.World = S * R * T;
+            effect.World = S * R * P;
+
+            effect.View = mCamera.View;
 
             effect.DirectionalLight0.Direction = Vector3.Normalize( lightDir );
 
             base.Update( gameTime );
-        }
-
-        Matrix RotateVecToZAxis( Vector3 v )
-        {
-            v.Normalize();
-            Vector3 axis = Vector3.Cross( v, Vector3.UnitZ );
-            float partialAngle = (float) Math.Asin( axis.Length() );
-            float finalAngle = v.Z < 0f
-                               ? MathHelper.PiOver2 - partialAngle + MathHelper.PiOver2
-                               : partialAngle;
-            axis.Normalize();
-
-            return Matrix.CreateFromAxisAngle( axis, finalAngle );
-        }
-
-        private static void FloatApproach( ref float variable, float target, float step )
-        {
-            if ( variable > target )
-                variable -= Math.Min( variable - target, step );
-
-            else if ( variable < target )
-                variable += Math.Min( target - variable, step );
-        }
-
-        private static void Vector3Approach( ref Vector3 variable, Vector3 target, Vector3 step )
-        {
-            FloatApproach( ref variable.X, target.X, step.X );
-            FloatApproach( ref variable.Y, target.Y, step.Y );
-            FloatApproach( ref variable.Z, target.Z, step.Z );
         }
 
         public override void Draw( GameTime gameTime )
@@ -338,7 +273,7 @@ namespace Cyber_Cube
                                     SpriteEffects.None,
                                     0 );
 
-            spriteBatch.DrawString( font, mRotationTarget.ToString(), Vector2.Zero, Color.White );
+            //spriteBatch.DrawString( font, mRotationTarget.ToString(), Vector2.Zero, Color.White );
             spriteBatch.End();
 
             base.Draw( gameTime );
