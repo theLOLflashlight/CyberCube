@@ -119,9 +119,8 @@ namespace Cyber_Cube
             effect.LightingEnabled = true;
 
             //COMP7051
-            Matrix projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
+            effect.Projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
                                             (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, 1f, 10f );
-            effect.Projection = projection;
 
             mCamera = new Camera( Game,
                                   7 * CurrentFace.Normal,
