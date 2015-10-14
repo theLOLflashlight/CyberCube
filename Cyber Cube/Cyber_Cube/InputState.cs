@@ -19,6 +19,7 @@ namespace Cyber_Cube
         public MouseState Mouse { get; private set; }
         public MouseState OldMouse { get; private set; }
 
+
         public InputState()
         {
             GamePad = Microsoft.Xna.Framework.Input.GamePad.GetState( PlayerIndex.One );

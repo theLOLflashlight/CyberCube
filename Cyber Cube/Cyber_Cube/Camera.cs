@@ -8,6 +8,13 @@ namespace Cyber_Cube
 {
     public class Camera : GameComponent
     {
+        public new Game1 Game
+        {
+            get {
+                return base.Game as Game1;
+            }
+        }
+
         private Vector3 mPosition0;
         private Vector3 mPosition1;
 

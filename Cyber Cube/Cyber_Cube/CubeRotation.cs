@@ -8,59 +8,50 @@ namespace Cyber_Cube
 {
     public partial class Cube
     {
-        public void Rotate( CompassDirections direction )
-        {
-            switch ( direction )
-            {
-            case CompassDirections.North:
-                RotateNorth();
-                break;
-            case CompassDirections.East:
-                RotateEast();
-                break;
-            case CompassDirections.South:
-                RotateSouth();
-                break;
-            case CompassDirections.West:
-                RotateWest();
-                break;
-            }
-            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
-            mCamera.AnimateUpVector( GetUpVector(), 1 );
-        }
-
         public void RotateRight()
         {
-            Rotate( +Up );
+            Rotate( +UpDir );
         }
 
         public void RotateLeft()
         {
-            Rotate( -Up );
+            Rotate( -UpDir );
         }
 
         public void RotateUp()
         {
-            Rotate( Up );
+            Rotate( UpDir );
         }
 
         public void RotateDown()
         {
-            Rotate( ~Up );
+            Rotate( ~UpDir );
         }
 
         public void RotateClockwise()
         {
-            --Up;
-            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
-            mCamera.AnimateUpVector( GetUpVector(), 1 );
+            --UpDir;
+            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         public void RotateAntiClockwise()
         {
-            ++Up;
-            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
-            mCamera.AnimateUpVector( GetUpVector(), 1 );
+            ++UpDir;
+            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
+        }
+
+        public void Rotate( CompassDirections direction )
+        {
+            Face nextFace = CurrentFace.AdjacentFace( direction );
+            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+
+            UpDir = GetNewUpDirection( direction, backTrack );
+            CurrentFace = nextFace;
+
+            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         private static CompassDirections FaceAdjacency( Face source, Face target )
@@ -82,56 +73,19 @@ namespace Cyber_Cube
 
         private Direction GetNewUpDirection( Direction rotation, Direction backTrack )
         {
-            if ( Up == rotation )
+            if ( UpDir == rotation )
                 return ~backTrack;
 
-            if ( Up == +rotation )
+            if ( UpDir == +rotation )
                 return -backTrack;
 
-            if ( Up == ~rotation )
+            if ( UpDir == ~rotation )
                 return backTrack;
 
-            if ( Up == -rotation )
+            if ( UpDir == -rotation )
                 return +backTrack;
 
             throw new Exception( "WTF" ); // What a Terrible Failure.
         }
-
-        private void RotateNorth()
-        {
-            Face nextFace = CurrentFace.NorthFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
-
-            Up = GetNewUpDirection( CompassDirections.North, backTrack );
-            CurrentFace = nextFace;
-        }
-
-        private void RotateEast()
-        {
-            Face nextFace = CurrentFace.EastFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
-
-            Up = GetNewUpDirection( CompassDirections.East, backTrack );
-            CurrentFace = nextFace;
-        }
-
-        private void RotateSouth()
-        {
-            Face nextFace = CurrentFace.SouthFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
-
-            Up = GetNewUpDirection( CompassDirections.South, backTrack );
-            CurrentFace = nextFace;
-        }
-
-        private void RotateWest()
-        {
-            Face nextFace = CurrentFace.WestFace;
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
-
-            Up = GetNewUpDirection( CompassDirections.West, backTrack );
-            CurrentFace = nextFace;
-        }
-
     }
 }

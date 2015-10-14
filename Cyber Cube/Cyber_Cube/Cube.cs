@@ -13,6 +13,12 @@ namespace Cyber_Cube
     /// </summary>
     public partial class Cube : DrawableGameComponent
     {
+        public new Game1 Game
+        {
+            get {
+                return base.Game as Game1;
+            }
+        }
 
         private Face mFrontFace;
         private Face mBackFace;
@@ -33,13 +39,12 @@ namespace Cyber_Cube
             }
         }
 
+        private SpriteFont mFont;
+        private SpriteBatch mSpriteBatch;
 
-        private SpriteFont font;
-        private SpriteBatch spriteBatch;
+        public BasicEffect Effect { get; private set; }
 
-        public BasicEffect effect;
-
-        private SpriteFont fontLarge;
+        private SpriteFont mFontLarge;
 
         Vector3 mPosition = Vector3.Zero;
         Vector3 mRotation = Vector3.Zero;
@@ -47,18 +52,20 @@ namespace Cyber_Cube
 
         public Camera mCamera;
 
+        public float CameraDistance { get; private set; }
+
         public enum CubeMode { Edit, Play }
 
         public CubeMode Mode { get; set; }
 
         public Face CurrentFace { get; private set; }
 
-        public Direction Up { get; private set; }
+        public Direction UpDir { get; private set; }
 
-        public Vector3 GetUpVector()
+        public Vector3 ComputeUpVector()
         {
-            return Vector3.Transform( CurrentFace.Up,
-                Matrix.CreateFromAxisAngle( CurrentFace.Normal, Up.ToRadians() ) );
+            return Vector3.Transform( CurrentFace.UpVec,
+                Matrix.CreateFromAxisAngle( CurrentFace.Normal, UpDir.ToRadians() ) );
 
             /*Vector3 up = Vector3.Transform( CurrentFace.Up,
                 Matrix.CreateFromAxisAngle( CurrentFace.Normal, Up.ToRadians() ) );
@@ -101,8 +108,10 @@ namespace Cyber_Cube
 
             SetUpFaces();
 
+            CameraDistance = 7;
+
             CurrentFace = mFrontFace;
-            Up = CompassDirections.North;
+            UpDir = CompassDirections.North;
 
             foreach ( Face face in Faces )
                 Game.Components.Add( face );
@@ -149,25 +158,25 @@ namespace Cyber_Cube
         {
             base.Initialize();
 
-            effect = new BasicEffect( GraphicsDevice );
-            effect.AmbientLightColor = new Vector3( 1.0f, 1.0f, 1.0f );
-            effect.DirectionalLight0.Enabled = true;
-            effect.DirectionalLight0.DiffuseColor = Vector3.One;
-            effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
-            effect.LightingEnabled = true;
+            Effect = new BasicEffect( GraphicsDevice );
+            Effect.AmbientLightColor = new Vector3( 1.0f, 1.0f, 1.0f );
+            Effect.DirectionalLight0.Enabled = true;
+            Effect.DirectionalLight0.DiffuseColor = Vector3.One;
+            Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
+            Effect.LightingEnabled = true;
 
             //COMP7051
-            effect.Projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
+            Effect.Projection = Matrix.CreatePerspectiveFieldOfView( (float) Math.PI / 4.0f,
                                             (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, 1f, 10f );
 
             mCamera = new Camera( Game,
-                                  7 * CurrentFace.Normal,
+                                  CameraDistance * CurrentFace.Normal,
                                   mPosition,
-                                  GetUpVector() );
+                                  ComputeUpVector() );
 
             mCamera.UsesSphereAnimation = true;
 
-            effect.View = mCamera.View;
+            Effect.View = mCamera.View;
 
             Color[] colors = {
                 Color.Red,
@@ -185,16 +194,16 @@ namespace Cyber_Cube
 
         protected override void LoadContent()
         {
-            spriteBatch = new SpriteBatch( GraphicsDevice );
-            fontLarge = Game.Content.Load<SpriteFont>( "MessageFontLarge" );
-            font = Game.Content.Load<SpriteFont>( "MessageFont" );
+            mSpriteBatch = new SpriteBatch( GraphicsDevice );
+            mFontLarge = Game.Content.Load<SpriteFont>( "MessageFontLarge" );
+            mFont = Game.Content.Load<SpriteFont>( "MessageFont" );
 
             base.LoadContent();
         }
 
         public override void Update( GameTime gameTime )
         {
-            var input = (Game as Game1).mInput;
+            var input = Game.mInput;
 
             if ( Mode == CubeMode.Edit )
             {
@@ -245,9 +254,9 @@ namespace Cyber_Cube
             Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
             Matrix T = Matrix.CreateTranslation( mPosition );
             Matrix S = Matrix.CreateScale( mScale );
-            effect.World = S * R * T;
+            Effect.World = S * R * T;
 
-            effect.View = mCamera.View;
+            Effect.View = mCamera.View;
 
             base.Update( gameTime );
         }
@@ -259,34 +268,34 @@ namespace Cyber_Cube
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 
-            effect.TextureEnabled = true;
+            Effect.TextureEnabled = true;
 
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.CullClockwiseFace;
             GraphicsDevice.RasterizerState = rs;
 
             foreach ( Face face in Faces )
-                face.Render3D( effect );
+                face.Render3D( Effect );
 
 
             string output = CurrentFace.Name;
 
-            var pos = font.MeasureString( output );
+            var pos = mFont.MeasureString( output );
 
-            spriteBatch.Begin();
-            spriteBatch.DrawString( font,
+            mSpriteBatch.Begin();
+            mSpriteBatch.DrawString( mFont,
                                     output,
                                     new Vector2( Game.Window.ClientBounds.Width - pos.X, pos.Y ),
                                     Color.White,
-                                    Up.ToRadians(),
-                                    font.MeasureString( output ) / 2,
+                                    UpDir.ToRadians(),
+                                    mFont.MeasureString( output ) / 2,
                                     1,
                                     SpriteEffects.None,
                                     0 );
 
-            spriteBatch.DrawString( font, mCamera.Position.ToString(), Vector2.Zero, Color.White );
-            spriteBatch.DrawString( font, mCamera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
-            spriteBatch.End();
+            mSpriteBatch.DrawString( mFont, mCamera.Position.ToString(), Vector2.Zero, Color.White );
+            mSpriteBatch.DrawString( mFont, mCamera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
+            mSpriteBatch.End();
 
             base.Draw( gameTime );
         }

@@ -13,6 +13,12 @@ namespace Cyber_Cube
     {
         public class Face : DrawableGameComponent
         {
+            public new Game1 Game
+            {
+                get {
+                    return base.Game as Game1;
+                }
+            }
 
             public const int SIZE = 100;
             public const int WIDTH = SIZE;
@@ -28,7 +34,7 @@ namespace Cyber_Cube
             public string Name { get; private set; }
 
             public Vector3 Normal { get; private set; }
-            public Vector3 Up { get; private set; }
+            public Vector3 UpVec { get; private set; }
 
             private SpriteFont mFont;
 
@@ -41,9 +47,37 @@ namespace Cyber_Cube
             /// </summary>
             private VertexPositionNormalTexture[] VPNT = new VertexPositionNormalTexture[ 6 ];
 
-            public readonly Matrix RotatePlane;
-
             public Direction Dir;
+
+
+            public CompassDirections VectorToDirection( Vector3 vec )
+            {
+                vec.Normalize();
+                vec = Utils.RoundVector( vec );
+
+                if ( UpVec == vec )
+                    return CompassDirections.North;
+
+                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
+                vec = Utils.RoundVector( vec );
+
+                if ( UpVec == vec )
+                    return CompassDirections.East;
+
+                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
+                vec = Utils.RoundVector( vec );
+
+                if ( UpVec == vec )
+                    return CompassDirections.South;
+
+                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
+                vec = Utils.RoundVector( vec );
+
+                if ( UpVec == vec )
+                    return CompassDirections.West;
+
+                throw new Exception( "Vector not aligned on plane." );
+            }
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction dir )
                 : base( cube.Game )
@@ -51,7 +85,7 @@ namespace Cyber_Cube
                 Cube = cube;
                 Name = name;
                 Normal = Vector3.Normalize( normal );
-                Up = up;
+                UpVec = Vector3.Normalize( up );
 
                 Dir = dir;
 
@@ -74,31 +108,31 @@ namespace Cyber_Cube
                 Vector2 textureBottomLeft = Vector2.UnitY;
                 Vector2 textureBottomRight = Vector2.One;
 
-                RotatePlane = Utils.RotateVecToVec( Vector3.UnitZ, Normal )
+                Matrix rotation = Utils.RotateVecToVec( Vector3.UnitZ, Normal )
                               * Matrix.CreateFromAxisAngle( Normal, dir.ToRadians() );
 
                 VPNT[ 0 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 0 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 0 ], rotation ) + Normal,
                     Normal, textureTopLeft );
 
                 VPNT[ 1 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 1 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 1 ], rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 VPNT[ 2 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 2 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 2 ], rotation ) + Normal,
                     Normal, textureTopRight );
 
                 VPNT[ 3 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 3 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 3 ], rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 VPNT[ 4 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 4 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 4 ], rotation ) + Normal,
                     Normal, textureBottomRight );
 
                 VPNT[ 5 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 5 ], RotatePlane ) + Normal,
+                    Vector3.Transform( face[ 5 ], rotation ) + Normal,
                     Normal, textureTopRight );
             }
 
@@ -117,7 +151,26 @@ namespace Cyber_Cube
 
                 mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
             }
-            
+
+            public Face AdjacentFace( CompassDirections direction )
+            {
+                switch ( direction )
+                {
+                case CompassDirections.North:
+                    return NorthFace;
+
+                case CompassDirections.East:
+                    return EastFace;
+
+                case CompassDirections.South:
+                    return SouthFace;
+
+                case CompassDirections.West:
+                    return WestFace;
+                }
+
+                return this;
+            }
 
             public override void Update( GameTime gameTime )
             {

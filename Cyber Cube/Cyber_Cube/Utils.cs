@@ -56,6 +56,31 @@ namespace Cyber_Cube
             v0 = InterpolateVectorSlerp( v0, v1, amount );
         }
 
+        public static void RoundVector( ref Vector3 vec )
+        {
+            vec.X = (float) Math.Round( vec.X );
+            vec.Y = (float) Math.Round( vec.Y );
+            vec.Z = (float) Math.Round( vec.Z );
+        }
+
+        public static Vector3 RoundVector( Vector3 vec )
+        {
+            RoundVector( ref vec );
+            return vec;
+        }
+
+        public static void RoundVector( ref Vector2 vec )
+        {
+            vec.X = (float) Math.Round( vec.X );
+            vec.Y = (float) Math.Round( vec.Y );
+        }
+
+        public static Vector2 RoundVector( Vector2 vec )
+        {
+            RoundVector( ref vec );
+            return vec;
+        }
+
         public static Matrix RotateVecToVec( Vector3 v1, Vector3 v2 )
         {
             if ( v1 == Vector3.Zero || v2 == Vector3.Zero )

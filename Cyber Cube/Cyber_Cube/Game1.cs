@@ -19,9 +19,8 @@ namespace Cyber_Cube
         GraphicsDeviceManager graphics;
         SpriteBatch spriteBatch;
 
-        SpriteFont font;
-
         public readonly InputState mInput = new InputState();
+
         private Cube mCube;
 
         public Game1()
@@ -56,7 +55,6 @@ namespace Cyber_Cube
         {
             // Create a new SpriteBatch, which can be used to draw textures.
             spriteBatch = new SpriteBatch( GraphicsDevice );
-            font = Content.Load<SpriteFont>( "MessageFont" );
 
             // TODO: use this.Content to load your game content here
         }
