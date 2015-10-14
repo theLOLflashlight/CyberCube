@@ -14,21 +14,30 @@ namespace Cyber_Cube
     public partial class Cube : DrawableGameComponent
     {
 
-        private Face mFrontFace = new Face( "Front", Vector3.UnitZ, Vector3.UnitY );
-        private Face mBackFace = new Face( "Back", -Vector3.UnitZ, -Vector3.UnitY );
-        private Face mLeftFace = new Face( "Left", -Vector3.UnitX, Vector3.UnitZ );
-        private Face mRightFace = new Face( "Right", Vector3.UnitX, Vector3.UnitZ );
-        private Face mTopFace = new Face( "Top", Vector3.UnitY, -Vector3.UnitZ );
-        private Face mBottomFace = new Face( "Bottom", -Vector3.UnitY, Vector3.UnitZ );
+        private Face mFrontFace;
+        private Face mBackFace;
+        private Face mTopFace;
+        private Face mBottomFace;
+        private Face mLeftFace;
+        private Face mRightFace;
+
+        public IEnumerable< Face > Faces
+        {
+            get {
+                yield return mFrontFace;
+                yield return mBackFace;
+                yield return mTopFace;
+                yield return mBottomFace;
+                yield return mLeftFace;
+                yield return mRightFace;
+            }
+        }
+
 
         private SpriteFont font;
         private SpriteBatch spriteBatch;
 
         public BasicEffect effect;
-        public Vector3 size;
-        public Vector3 position;
-        public VertexPositionNormalTexture[] vertices;
-        public int primitiveCount;
 
         private SpriteFont fontLarge;
 
@@ -36,7 +45,11 @@ namespace Cyber_Cube
         Vector3 mRotation = Vector3.Zero;
         Vector3 mScale = Vector3.One;
 
-        private Camera mCamera;
+        public Camera mCamera;
+
+        public enum CubeMode { Edit, Play }
+
+        public CubeMode Mode { get; set; }
 
         public Face CurrentFace { get; private set; }
 
@@ -46,7 +59,18 @@ namespace Cyber_Cube
         {
             return Vector3.Transform( CurrentFace.Up,
                 Matrix.CreateFromAxisAngle( CurrentFace.Normal, Up.ToRadians() ) );
+
+            /*Vector3 up = Vector3.Transform( CurrentFace.Up,
+                Matrix.CreateFromAxisAngle( CurrentFace.Normal, Up.ToRadians() ) );
+
+            up.X = (float) Math.Round( up.X );
+            up.Y = (float) Math.Round( up.Y );
+            up.Z = (float) Math.Round( up.Z );
+
+            return up;*/
         }
+
+        public Player mPlayer;
 
         /*
         Picture the unfolded cube:
@@ -68,13 +92,27 @@ namespace Cyber_Cube
         public Cube( Game game )
             : base( game )
         {
-            this.size = new Vector3( 0, 0, 0 );
-            this.position = new Vector3( 0, 0, 0 );
-            this.vertices = null;
+            mFrontFace = new Face( this, "Front", Vector3.UnitZ, Vector3.UnitY, Direction.North );
+            mBackFace = new Face( this, "Back", -Vector3.UnitZ, -Vector3.UnitY, Direction.East );
+            mTopFace = new Face( this, "Top", Vector3.UnitY, -Vector3.UnitZ, Direction.North );
+            mBottomFace = new Face( this, "Bottom", -Vector3.UnitY, Vector3.UnitZ, Direction.North );
+            mLeftFace = new Face( this, "Left", -Vector3.UnitX, Vector3.UnitZ, Direction.East );
+            mRightFace = new Face( this, "Right", Vector3.UnitX, Vector3.UnitZ, Direction.West );
+
+            SetUpFaces();
 
             CurrentFace = mFrontFace;
             Up = CompassDirections.North;
 
+            foreach ( Face face in Faces )
+                Game.Components.Add( face );
+
+            mPlayer = new Player( this );
+            Game.Components.Add( mPlayer );
+        }
+
+        private void SetUpFaces()
+        {
             mFrontFace.NorthFace = mTopFace;
             mFrontFace.EastFace = mRightFace;
             mFrontFace.SouthFace = mBottomFace;
@@ -85,16 +123,6 @@ namespace Cyber_Cube
             mBackFace.SouthFace = mTopFace;
             mBackFace.WestFace = mLeftFace;
 
-            mLeftFace.NorthFace = mFrontFace;
-            mLeftFace.EastFace = mBottomFace;
-            mLeftFace.SouthFace = mBackFace;
-            mLeftFace.WestFace = mTopFace;
-
-            mRightFace.NorthFace = mFrontFace;
-            mRightFace.EastFace = mTopFace;
-            mRightFace.SouthFace = mBackFace;
-            mRightFace.WestFace = mBottomFace;
-
             mTopFace.NorthFace = mBackFace;
             mTopFace.EastFace = mRightFace;
             mTopFace.SouthFace = mFrontFace;
@@ -104,6 +132,16 @@ namespace Cyber_Cube
             mBottomFace.EastFace = mRightFace;
             mBottomFace.SouthFace = mBackFace;
             mBottomFace.WestFace = mLeftFace;
+
+            mLeftFace.NorthFace = mFrontFace;
+            mLeftFace.EastFace = mBottomFace;
+            mLeftFace.SouthFace = mBackFace;
+            mLeftFace.WestFace = mTopFace;
+
+            mRightFace.NorthFace = mFrontFace;
+            mRightFace.EastFace = mTopFace;
+            mRightFace.SouthFace = mBackFace;
+            mRightFace.WestFace = mBottomFace;
         }
 
 
@@ -112,7 +150,7 @@ namespace Cyber_Cube
             base.Initialize();
 
             effect = new BasicEffect( GraphicsDevice );
-            effect.AmbientLightColor = new Vector3( 0.0f, 1.0f, 0.0f );
+            effect.AmbientLightColor = new Vector3( 1.0f, 1.0f, 1.0f );
             effect.DirectionalLight0.Enabled = true;
             effect.DirectionalLight0.DiffuseColor = Vector3.One;
             effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
@@ -127,12 +165,22 @@ namespace Cyber_Cube
                                   mPosition,
                                   GetUpVector() );
 
+            mCamera.UsesSphereAnimation = true;
+
             effect.View = mCamera.View;
 
-            //COMP7051
-            size = new Vector3( 1, 1, 1 );
-            position = new Vector3( 0, 0, 0 );
-            BuildShape();
+            Color[] colors = {
+                Color.Red,
+                Color.Orange,
+                Color.Blue,
+                Color.Green,
+                Color.White,
+                Color.Yellow
+            };
+
+            foreach ( var pair in Enumerable.Zip( Faces, colors,
+                      (f, c) => { return new Tuple<Face, Color>( f, c ); } ) )
+                pair.Item1.BackgroundColor = pair.Item2;
         }
 
         protected override void LoadContent()
@@ -148,131 +196,96 @@ namespace Cyber_Cube
         {
             var input = (Game as Game1).mInput;
 
-            if ( input.Keyboard_WasAnyKeyPressed( new Keys[] { Keys.Right, Keys.Left, Keys.Up, Keys.Down } ) )
+            if ( Mode == CubeMode.Edit )
             {
-                if ( input.Keyboard_WasKeyPressed( Keys.Right ) )
-                    this.RotateRight();
+                if ( input.Keyboard_WasAnyKeyPressed( new Keys[] { Keys.Right, Keys.Left, Keys.Up, Keys.Down, Keys.RightShift, Keys.LeftShift } ) )
+                {
+                    if ( input.Keyboard_WasKeyPressed( Keys.Right ) )
+                        this.RotateRight();
 
-                if ( input.Keyboard_WasKeyPressed( Keys.Left ) )
-                    this.RotateLeft();
+                    if ( input.Keyboard_WasKeyPressed( Keys.Left ) )
+                        this.RotateLeft();
 
-                if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
-                    this.RotateUp();
+                    if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
+                        this.RotateUp();
 
-                if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
-                    this.RotateDown();
+                    if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
+                        this.RotateDown();
 
+                    if ( input.Keyboard_WasKeyPressed( Keys.RightShift ) )
+                        this.RotateClockwise();
 
-                mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
-                mCamera.AnimateUpVector( GetUpVector(), 1 );
+                    if ( input.Keyboard_WasKeyPressed( Keys.LeftShift ) )
+                        this.RotateAntiClockwise();
+                }
+            }
+            else
+            {
+                if ( input.Keyboard_WasKeyPressed( Keys.RightShift ) )
+                    this.RotateClockwise();
+
+                if ( input.Keyboard_WasKeyPressed( Keys.LeftShift ) )
+                    this.RotateAntiClockwise();
             }
 
             if ( input.Keyboard_WasKeyPressed( Keys.Space ) )
             {
-                CurrentFace = mFrontFace;
-                Up = CompassDirections.North;
+                //CurrentFace = mFrontFace;
+                //Up = CompassDirections.North;
+                //
+                //mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+                //mCamera.AnimateTarget( mPosition, 10 );
+                //mCamera.AnimateUpVector( Vector3.Up, 1 );
 
-                mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
-                mCamera.AnimateTarget( mPosition, 10 );
-                mCamera.AnimateUpVector( Vector3.Up, 1 );
+                Mode = Mode == CubeMode.Edit ? CubeMode.Play : CubeMode.Edit;
             }
 
             mCamera.Update( gameTime );
 
-            Vector3 lightDir = Vector3.Zero;
-
-            // Game Pad
-            {
-                if ( input.GamePad.IsConnected )
-                {
-                    if ( input.GamePad.DPad.Left == ButtonState.Pressed )
-                        mRotation.Y -= 0.005f;
-
-                    if ( input.GamePad.DPad.Right == ButtonState.Pressed )
-                        mRotation.Y += 0.005f;
-
-                    float stickRY = input.GamePad.ThumbSticks.Right.Y;
-
-                    if ( stickRY != input.OldGamePad.ThumbSticks.Right.Y )
-                    {
-                        mScale = new Vector3( (stickRY + 1.0f) / 2.0f + .5f );
-                    }
-
-                    lightDir += new Vector3( input.GamePad.ThumbSticks.Left.X,
-                                             input.GamePad.ThumbSticks.Left.Y,
-                                             1.0f );
-                    lightDir.Normalize();
-                }
-                else
-                {
-                    //angle += 0.0003f * gameTime.ElapsedGameTime.Milliseconds;
-                }
-            }
-
-            // Mouse
-            {
-                int scrollWheel = input.Mouse.ScrollWheelValue - input.OldMouse.ScrollWheelValue;
-
-                if ( scrollWheel != input.OldMouse.ScrollWheelValue )
-                {
-                    mScale += new Vector3( scrollWheel / 2000f );
-                }
-
-                lightDir += new Vector3( -input.Mouse.X + Game.Window.ClientBounds.Width / 2,
-                                         input.Mouse.Y - Game.Window.ClientBounds.Height / 2,
-                                         1.0f );
-                lightDir.Normalize();
-            }
-
-            Utils.Vector3Approach( ref mScale, Vector3.One, 0.005f );
-            Utils.Vector3Approach( ref mPosition, Vector3.Zero, 0.01f );
-
-            if ( mScale.X < 0 )
-                mScale.X = 0;
-            if ( mScale.Y < 0 )
-                mScale.Y = 0;
-            if ( mScale.Z < 0 )
-                mScale.Z = 0;
-
             Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
-            Matrix P = Matrix.CreateTranslation( mPosition );
+            Matrix T = Matrix.CreateTranslation( mPosition );
             Matrix S = Matrix.CreateScale( mScale );
-            effect.World = S * R * P;
+            effect.World = S * R * T;
 
             effect.View = mCamera.View;
-
-            effect.DirectionalLight0.Direction = Vector3.Normalize( lightDir );
 
             base.Update( gameTime );
         }
 
         public override void Draw( GameTime gameTime )
         {
+            GraphicsDevice.Clear( Color.CornflowerBlue );
 
-            if ( vertices != null )
-            {
-                RasterizerState rs = new RasterizerState();
-                rs.CullMode = CullMode.CullClockwiseFace;
-                GraphicsDevice.RasterizerState = rs;
-                foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
-                {
-                    pass.Apply();
-                    GraphicsDevice.DrawUserPrimitives<VertexPositionNormalTexture>( PrimitiveType.TriangleList, vertices, 0, primitiveCount );
-                }
-            }
+            foreach ( Face face in Faces )
+                face.Render2D( gameTime );
+
+            effect.TextureEnabled = true;
+
+            RasterizerState rs = new RasterizerState();
+            rs.CullMode = CullMode.CullClockwiseFace;
+            GraphicsDevice.RasterizerState = rs;
+
+            foreach ( Face face in Faces )
+                face.Render3D( effect );
+
+
+            string output = CurrentFace.Name;
+
+            var pos = font.MeasureString( output );
 
             spriteBatch.Begin();
-            spriteBatch.DrawString( fontLarge,
-                                    CurrentFace.Name,
-                                    new Vector2( Game.Window.ClientBounds.Width / 2, Game.Window.ClientBounds.Height / 2 ),
+            spriteBatch.DrawString( font,
+                                    output,
+                                    new Vector2( Game.Window.ClientBounds.Width - pos.X, pos.Y ),
                                     Color.White,
                                     Up.ToRadians(),
-                                    fontLarge.MeasureString( CurrentFace.Name ) / 2,
+                                    font.MeasureString( output ) / 2,
                                     1,
                                     SpriteEffects.None,
                                     0 );
 
-            //spriteBatch.DrawString( font, mRotationTarget.ToString(), Vector2.Zero, Color.White );
+            spriteBatch.DrawString( font, mCamera.Position.ToString(), Vector2.Zero, Color.White );
+            spriteBatch.DrawString( font, mCamera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
             spriteBatch.End();
 
             base.Draw( gameTime );

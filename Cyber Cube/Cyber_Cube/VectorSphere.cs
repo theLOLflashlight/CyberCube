@@ -32,17 +32,29 @@ namespace Cyber_Cube
 
         public static explicit operator VectorSphere( Vector3 v )
         {
-            var length = v.Length();
-            return new VectorSphere( length,
-                                     v.X != 0 ? (float) Math.Atan( v.Y / v.X ) : 0,
-                                     (float) Math.Acos( v.Z / length ) );
+            VectorSphere outVec = new VectorSphere();
+
+            outVec.R = v.Length(); //(float) Math.Sqrt( (v.X * v.X) + (v.Y * v.Y) + (v.Z * v.Z) );
+
+            if ( v.X == 0 )
+                v.X = float.Epsilon;
+
+            outVec.P = (float) Math.Atan( v.Z / v.X );
+            if ( v.X < 0 )
+                outVec.P += MathHelper.Pi;
+
+            outVec.A = (float) Math.Asin( v.Y / outVec.R );
+
+            return outVec;
         }
 
         public static explicit operator Vector3( VectorSphere v )
         {
-            return new Vector3( (float) (v.R * Math.Sin( v.A ) * Math.Cos( v.P )),
-                                (float) (v.R * Math.Sin( v.A ) * Math.Sin( v.P )),
-                                (float) (v.R * Math.Cos( v.A )) );
+            float a = v.R * (float) Math.Cos( v.A );
+
+            return new Vector3( a * (float) Math.Cos( v.P ),
+                                v.R * (float) Math.Sin( v.A ),
+                                a * (float) Math.Sin( v.P ) );
         }
     }
 }

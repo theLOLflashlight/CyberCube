@@ -22,6 +22,8 @@ namespace Cyber_Cube
         private float mTargetSpeed = 1;
         private float mUpVectorSpeed = 1;
 
+        public bool UsesSphereAnimation { get; set; }
+
         public Vector3 Position
         {
             get {
@@ -31,6 +33,7 @@ namespace Cyber_Cube
                 mPosition0 = mPosition1 = value;
             }
         }
+
         public Vector3 Target
         {
             get
@@ -42,6 +45,7 @@ namespace Cyber_Cube
                 mTarget0 = mTarget1 = value;
             }
         }
+
         public Vector3 UpVector
         {
             get
@@ -72,16 +76,24 @@ namespace Cyber_Cube
         {
             float seconds = gameTime.ElapsedGameTime.Milliseconds / 1000f;
 
-            //VectorSphere spherePos0 = (VectorSphere) mPosition0;
-            //VectorSphere spherePos1 = (VectorSphere) mPosition1;
-            //Utils.FloatApproach( ref spherePos0.R, spherePos1.R, seconds * mPositionSpeed );
-            //Utils.FloatApproach( ref spherePos0.A, spherePos1.A, seconds * mPositionSpeed );
-            //Utils.FloatApproach( ref spherePos0.P, spherePos1.P, seconds * mPositionSpeed );
-            //mPosition0 = (Vector3) spherePos0;
-            
-            Utils.Vector3Approach( ref mPosition0, mPosition1, seconds * mPositionSpeed );
-            Utils.Vector3Approach( ref mTarget0, mTarget1, seconds * mTargetSpeed );
-            Utils.Vector3Approach( ref mUpVector0, mUpVector1, seconds * mUpVectorSpeed );
+            if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
+                mPosition0 = mPosition1;
+
+            if ( Vector3.Distance( mTarget0, mTarget1 ) < seconds * mTargetSpeed )
+                mTarget0 = mTarget1;
+
+            if ( Vector3.Distance( mUpVector0, mUpVector1 ) < seconds * mUpVectorSpeed )
+                mUpVector0 = mUpVector1;
+
+
+            Utils.Vector3InterpolatorRef interpolator = UsesSphereAnimation
+                ? (Utils.Vector3InterpolatorRef) Utils.InterpolateVectorSlerp
+                : (Utils.Vector3InterpolatorRef) Utils.InterpolateVectorLerp;
+
+            interpolator( ref mPosition0, mPosition1, seconds * mPositionSpeed );
+            interpolator( ref mTarget0, mTarget1, seconds * mTargetSpeed );
+            interpolator( ref mUpVector0, mUpVector1, seconds * mUpVectorSpeed * 10 );
+
         }
 
         public void AnimatePosition( Vector3 position, float speed )

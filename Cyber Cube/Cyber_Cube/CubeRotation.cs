@@ -25,6 +25,8 @@ namespace Cyber_Cube
                 RotateWest();
                 break;
             }
+            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+            mCamera.AnimateUpVector( GetUpVector(), 1 );
         }
 
         public void RotateRight()
@@ -45,6 +47,20 @@ namespace Cyber_Cube
         public void RotateDown()
         {
             Rotate( ~Up );
+        }
+
+        public void RotateClockwise()
+        {
+            --Up;
+            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+            mCamera.AnimateUpVector( GetUpVector(), 1 );
+        }
+
+        public void RotateAntiClockwise()
+        {
+            ++Up;
+            mCamera.AnimatePosition( 7 * CurrentFace.Normal, 7 );
+            mCamera.AnimateUpVector( GetUpVector(), 1 );
         }
 
         private static CompassDirections FaceAdjacency( Face source, Face target )

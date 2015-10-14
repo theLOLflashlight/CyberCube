@@ -62,8 +62,8 @@
     <Compile Include="Cube.cs" />
     <Compile Include="CubeFace.cs" />
     <Compile Include="CubeRotation.cs" />
-    <Compile Include="CubeShape.cs" />
     <Compile Include="InputState.cs" />
+    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="Game1.cs" />
