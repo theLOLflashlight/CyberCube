@@ -16,12 +16,16 @@ namespace Cyber_Cube
     /// </summary>
     public class Game1 : Microsoft.Xna.Framework.Game
     {
-        GraphicsDeviceManager graphics;
-        SpriteBatch spriteBatch;
 
-        public readonly InputState mInput = new InputState();
+        GraphicsDeviceManager graphics;
+        SpriteBatch mSpriteBatch;
+
+        public readonly InputState Input = new InputState();
+        public readonly Camera Camera;
 
         private Cube mCube;
+        private SpriteFont mFont;
+        public Player Player { get; private set; }
 
         public Game1()
         {
@@ -29,9 +33,13 @@ namespace Cyber_Cube
             Content.RootDirectory = "Content";
             IsMouseVisible = true;
 
+            Camera = new Camera( this );
             mCube = new Cube( this );
+            Player = new Player( mCube );
 
+            Components.Add( Player );
             Components.Add( mCube );
+            Components.Add( Camera );
         }
 
         /// <summary>
@@ -43,6 +51,7 @@ namespace Cyber_Cube
         protected override void Initialize()
         {
             // TODO: Add your initialization logic here
+            mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             base.Initialize();
         }
@@ -53,8 +62,7 @@ namespace Cyber_Cube
         /// </summary>
         protected override void LoadContent()
         {
-            // Create a new SpriteBatch, which can be used to draw textures.
-            spriteBatch = new SpriteBatch( GraphicsDevice );
+            mFont = Content.Load<SpriteFont>( "MessageFont" );
 
             // TODO: use this.Content to load your game content here
         }
@@ -75,13 +83,42 @@ namespace Cyber_Cube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            mInput.Update( gameTime );
+            Input.Update( gameTime );
 
             // Allows the game to exit
             if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
                 this.Exit();
 
-            // TODO: Add your update logic here
+            if ( mCube.Mode == Cube.CubeMode.Edit )
+            {
+                if ( Input.Keyboard_WasKeyPressed( Keys.Right ) )
+                    mCube.RotateRight();
+
+                if ( Input.Keyboard_WasKeyPressed( Keys.Left ) )
+                    mCube.RotateLeft();
+
+                if ( Input.Keyboard_WasKeyPressed( Keys.Up ) )
+                    mCube.RotateUp();
+
+                if ( Input.Keyboard_WasKeyPressed( Keys.Down ) )
+                    mCube.RotateDown();
+            }
+
+            if ( Input.Keyboard_WasKeyPressed( Keys.RightShift ) )
+                mCube.RotateClockwise();
+
+            if ( Input.Keyboard_WasKeyPressed( Keys.LeftShift ) )
+                mCube.RotateAntiClockwise();
+
+            if ( Input.Keyboard_WasKeyPressed( Keys.Space )
+                 || Input.GamePad_WasButtonPressed( Buttons.Start ) )
+            {
+                mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
+                             ? Cube.CubeMode.Play
+                             : Cube.CubeMode.Edit;
+
+                Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
+            }
 
             base.Update( gameTime );
         }
@@ -97,6 +134,28 @@ namespace Cyber_Cube
             // TODO: Add your drawing code here
 
             base.Draw( gameTime );
+
+            mSpriteBatch.Begin();
+
+            string output = mCube.CurrentFace.Name;
+            var pos = mFont.MeasureString( output );
+
+            mSpriteBatch.DrawString( mFont,
+                                    output,
+                                    new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
+                                    Color.White,
+                                    mCube.UpDir.ToRadians(),
+                                    mFont.MeasureString( output ) / 2,
+                                    1,
+                                    SpriteEffects.None,
+                                    0 );
+
+            mSpriteBatch.DrawString( mFont, Camera.Position.ToString(), Vector2.Zero, Color.White );
+            mSpriteBatch.DrawString( mFont, Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
+            mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X, new Vector2( 0, 60 ), Color.White );
+            mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y, new Vector2( 0, 90 ), Color.White );
+            mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z, new Vector2( 0, 120 ), Color.White );
+            mSpriteBatch.End();
         }
     }
 }

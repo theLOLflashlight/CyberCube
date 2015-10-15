@@ -28,17 +28,17 @@ namespace Cyber_Cube
             FloatApproach( ref variable.Z, target.Z, step.Z );
         }
 
-        public static Vector3 InterpolateVectorLerp( Vector3 v0, Vector3 v1, float amount )
+        public static Vector3 VectorLerp( Vector3 v0, Vector3 v1, float amount )
         {
             return Vector3.Lerp( v0, v1, amount );
         }
 
-        public static void InterpolateVectorLerp( ref Vector3 v0, Vector3 v1, float amount )
+        public static void VectorLerp( ref Vector3 v0, Vector3 v1, float amount )
         {
-            v0 = InterpolateVectorLerp( v0, v1, amount );
+            v0 = VectorLerp( v0, v1, amount );
         }
 
-        public static Vector3 InterpolateVectorSlerp( Vector3 v0, Vector3 v1, float amount )
+        public static Vector3 VectorSlerp( Vector3 v0, Vector3 v1, float amount )
         {
             return Vector3.Transform(
                        v0,
@@ -51,10 +51,26 @@ namespace Cyber_Cube
                            amount ) );
         }
 
-        public static void InterpolateVectorSlerp( ref Vector3 v0, Vector3 v1, float amount )
+        public static void VectorSlerp( ref Vector3 v0, Vector3 v1, float amount )
         {
-            v0 = InterpolateVectorSlerp( v0, v1, amount );
+            v0 = VectorSlerp( v0, v1, amount );
         }
+
+        public static Vector3 Slerp( this Vector3 v0, Vector3 v1, float amount )
+        {
+            return VectorSlerp( v0, v1, amount );
+        }
+
+        public static Vector3 RotateVector( Vector3 position, Vector3 normal, float radians )
+        {
+            return Vector3.Transform( position, Matrix.CreateFromAxisAngle( normal, radians ) );
+        }
+
+        public static Vector3 Rotate( this Vector3 position, Vector3 normal, float radians )
+        {
+            return RotateVector( position, normal, radians );
+        }
+
 
         public static void RoundVector( ref Vector3 vec )
         {
@@ -69,6 +85,11 @@ namespace Cyber_Cube
             return vec;
         }
 
+        public static Vector3 Round( this Vector3 vec )
+        {
+            return RoundVector( vec );
+        }
+
         public static void RoundVector( ref Vector2 vec )
         {
             vec.X = (float) Math.Round( vec.X );
@@ -81,9 +102,14 @@ namespace Cyber_Cube
             return vec;
         }
 
+        public static Vector2 Round( this Vector2 vec )
+        {
+            return RoundVector( vec );
+        }
+
         public static Matrix RotateVecToVec( Vector3 v1, Vector3 v2 )
         {
-            if ( v1 == Vector3.Zero || v2 == Vector3.Zero )
+            if ( v1 == v2 )
                 return Matrix.Identity;
 
             v1.Normalize();
@@ -93,10 +119,19 @@ namespace Cyber_Cube
             if ( angle == 0 )
                 return Matrix.Identity;
 
-            var axis = Vector3.Cross( v1, angle != Math.PI ? v2 : Vector3.One );
+            var axis = Vector3.Cross( v1, angle != Math.PI
+                                          ? v2
+                                          : v1 != Vector3.One
+                                            ? Vector3.One
+                                            : Vector3.Up );
             axis.Normalize();
 
             return Matrix.CreateFromAxisAngle( axis, (float) angle );
+        }
+
+        public static Matrix RotateOnto( this Vector3 v1, Vector3 v2 )
+        {
+            return RotateVecToVec( v1, v2 );
         }
 
         public static void Vector3SphereApproach( ref Vector3 v0, Vector3 v1, float step )

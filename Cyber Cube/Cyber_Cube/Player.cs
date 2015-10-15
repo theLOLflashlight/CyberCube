@@ -17,14 +17,13 @@ namespace Cyber_Cube
             }
         }
 
-        private SpriteFont mFont;
-
         public Vector3 WorldPosition = Vector3.UnitZ;
         public Vector3 Velocity = Vector3.Zero;
 
         private Cube mCube;
 
         private Texture2D pixel;
+        private SpriteBatch mSpriteBatch;
 
         private Cube.Face CurrentFace
         {
@@ -44,6 +43,8 @@ namespace Cyber_Cube
             : base( cube.Game )
         {
             mCube = cube;
+            this.Visible = true;
+            this.DrawOrder = 1;
         }
 
         public override void Initialize()
@@ -53,53 +54,39 @@ namespace Cyber_Cube
             pixel = new Texture2D( GraphicsDevice, 2, 2 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White, Color.White } );
 
-            this.Visible = true;
-            this.DrawOrder = 1;
+            mSpriteBatch = new SpriteBatch( GraphicsDevice );
         }
 
         protected override void LoadContent()
         {
             base.LoadContent();
-
-            mFont = Game.Content.Load<SpriteFont>( "MessageFont" );
         }
 
         public Vector3 Transform2dTo3d( Vector2 vec2d )
         {
             Vector3 vec3d = new Vector3( vec2d, 0 );
 
-            vec3d = Vector3.Transform( vec3d, Utils.RotateVecToVec( Vector3.UnitZ, Normal ) );
+            vec3d = Vector3.Transform( vec3d, Vector3.UnitZ.RotateOnto( Normal ) );
             var angle = mCube.UpDir.ToRadians() + mCube.CurrentFace.Dir.ToRadians();
 
-            return Vector3.Transform( vec3d, Matrix.CreateFromAxisAngle( Normal, angle ) );
+            return vec3d.Rotate( Normal, angle );
         }
 
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
 
-            if ( mCube.Mode == Cube.CubeMode.Edit )
-                return;
-
-            var input = Game.mInput;
+            var input = Game.Input;
 
             var delta2d = Vector2.Zero;
 
-            if ( input.Keyboard.IsKeyDown( Keys.Right ) )
-                delta2d.X++;
-
-            if ( input.Keyboard.IsKeyDown( Keys.Left ) )
-                delta2d.X--;
-
-            if ( input.Keyboard.IsKeyDown( Keys.Up ) )
-                delta2d.Y++;
-
-            if ( input.Keyboard.IsKeyDown( Keys.Down ) )
-                delta2d.Y--;
+            delta2d.X += input[ Actions.MoveRight ].Value;
+            delta2d.X -= input[ Actions.MoveLeft ].Value;
+            delta2d.Y += input[ Actions.MoveUp ].Value;
+            delta2d.Y -= input[ Actions.MoveDown ].Value;
 
             Vector3 delta3d = Transform2dTo3d( delta2d );
-
-            WorldPosition += (delta3d / 100) * (gameTime.ElapsedGameTime.Milliseconds / 10f);
+            WorldPosition += (delta3d / Cube.Face.SIZE) * ((float) gameTime.ElapsedGameTime.TotalMilliseconds / 10f);
 
             if ( WorldPosition.X > 1 )
             {
@@ -134,48 +121,30 @@ namespace Cyber_Cube
                 mCube.Rotate( CurrentFace.VectorToDirection( -Vector3.UnitZ ) );
             }
 
+            Game.Camera.Target = WorldPosition;
         }
 
         public override void Draw( GameTime gameTime )
         {
             base.Draw( gameTime );
 
-            SpriteBatch spriteBatch = new SpriteBatch( GraphicsDevice );
-
             // Find screen equivalent of 3D location in world
-            Vector3 worldLocation = WorldPosition;
             Vector3 screenLocation = GraphicsDevice.Viewport.Project(
-                worldLocation,
+                this.WorldPosition,
                 mCube.Effect.Projection,
                 mCube.Effect.View,
                 mCube.Effect.World );
 
             // Draw our pixel texture there
-            spriteBatch.Begin();
-            spriteBatch.Draw( pixel,
-                              new Vector2(
-                                  screenLocation.X,
-                                  screenLocation.Y ),
-                              Color.Black );
+            mSpriteBatch.Begin();
+            
+            mSpriteBatch.Draw( pixel,
+                               new Vector2(
+                                   screenLocation.X,
+                                   screenLocation.Y ),
+                               Color.Black );
 
-            spriteBatch.End();
-
-            if ( this.Visible )
-                return;
-
-            var pos = Vector3.Transform( WorldPosition, Utils.RotateVecToVec( mCube.CurrentFace.Normal, Vector3.UnitZ ) );
-
-            spriteBatch.Begin();
-            spriteBatch.DrawString( mFont,
-                                    "A",
-                                    new Vector2( Cube.Face.SIZE / 2 ) + (new Vector2( pos.X, pos.Y ) * 50),
-                                    Color.Black,
-                                    -mCube.UpDir.ToRadians(),// 0,//Up.ToRadians(),
-                                    mFont.MeasureString( "A" ) / 2,
-                                    1f,
-                                    SpriteEffects.None,
-                                    0 );
-            spriteBatch.End();
+            mSpriteBatch.End();
         }
 
     }

@@ -29,14 +29,13 @@ namespace Cyber_Cube
         private float mTargetSpeed = 1;
         private float mUpVectorSpeed = 1;
 
-        public bool UsesSphereAnimation { get; set; }
-
         public Vector3 Position
         {
             get {
                 return mPosition0;
             }
             set {
+                mViewMatrix = Matrix.Identity;
                 mPosition0 = mPosition1 = value;
             }
         }
@@ -49,6 +48,7 @@ namespace Cyber_Cube
             }
             set
             {
+                mViewMatrix = Matrix.Identity;
                 mTarget0 = mTarget1 = value;
             }
         }
@@ -61,6 +61,7 @@ namespace Cyber_Cube
             }
             set
             {
+                mViewMatrix = Matrix.Identity;
                 mUpVector0 = mUpVector1 = value;
             }
         }
@@ -81,26 +82,27 @@ namespace Cyber_Cube
 
         public override void Update( GameTime gameTime )
         {
-            float seconds = gameTime.ElapsedGameTime.Milliseconds / 1000f;
+            float seconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
 
-            if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
-                mPosition0 = mPosition1;
-
-            if ( Vector3.Distance( mTarget0, mTarget1 ) < seconds * mTargetSpeed )
-                mTarget0 = mTarget1;
-
-            if ( Vector3.Distance( mUpVector0, mUpVector1 ) < seconds * mUpVectorSpeed )
-                mUpVector0 = mUpVector1;
+            if ( mPosition0 != mPosition1 )
+                if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
+                    mPosition0 = mPosition1;
+                else
+                    mPosition0 = mPosition0.Slerp( mPosition1, seconds * mPositionSpeed );
 
 
-            Utils.Vector3InterpolatorRef interpolator = UsesSphereAnimation
-                ? (Utils.Vector3InterpolatorRef) Utils.InterpolateVectorSlerp
-                : (Utils.Vector3InterpolatorRef) Utils.InterpolateVectorLerp;
+            if ( mTarget0 != mTarget1 )
+                if ( Vector3.Distance( mTarget0, mTarget1 ) < seconds * mTargetSpeed )
+                    mTarget0 = mTarget1;
+                else
+                    mTarget0 = mTarget0.Slerp( mTarget1, seconds * mTargetSpeed );
 
-            interpolator( ref mPosition0, mPosition1, seconds * mPositionSpeed );
-            interpolator( ref mTarget0, mTarget1, seconds * mTargetSpeed );
-            interpolator( ref mUpVector0, mUpVector1, seconds * mUpVectorSpeed * 10 );
 
+            if ( mUpVector0 != mUpVector1 )
+                if ( Vector3.Distance( mUpVector0, mUpVector1 ) < seconds * mUpVectorSpeed )
+                    mUpVector0 = mUpVector1;
+                else
+                    mUpVector0 = mUpVector0.Slerp( mUpVector1, seconds * mUpVectorSpeed * 10 );
         }
 
         public void AnimatePosition( Vector3 position, float speed )
@@ -135,8 +137,7 @@ namespace Cyber_Cube
 
         public Matrix View
         {
-            get
-            {
+            get {
                 if ( IsAnimating() || mViewMatrix == Matrix.Identity )
                     Matrix.CreateLookAt( ref mPosition0,
                                          ref mTarget0,

@@ -31,27 +31,27 @@ namespace Cyber_Cube
         public void RotateClockwise()
         {
             --UpDir;
-            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
+            Game.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         public void RotateAntiClockwise()
         {
             ++UpDir;
-            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
+            Game.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         public void Rotate( CompassDirections direction )
         {
             Face nextFace = CurrentFace.AdjacentFace( direction );
-            var backTrack = FaceAdjacency( nextFace, CurrentFace );
+            CompassDirections backTrack = FaceAdjacency( nextFace, CurrentFace );
 
-            UpDir = GetNewUpDirection( direction, backTrack );
             CurrentFace = nextFace;
+            UpDir = GetNextUpDirection( direction, backTrack );
 
-            mCamera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            mCamera.AnimateUpVector( ComputeUpVector(), 1 );
+            Game.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         private static CompassDirections FaceAdjacency( Face source, Face target )
@@ -71,7 +71,7 @@ namespace Cyber_Cube
             throw new Exception( "Faces are not connected." );
         }
 
-        private Direction GetNewUpDirection( Direction rotation, Direction backTrack )
+        private Direction GetNextUpDirection( Direction rotation, Direction backTrack )
         {
             if ( UpDir == rotation )
                 return ~backTrack;

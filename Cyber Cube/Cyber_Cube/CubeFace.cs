@@ -45,39 +45,12 @@ namespace Cyber_Cube
             /// <summary>
             /// The face's VertexPositionNormalTexture
             /// </summary>
-            private VertexPositionNormalTexture[] VPNT = new VertexPositionNormalTexture[ 6 ];
+            private VertexPositionNormalTexture[] mVertexData = new VertexPositionNormalTexture[ 6 ];
 
             public Direction Dir;
 
-
-            public CompassDirections VectorToDirection( Vector3 vec )
-            {
-                vec.Normalize();
-                vec = Utils.RoundVector( vec );
-
-                if ( UpVec == vec )
-                    return CompassDirections.North;
-
-                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
-                vec = Utils.RoundVector( vec );
-
-                if ( UpVec == vec )
-                    return CompassDirections.East;
-
-                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
-                vec = Utils.RoundVector( vec );
-
-                if ( UpVec == vec )
-                    return CompassDirections.South;
-
-                vec = Vector3.Transform( vec, Matrix.CreateFromAxisAngle( Normal, MathHelper.PiOver2 ) );
-                vec = Utils.RoundVector( vec );
-
-                if ( UpVec == vec )
-                    return CompassDirections.West;
-
-                throw new Exception( "Vector not aligned on plane." );
-            }
+            private Texture2D pixel;
+            private SpriteBatch mSpriteBatch;
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction dir )
                 : base( cube.Game )
@@ -108,30 +81,30 @@ namespace Cyber_Cube
                 Vector2 textureBottomLeft = Vector2.UnitY;
                 Vector2 textureBottomRight = Vector2.One;
 
-                Matrix rotation = Utils.RotateVecToVec( Vector3.UnitZ, Normal )
-                              * Matrix.CreateFromAxisAngle( Normal, dir.ToRadians() );
+                Matrix rotation = Vector3.UnitZ.RotateOnto( Normal )
+                                  * Matrix.CreateFromAxisAngle( Normal, dir.ToRadians() );
 
-                VPNT[ 0 ] = new VertexPositionNormalTexture(
+                mVertexData[ 0 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 0 ], rotation ) + Normal,
                     Normal, textureTopLeft );
 
-                VPNT[ 1 ] = new VertexPositionNormalTexture(
+                mVertexData[ 1 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 1 ], rotation ) + Normal,
                     Normal, textureBottomLeft );
 
-                VPNT[ 2 ] = new VertexPositionNormalTexture(
+                mVertexData[ 2 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 2 ], rotation ) + Normal,
                     Normal, textureTopRight );
 
-                VPNT[ 3 ] = new VertexPositionNormalTexture(
+                mVertexData[ 3 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 3 ], rotation ) + Normal,
                     Normal, textureBottomLeft );
 
-                VPNT[ 4 ] = new VertexPositionNormalTexture(
+                mVertexData[ 4 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 4 ], rotation ) + Normal,
                     Normal, textureBottomRight );
 
-                VPNT[ 5 ] = new VertexPositionNormalTexture(
+                mVertexData[ 5 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 5 ], rotation ) + Normal,
                     Normal, textureTopRight );
             }
@@ -142,7 +115,12 @@ namespace Cyber_Cube
 
                 this.Visible = false;
                 BackgroundColor = Color.Transparent;
-                //this.Render2D( new GameTime() );
+
+                Texture = new Texture2D( GraphicsDevice, WIDTH, HEIGHT );
+                pixel = new Texture2D( GraphicsDevice, 1, 1 );
+                pixel.SetData( new[] { Color.White } );
+
+                mSpriteBatch = new SpriteBatch( GraphicsDevice );
             }
 
             protected override void LoadContent()
@@ -150,6 +128,97 @@ namespace Cyber_Cube
                 base.LoadContent();
 
                 mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
+            }
+
+            public override void Update( GameTime gameTime )
+            {
+                base.Update( gameTime );
+
+            }
+
+            public override void Draw( GameTime gameTime )
+            {
+                base.Draw( gameTime );
+
+                mSpriteBatch.Begin();
+                mSpriteBatch.DrawString( mFont,
+                                        Name,
+                                        new Vector2( WIDTH, HEIGHT ) / 2,
+                                        Color.Black,
+                                        0, // Rotation is handled via texture orientation.
+                                        mFont.MeasureString( Name ) / 2,
+                                        1f,
+                                        SpriteEffects.None,
+                                        0 );
+
+                mSpriteBatch.Draw( pixel, new Rectangle( WIDTH - 10, HEIGHT - 10, 10, 10 ), Color.Black );
+
+                //if ( Cube.CurrentFace == this )
+                //{
+                //    Cube.mPlayer.Draw( gameTime );
+                //}
+
+                mSpriteBatch.End();
+            }
+
+            public void Render2D( GameTime gameTime )
+            {
+                // Huge memory performance improvement gained by disposing of render target.
+                using ( var renderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT ) )
+                {
+                    var tmp = GraphicsDevice.GetRenderTargets();
+
+                    // Set the current graphics device to the render target and clear it
+                    GraphicsDevice.SetRenderTarget( renderTarget );
+                    GraphicsDevice.Clear( BackgroundColor );
+
+                    this.Draw( gameTime );
+
+                    // Now switch back to the default target (i.e., the primary display) and set it up
+                    GraphicsDevice.SetRenderTargets( tmp );
+                    GraphicsDevice.Clear( Color.CornflowerBlue );
+
+                    int[] data = new int[ WIDTH * HEIGHT ];
+                    renderTarget.GetData( data );
+                    Texture.SetData( data );
+                }
+            }
+
+            public void Render3D( Effect effect )
+            {
+                effect.Parameters[ "Texture" ].SetValue( Texture );
+
+                foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
+                {
+                    pass.Apply();
+                    GraphicsDevice.DrawUserPrimitives( PrimitiveType.TriangleList, mVertexData, 0, 2 );
+                }
+            }
+
+            public CompassDirections VectorToDirection( Vector3 vec )
+            {
+                vec.Normalize();
+                vec = vec.Round();
+
+                if ( UpVec == vec )
+                    return CompassDirections.North;
+                
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+
+                if ( UpVec == vec )
+                    return CompassDirections.East;
+
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+
+                if ( UpVec == vec )
+                    return CompassDirections.South;
+
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+
+                if ( UpVec == vec )
+                    return CompassDirections.West;
+
+                throw new Exception( "Vector not aligned on plane." );
             }
 
             public Face AdjacentFace( CompassDirections direction )
@@ -168,71 +237,8 @@ namespace Cyber_Cube
                 case CompassDirections.West:
                     return WestFace;
                 }
-
                 return this;
             }
-
-            public override void Update( GameTime gameTime )
-            {
-                base.Update( gameTime );
-
-            }
-
-            public override void Draw( GameTime gameTime )
-            {
-                base.Draw( gameTime );
-
-                SpriteBatch spriteBatch = new SpriteBatch( GraphicsDevice );
-
-                spriteBatch.Begin();
-                spriteBatch.DrawString( mFont,
-                                        Name,
-                                        new Vector2( WIDTH, HEIGHT ) / 2,
-                                        Color.Black,
-                                        0,//Up.ToRadians(),
-                                        mFont.MeasureString( Name ) / 2,
-                                        1f,
-                                        SpriteEffects.None,
-                                        0 );
-
-                if ( Cube.CurrentFace == this )
-                {
-                    //Cube.mPlayer.Draw( gameTime );
-                }
-
-                spriteBatch.End();
-            }
-
-            public void Render2D( GameTime gameTime )
-            {
-                RenderTarget2D renderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT );
-                {
-                    var renderTargets = GraphicsDevice.GetRenderTargets();
-                    
-                    // Set the current graphics device to the render target and clear it
-                    GraphicsDevice.SetRenderTarget( renderTarget );
-                    GraphicsDevice.Clear( BackgroundColor );
-
-                    this.Draw( gameTime );
-                    Texture = renderTarget;
-
-                    // Now switch back to the default target (i.e., the primary display) and set it up
-                    GraphicsDevice.SetRenderTargets( renderTargets );
-                    GraphicsDevice.Clear( Color.CornflowerBlue );
-                }
-            }
-
-            public void Render3D( Effect effect )
-            {
-                effect.Parameters[ "Texture" ].SetValue( Texture );
-
-                foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
-                {
-                    pass.Apply();
-                    GraphicsDevice.DrawUserPrimitives( PrimitiveType.TriangleList, VPNT, 0, 2 );
-                }
-            }
-
         }
     }
 }
