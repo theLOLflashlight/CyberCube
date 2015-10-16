@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
+using Cyber_Cube.IO;
+using System.Reflection;
 
 namespace Cyber_Cube
 {
@@ -27,16 +29,23 @@ namespace Cyber_Cube
         private SpriteFont mFont;
         public Player Player { get; private set; }
 
+        private GameConsole mConsole;
+        public Color BackgroundColor { get; private set; }
+
         public Game1()
         {
             graphics = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
-            IsMouseVisible = true;
 
+            mConsole = new GameConsole( this );
             Camera = new Camera( this );
             mCube = new Cube( this );
             Player = new Player( mCube );
 
+            mConsole.CommandExecuted += RunCommand;
+            mConsole.Close();
+
+            Components.Add( mConsole );
             Components.Add( Player );
             Components.Add( mCube );
             Components.Add( Camera );
@@ -50,7 +59,8 @@ namespace Cyber_Cube
         /// </summary>
         protected override void Initialize()
         {
-            // TODO: Add your initialization logic here
+            IsMouseVisible = true;
+            BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             base.Initialize();
@@ -116,11 +126,17 @@ namespace Cyber_Cube
                 mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
                              ? Cube.CubeMode.Play
                              : Cube.CubeMode.Edit;
-
-                Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
             }
 
+            Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
+
             base.Update( gameTime );
+
+            if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
+                mConsole.Open();
+
+            if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
+                mConsole.Close();
         }
 
         /// <summary>
@@ -129,7 +145,7 @@ namespace Cyber_Cube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            GraphicsDevice.Clear( Color.CornflowerBlue );
+            GraphicsDevice.Clear( BackgroundColor );
 
             // TODO: Add your drawing code here
 
@@ -141,21 +157,65 @@ namespace Cyber_Cube
             var pos = mFont.MeasureString( output );
 
             mSpriteBatch.DrawString( mFont,
-                                    output,
-                                    new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
-                                    Color.White,
-                                    mCube.UpDir.ToRadians(),
-                                    mFont.MeasureString( output ) / 2,
-                                    1,
-                                    SpriteEffects.None,
-                                    0 );
+                                     output,
+                                     new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
+                                     Color.White,
+                                     mCube.UpDir.ToRadians(),
+                                     mFont.MeasureString( output ) / 2,
+                                     1,
+                                     SpriteEffects.None,
+                                     0 );
 
             mSpriteBatch.DrawString( mFont, Camera.Position.ToString(), Vector2.Zero, Color.White );
             mSpriteBatch.DrawString( mFont, Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X, new Vector2( 0, 60 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y, new Vector2( 0, 90 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z, new Vector2( 0, 120 ), Color.White );
+
+
+            mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
+            mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
+            mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
             mSpriteBatch.End();
+        }
+
+        private bool RunCommand( string command )
+        {
+            switch ( command )
+            {
+            default:
+                if ( command.StartsWith( "background " ) )
+                {
+                    string colorName = command.Substring( "background ".Length ).Trim();
+
+                    var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
+
+                    foreach ( var property in properties )
+                    {
+                        if ( property.Name.ToLower() == colorName.ToLower()
+                             && property.PropertyType == typeof( Color ) )
+                        {
+                            BackgroundColor = (Color) property.GetValue( null, null );
+                            return true;
+                        }
+                    }
+                }
+                break;
+
+            case "help":
+                mConsole.History.Add( @"Valid commands are:
+[help]
+[background <xna color>]
+[exit]
+[clear]" );
+                return true;
+
+            case "exit":
+                this.Exit();
+                return true;
+
+            case "clear":
+                mConsole.History.Clear();
+                return true;
+            }
+            return false;
         }
     }
 }

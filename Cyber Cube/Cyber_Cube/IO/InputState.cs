@@ -5,32 +5,32 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube
+namespace Cyber_Cube.IO
 {
     public delegate float AnalogInput();
 
-    public enum Actions
+    public enum Action
     {
         MoveLeft, MoveRight, MoveUp, MoveDown
     }
 
     public struct InputAction
     {
-        public readonly Actions Action;
+        public readonly Action Action;
         public readonly float Value;
 
-        public InputAction( Actions action, float value )
+        public InputAction( Action action, float value )
         {
             Action = action;
             Value = value;
         }
 
-        public InputAction( Actions action, bool value )
+        public InputAction( Action action, bool value )
             : this( action, value ? 1f : 0f )
         {
         }
 
-        public static implicit operator Actions( InputAction pAction )
+        public static implicit operator Action( InputAction pAction )
         {
             return pAction.Action;
         }
@@ -53,9 +53,9 @@ namespace Cyber_Cube
         public MouseState Mouse { get; private set; }
         public MouseState OldMouse { get; private set; }
 
-        private Dictionary<Actions, Keys> mKeyBinds = new Dictionary<Actions, Keys>();
-        private Dictionary<Actions, Buttons> mButtonBinds = new Dictionary<Actions, Buttons>();
-        private Dictionary<Actions, AnalogInput> mAnalogBinds = new Dictionary<Actions, AnalogInput>();
+        private Dictionary<Action, Keys> mKeyBinds = new Dictionary<Action, Keys>();
+        private Dictionary<Action, Buttons> mButtonBinds = new Dictionary<Action, Buttons>();
+        private Dictionary<Action, AnalogInput> mAnalogBinds = new Dictionary<Action, AnalogInput>();
 
         public InputState()
         {
@@ -63,20 +63,20 @@ namespace Cyber_Cube
             Keyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
 
-            mKeyBinds[ Actions.MoveLeft ] = Keys.Left;
-            mKeyBinds[ Actions.MoveRight ] = Keys.Right;
-            mKeyBinds[ Actions.MoveUp ] = Keys.Up;
-            mKeyBinds[ Actions.MoveDown ] = Keys.Down;
+            mKeyBinds[ Action.MoveLeft ] = Keys.Left;
+            mKeyBinds[ Action.MoveRight ] = Keys.Right;
+            mKeyBinds[ Action.MoveUp ] = Keys.Up;
+            mKeyBinds[ Action.MoveDown ] = Keys.Down;
 
-            mButtonBinds[ Actions.MoveLeft ] = Buttons.DPadLeft;
-            mButtonBinds[ Actions.MoveRight ] = Buttons.DPadRight;
-            mButtonBinds[ Actions.MoveUp ] = Buttons.DPadUp;
-            mButtonBinds[ Actions.MoveDown ] = Buttons.DPadDown;
+            mButtonBinds[ Action.MoveLeft ] = Buttons.DPadLeft;
+            mButtonBinds[ Action.MoveRight ] = Buttons.DPadRight;
+            mButtonBinds[ Action.MoveUp ] = Buttons.DPadUp;
+            mButtonBinds[ Action.MoveDown ] = Buttons.DPadDown;
 
-            mAnalogBinds[ Actions.MoveLeft ] = () => { return -GamePad.ThumbSticks.Left.X; };
-            mAnalogBinds[ Actions.MoveRight ] = () => { return GamePad.ThumbSticks.Left.X; };
-            mAnalogBinds[ Actions.MoveUp ] = () => { return GamePad.ThumbSticks.Left.Y; };
-            mAnalogBinds[ Actions.MoveDown ] = () => { return -GamePad.ThumbSticks.Left.Y; };
+            mAnalogBinds[ Action.MoveLeft ] = () => { return -GamePad.ThumbSticks.Left.X; };
+            mAnalogBinds[ Action.MoveRight ] = () => { return GamePad.ThumbSticks.Left.X; };
+            mAnalogBinds[ Action.MoveUp ] = () => { return GamePad.ThumbSticks.Left.Y; };
+            mAnalogBinds[ Action.MoveDown ] = () => { return -GamePad.ThumbSticks.Left.Y; };
         }
 
         public void Update( GameTime gameTime )
@@ -90,7 +90,7 @@ namespace Cyber_Cube
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
         }
 
-        public InputAction this[ Actions action ]
+        public InputAction this[ Action action ]
         {
             get {
                 if ( mKeyBinds.ContainsKey( action )
@@ -149,6 +149,21 @@ namespace Cyber_Cube
         public bool GamePad_WasAnyButtonReleased( Buttons[] buttons )
         {
             return buttons.Any( b => { return GamePad_WasButtonReleased( b ); } );
+        }
+
+        public bool IsShiftDown()
+        {
+            return Keyboard.IsKeyDown( Keys.LeftShift ) || Keyboard.IsKeyDown( Keys.RightShift );
+        }
+
+        public bool IsCtrlDown()
+        {
+            return Keyboard.IsKeyDown( Keys.LeftControl ) || Keyboard.IsKeyDown( Keys.RightControl );
+        }
+
+        public bool IsAltDown()
+        {
+            return Keyboard.IsKeyDown( Keys.LeftAlt ) || Keyboard.IsKeyDown( Keys.RightAlt );
         }
 
     }

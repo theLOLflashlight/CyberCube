@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using Cyber_Cube.IO;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -64,10 +65,13 @@ namespace Cyber_Cube
 
         public Vector3 Transform2dTo3d( Vector2 vec2d )
         {
-            Vector3 vec3d = new Vector3( vec2d, 0 );
+            Vector3 vec3d;
+            vec3d.X = vec2d.X;
+            vec3d.Y = vec2d.Y;
+            vec3d.Z = 0;
 
-            vec3d = Vector3.Transform( vec3d, Vector3.UnitZ.RotateOnto( Normal ) );
-            var angle = mCube.UpDir.ToRadians() + mCube.CurrentFace.Dir.ToRadians();
+            vec3d = vec3d.Transform( Vector3.UnitZ.RotateOntoQ( Normal ) );
+            var angle = mCube.UpDir.ToRadians() + mCube.CurrentFace.Orientation.ToRadians();
 
             return vec3d.Rotate( Normal, angle );
         }
@@ -80,10 +84,10 @@ namespace Cyber_Cube
 
             var delta2d = Vector2.Zero;
 
-            delta2d.X += input[ Actions.MoveRight ].Value;
-            delta2d.X -= input[ Actions.MoveLeft ].Value;
-            delta2d.Y += input[ Actions.MoveUp ].Value;
-            delta2d.Y -= input[ Actions.MoveDown ].Value;
+            delta2d.X += input[ IO.Action.MoveRight ].Value;
+            delta2d.X -= input[ IO.Action.MoveLeft ].Value;
+            delta2d.Y += input[ IO.Action.MoveUp ].Value;
+            delta2d.Y -= input[ IO.Action.MoveDown ].Value;
 
             Vector3 delta3d = Transform2dTo3d( delta2d );
             WorldPosition += (delta3d / Cube.Face.SIZE) * ((float) gameTime.ElapsedGameTime.TotalMilliseconds / 10f);

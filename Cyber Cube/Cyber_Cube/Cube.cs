@@ -58,11 +58,9 @@ namespace Cyber_Cube
         public Vector3 ComputeUpVector()
         {
             return Utils.RoundVector(
-                       Vector3.Transform(
-                           CurrentFace.UpVec,
-                           Matrix.CreateFromAxisAngle(
-                               CurrentFace.Normal,
-                               UpDir.ToRadians() ) ) );
+                       CurrentFace.UpVec.Rotate(
+                           CurrentFace.Normal,
+                           UpDir.ToRadians() ) );
         }
 
         /*
@@ -82,7 +80,7 @@ namespace Cyber_Cube
         letter (face) when folded into a cube.
         */
 
-        public Cube( Game game )
+        public Cube( Game1 game )
             : base( game )
         {
             mFrontFace = new Face( this, "Front", Vector3.UnitZ, Vector3.UnitY, Direction.North );
@@ -92,10 +90,16 @@ namespace Cyber_Cube
             mLeftFace = new Face( this, "Left", -Vector3.UnitX, Vector3.UnitZ, Direction.East );
             mRightFace = new Face( this, "Right", Vector3.UnitX, Vector3.UnitZ, Direction.West );
 
-            SetUpFaces();
+            mFrontFace.BackgroundColor = Color.Red;
+            mBackFace.BackgroundColor = Color.Orange;
+            mTopFace.BackgroundColor = Color.Blue;
+            mBottomFace.BackgroundColor = Color.Green;
+            mLeftFace.BackgroundColor = Color.White;
+            mRightFace.BackgroundColor = Color.Yellow;
+
+            ConnectFaces();
 
             CameraDistance = 6;
-
             CurrentFace = mFrontFace;
             UpDir = CompassDirections.North;
 
@@ -103,7 +107,7 @@ namespace Cyber_Cube
                 Game.Components.Add( face );
         }
 
-        private void SetUpFaces()
+        private void ConnectFaces()
         {
             mFrontFace.NorthFace = mTopFace;
             mFrontFace.EastFace = mRightFace;
@@ -136,7 +140,6 @@ namespace Cyber_Cube
             mRightFace.WestFace = mBottomFace;
         }
 
-
         public override void Initialize()
         {
             base.Initialize();
@@ -157,19 +160,6 @@ namespace Cyber_Cube
             Game.Camera.UpVector = ComputeUpVector();
 
             Effect.View = Game.Camera.View;
-
-            Color[] colors = {
-                Color.Red,
-                Color.Orange,
-                Color.Blue,
-                Color.Green,
-                Color.White,
-                Color.Yellow
-            };
-
-            foreach ( var pair in Enumerable.Zip( Faces, colors,
-                      (f, c) => { return new Tuple<Face, Color>( f, c ); } ) )
-                pair.Item1.BackgroundColor = pair.Item2;
         }
 
         protected override void LoadContent()
@@ -196,8 +186,6 @@ namespace Cyber_Cube
 
         public override void Draw( GameTime gameTime )
         {
-            GraphicsDevice.Clear( Color.CornflowerBlue );
-
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 

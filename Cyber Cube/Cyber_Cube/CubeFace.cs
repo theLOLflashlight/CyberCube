@@ -47,20 +47,20 @@ namespace Cyber_Cube
             /// </summary>
             private VertexPositionNormalTexture[] mVertexData = new VertexPositionNormalTexture[ 6 ];
 
-            public Direction Dir;
+            public Direction Orientation { get; private set; }
 
             private Texture2D pixel;
             private SpriteBatch mSpriteBatch;
 
-            public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction dir )
+            public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube.Game )
             {
                 Cube = cube;
                 Name = name;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
-
-                Dir = dir;
+                Orientation = orientation;
+                BackgroundColor = Color.Transparent;
 
                 Vector3[] face = new Vector3[ 6 ];
                 // TopLeft
@@ -81,8 +81,8 @@ namespace Cyber_Cube
                 Vector2 textureBottomLeft = Vector2.UnitY;
                 Vector2 textureBottomRight = Vector2.One;
 
-                Matrix rotation = Vector3.UnitZ.RotateOnto( Normal )
-                                  * Matrix.CreateFromAxisAngle( Normal, dir.ToRadians() );
+                Matrix rotation = Vector3.UnitZ.RotateOntoM( Normal )
+                                  * Matrix.CreateFromAxisAngle( Normal, Orientation.ToRadians() );
 
                 mVertexData[ 0 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 0 ], rotation ) + Normal,
@@ -114,7 +114,6 @@ namespace Cyber_Cube
                 base.Initialize();
 
                 this.Visible = false;
-                BackgroundColor = Color.Transparent;
 
                 Texture = new Texture2D( GraphicsDevice, WIDTH, HEIGHT );
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
@@ -176,7 +175,7 @@ namespace Cyber_Cube
 
                     // Now switch back to the default target (i.e., the primary display) and set it up
                     GraphicsDevice.SetRenderTargets( tmp );
-                    GraphicsDevice.Clear( Color.CornflowerBlue );
+                    GraphicsDevice.Clear( Game.BackgroundColor );
 
                     int[] data = new int[ WIDTH * HEIGHT ];
                     renderTarget.GetData( data );
@@ -198,22 +197,22 @@ namespace Cyber_Cube
             public CompassDirections VectorToDirection( Vector3 vec )
             {
                 vec.Normalize();
-                vec = vec.Round();
+                vec = vec.Rounded();
 
                 if ( UpVec == vec )
                     return CompassDirections.North;
                 
-                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
                     return CompassDirections.East;
 
-                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
                     return CompassDirections.South;
 
-                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Round();
+                vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
                     return CompassDirections.West;
