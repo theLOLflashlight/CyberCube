@@ -65,15 +65,26 @@ namespace Cyber_Cube
 
         public Vector3 Transform2dTo3d( Vector2 vec2d )
         {
-            Vector3 vec3d;
-            vec3d.X = vec2d.X;
-            vec3d.Y = vec2d.Y;
-            vec3d.Z = 0;
+            var angle = mCube.UpDir.ToRadians() + CurrentFace.Orientation.ToRadians();
 
-            vec3d = vec3d.Transform( Vector3.UnitZ.RotateOntoQ( Normal ) );
-            var angle = mCube.UpDir.ToRadians() + mCube.CurrentFace.Orientation.ToRadians();
+            return new Vector3( vec2d, 0 )
+                       .Transform( Utils.RotateOntoQ( Vector3.UnitZ, Normal ) )
+                       .Rotate( Normal, angle );
+        }
 
-            return vec3d.Rotate( Normal, angle );
+        public Vector2 Transform3dTo2d( Vector3 vec3d )
+        {
+            var angle = CurrentFace.Orientation.ToRadians();
+
+            vec3d = vec3d.Rotate( Normal, -angle )
+                         .Transform( Utils.RotateOntoQ( Normal, Vector3.UnitZ ) );
+            return new Vector2( vec3d.X, -vec3d.Y );
+        }
+
+        public Vector2 ComputeFacePosition()
+        {
+            var adjustingFactor = Cube.Face.SIZE / 2;
+            return Transform3dTo2d( WorldPosition ) * adjustingFactor + new Vector2( adjustingFactor );
         }
 
         public override void Update( GameTime gameTime )

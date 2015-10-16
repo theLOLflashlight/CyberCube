@@ -189,10 +189,8 @@ namespace Cyber_Cube.IO
 
     public class ConsoleMessage
     {
-        public string Message
-        { get; private set; }
-        public Color TextColor
-        { get; private set; }
+        public string Message { get; private set; }
+        public Color TextColor { get; private set; }
 
         public ConsoleMessage( string message, Color color )
         {

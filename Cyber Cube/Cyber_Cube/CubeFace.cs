@@ -150,12 +150,18 @@ namespace Cyber_Cube
                                         SpriteEffects.None,
                                         0 );
 
-                mSpriteBatch.Draw( pixel, new Rectangle( WIDTH - 10, HEIGHT - 10, 10, 10 ), Color.Black );
+                Color c = Color.Black;
+                Rectangle rec = new Rectangle( WIDTH - 10, HEIGHT - 10, 10, 10 );
 
-                //if ( Cube.CurrentFace == this )
-                //{
-                //    Cube.mPlayer.Draw( gameTime );
-                //}
+                if ( Cube.CurrentFace == this )
+                {
+                    Vector2 vec2d = Game.Player.ComputeFacePosition();
+
+                    if ( rec.Contains( (int) vec2d.X, (int) vec2d.Y ) )
+                        c = Color.White;
+                }
+
+                mSpriteBatch.Draw( pixel, rec, c );
 
                 mSpriteBatch.End();
             }

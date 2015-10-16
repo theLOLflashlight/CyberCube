@@ -117,7 +117,7 @@ namespace Cyber_Cube
             if ( Input.Keyboard_WasKeyPressed( Keys.RightShift ) )
                 mCube.RotateClockwise();
 
-            if ( Input.Keyboard_WasKeyPressed( Keys.LeftShift ) )
+            if ( Input.Keyboard_WasKeyPressed( Keys.RightControl ) )
                 mCube.RotateAntiClockwise();
 
             if ( Input.Keyboard_WasKeyPressed( Keys.Space )
