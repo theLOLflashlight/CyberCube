@@ -152,7 +152,11 @@ namespace Cyber_Cube.IO
                 Vector2 selectionDimen = Font.MeasureString( Selection );
                 float selectionOffset = Font.MeasureString( Text.Substring( 0, SelectionStart ) ).X;
 
-                Rectangle box;
+                Rectangle box
+#if XBOX
+                    = new Rectangle()
+#endif
+                    ;
                 box.X      = (int) (Position.X + selectionOffset);
                 box.Y      = (int) Position.Y;
                 box.Width  = (int) selectionDimen.X;
@@ -178,7 +182,11 @@ namespace Cyber_Cube.IO
                 float caretOffsetX = Font.MeasureString( Text.Substring( lineStart, InputPos - lineStart ) ).X;
                 float caretOffsetY = newlines * Font.MeasureString( " " ).Y;
 
-                Rectangle caret;
+                Rectangle caret
+#if XBOX
+                = new Rectangle()
+#endif
+                ;
                 caret.X      = (int) (Position.X + caretOffsetX);
                 caret.Y      = (int) (Position.Y + caretOffsetY);
                 caret.Width  = 1;

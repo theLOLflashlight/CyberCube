@@ -101,12 +101,6 @@ namespace Cyber_Cube
         private XmlSerializer serializer;
 #endif
 
-        /// <summary>
-        /// Temporary variable, unsure meaning.
-        /// TODO: Determine usefulness of variable.
-        /// </summary>
-        private bool GameSaveRequested = false;
-
         static StorageManager()
         {
         }
