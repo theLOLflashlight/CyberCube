@@ -141,15 +141,6 @@ namespace Cyber_Cube
 
             if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                 mConsole.Close();
-
-            // Testing for saving/loading using the X for save and Y for load
-            if (Input.GamePad_WasButtonPressed(Buttons.X))
-                StorageManager.Instance.Save(this.Player);
-            if (Input.GamePad_WasButtonPressed(Buttons.Y))
-            {
-                StorageManager.Instance.Load();
-                this.Player.WorldPosition = StorageManager.Instance.PlayersWorldPosition;
-            }
         }
 
         /// <summary>
