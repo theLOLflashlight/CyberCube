@@ -20,12 +20,12 @@ namespace Cyber_Cube
             }
         }
 
-        private Face mFrontFace;
-        private Face mBackFace;
-        private Face mTopFace;
-        private Face mBottomFace;
-        private Face mLeftFace;
-        private Face mRightFace;
+        public Face mFrontFace;
+        public Face mBackFace;
+		public Face mTopFace;
+		public Face mBottomFace;
+		public Face mLeftFace;
+		public Face mRightFace;
 
         public IEnumerable< Face > Faces
         {

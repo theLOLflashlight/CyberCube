@@ -47,6 +47,7 @@ namespace Cyber_Cube
 
             Components.Add( mConsole );
             Components.Add( Player );
+			Components.Add( new Enemy(mCube, mCube.mTopFace, new Vector2(-.5f, -.5f)) );
             Components.Add( mCube );
             Components.Add( Camera );
 
