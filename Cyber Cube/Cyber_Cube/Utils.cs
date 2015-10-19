@@ -30,11 +30,59 @@ namespace Cyber_Cube
             return buttons;
         }
 
+        public static Vector2 Measure( this SpriteFont font )
+        {
+            return font.MeasureString( "_" );
+        }
+
         public static void DrawRect( this SpriteBatch batch, Rectangle rect, Color color )
         {
             Texture2D texture = new Texture2D( batch.GraphicsDevice, 1, 1 );
             texture.SetData( new Color[] { Color.White } );
             batch.Draw( texture, rect, color );
+        }
+
+        public static bool Contains( this Rectangle rec, Vector2 vec )
+        {
+            return vec.X >= rec.Left && vec.X <= rec.Right
+                 && vec.Y >= rec.Top && vec.Y <= rec.Bottom;
+        }
+
+        public static float Clamp( float n, float min, float max )
+        {
+            return Math.Max( min, Math.Min( max, n ) );
+        }
+
+        public static Vector2 NearestPointOn( this Vector2 vec, Rectangle rec )
+        {
+            var x = vec.X;
+            var y = vec.Y;
+
+            var l = rec.Left;
+            var t = rec.Top;
+            var r = rec.Right;
+            var b = rec.Bottom;
+
+            x = Clamp( x, l, r );
+            y = Clamp( y, t, b );
+
+            var dl = Math.Abs( x - l );
+            var dr = Math.Abs( x - r );
+            var dt = Math.Abs( y - t );
+            var db = Math.Abs( y - b );
+
+            var m = Math.Min( Math.Min( dl, dr ), Math.Min( dt, db ) );
+
+            if ( m == dt )
+                return new Vector2( x, t );
+
+            if ( m == db )
+                return new Vector2( x, b );
+
+            if ( m == dl )
+                return new Vector2( l, y );
+
+            return new Vector2( r, y );
         }
 
         public static void FloatApproach( ref float f0, float f1, float step )

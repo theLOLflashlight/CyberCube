@@ -11,15 +11,8 @@ namespace Cyber_Cube
 
     public partial class Cube
     {
-        public class Face : DrawableGameComponent
+        public class Face : DrawableCubeGameComponent
         {
-            public new Game1 Game
-            {
-                get {
-                    return base.Game as Game1;
-                }
-            }
-
             public const int SIZE = 100;
             public const int WIDTH = SIZE;
             public const int HEIGHT = SIZE;
@@ -47,10 +40,9 @@ namespace Cyber_Cube
             /// </summary>
             private VertexPositionNormalTexture[] mVertexData = new VertexPositionNormalTexture[ 6 ];
 
-            public Direction Orientation { get; private set; }
+            public float Rotation { get; private set; }
 
             private Texture2D pixel;
-            private SpriteBatch mSpriteBatch;
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube.Game )
@@ -59,7 +51,7 @@ namespace Cyber_Cube
                 Name = name;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
-                Orientation = orientation;
+                Rotation = orientation.ToRadians();
                 BackgroundColor = Color.Transparent;
 
                 Vector3[] face = new Vector3[ 6 ];
@@ -82,7 +74,7 @@ namespace Cyber_Cube
                 Vector2 textureBottomRight = Vector2.One;
 
                 Matrix rotation = Vector3.UnitZ.RotateOntoM( Normal )
-                                  * Matrix.CreateFromAxisAngle( Normal, Orientation.ToRadians() );
+                                  * Matrix.CreateFromAxisAngle( Normal, Rotation );
 
                 mVertexData[ 0 ] = new VertexPositionNormalTexture(
                     Vector3.Transform( face[ 0 ], rotation ) + Normal,
@@ -119,7 +111,8 @@ namespace Cyber_Cube
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
-                mSpriteBatch = new SpriteBatch( GraphicsDevice );
+                mSolids.Add( new Solid( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
+                mSolids.Add( new Solid( new Rectangle( WIDTH / 10, 2 * HEIGHT / 3, WIDTH / 3, 10 ) ) );
             }
 
             protected override void LoadContent()
@@ -129,10 +122,26 @@ namespace Cyber_Cube
                 mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
             }
 
+            private List< Solid > mSolids = new List<Solid>();
+
             public override void Update( GameTime gameTime )
             {
                 base.Update( gameTime );
 
+                foreach ( Solid solid in mSolids )
+                    solid.Color = Color.Black;
+
+                if ( Game.Player.Normal == this.Normal )
+                {
+                    Vector2 vec2d = Game.Player.ComputeFacePosition();
+
+                    foreach ( Solid solid in mSolids )
+                        if ( solid.Rectangle.Contains( vec2d ) )
+                        {
+                            solid.Color = Color.White;
+                            Game.Player.Collide( solid.Rectangle, vec2d );
+                        }
+                }
             }
 
             public override void Draw( GameTime gameTime )
@@ -146,22 +155,18 @@ namespace Cyber_Cube
                                         Color.Black,
                                         0, // Rotation is handled via texture orientation.
                                         mFont.MeasureString( Name ) / 2,
-                                        1f,
+                                        1,
                                         SpriteEffects.None,
                                         0 );
 
-                Color c = Color.Black;
-                Rectangle rec = new Rectangle( WIDTH - 10, HEIGHT - 10, 10, 10 );
+                foreach ( Solid solid in mSolids )
+                    mSpriteBatch.Draw( pixel, solid.Rectangle, solid.Color );
 
-                if ( Cube.CurrentFace == this )
-                {
-                    Vector2 vec2d = Game.Player.ComputeFacePosition();
-
-                    if ( rec.Contains( (int) vec2d.X, (int) vec2d.Y ) )
-                        c = Color.White;
-                }
-
-                mSpriteBatch.Draw( pixel, rec, c );
+                //Vector2 vec2d = Game.Player.ComputeFacePosition();
+                //vec2d = vec2d.Rounded();
+                //vec2d /= 10;
+                //
+                //mSpriteBatch.Draw( pixel, new Rectangle( 10 * (int) vec2d.X, 10 * (int) vec2d.Y, 10, 10 ), new Color( 0, 0, 0, 128 ) );
 
                 mSpriteBatch.End();
             }
@@ -200,46 +205,46 @@ namespace Cyber_Cube
                 }
             }
 
-            public CompassDirections VectorToDirection( Vector3 vec )
+            public CompassDirection? VectorToDirection( Vector3 vec )
             {
                 vec.Normalize();
                 vec = vec.Rounded();
 
                 if ( UpVec == vec )
-                    return CompassDirections.North;
+                    return CompassDirection.North;
                 
                 vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
-                    return CompassDirections.East;
+                    return CompassDirection.East;
 
                 vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
-                    return CompassDirections.South;
+                    return CompassDirection.South;
 
                 vec = vec.Rotate( Normal, MathHelper.PiOver2 ).Rounded();
 
                 if ( UpVec == vec )
-                    return CompassDirections.West;
+                    return CompassDirection.West;
 
-                throw new Exception( "Vector not aligned on plane." );
+                return null;
             }
 
-            public Face AdjacentFace( CompassDirections direction )
+            public Face AdjacentFace( CompassDirection direction )
             {
                 switch ( direction )
                 {
-                case CompassDirections.North:
+                case CompassDirection.North:
                     return NorthFace;
 
-                case CompassDirections.East:
+                case CompassDirection.East:
                     return EastFace;
 
-                case CompassDirections.South:
+                case CompassDirection.South:
                     return SouthFace;
 
-                case CompassDirections.West:
+                case CompassDirection.West:
                     return WestFace;
                 }
                 return this;

@@ -11,15 +11,8 @@ namespace Cyber_Cube
     /// <summary>
     /// Represents an entire level. Contains the 6 faces of the cube.
     /// </summary>
-    public partial class Cube : DrawableGameComponent
+    public partial class Cube : DrawableCubeGameComponent
     {
-        public new Game1 Game
-        {
-            get {
-                return base.Game as Game1;
-            }
-        }
-
         private Face mFrontFace;
         private Face mBackFace;
         private Face mTopFace;
@@ -80,7 +73,7 @@ namespace Cyber_Cube
         letter (face) when folded into a cube.
         */
 
-        public Cube( Game1 game )
+        public Cube( CubeGame game )
             : base( game )
         {
             mFrontFace = new Face( this, "Front", Vector3.UnitZ, Vector3.UnitY, Direction.North );
@@ -101,10 +94,19 @@ namespace Cyber_Cube
 
             CameraDistance = 6;
             CurrentFace = mFrontFace;
-            UpDir = CompassDirections.North;
+            UpDir = CompassDirection.North;
 
-            foreach ( Face face in Faces )
-                Game.Components.Add( face );
+            Game.Components.ComponentAdded += ( s, e ) => {
+                if ( ReferenceEquals( this, e.GameComponent ) )
+                    foreach ( Face face in Faces )
+                        Game.Components.Add( face );
+            };
+
+            Game.Components.ComponentRemoved += ( s, e ) => {
+                if ( ReferenceEquals( this, e.GameComponent ) )
+                    foreach ( Face face in Faces )
+                        Game.Components.Remove( face );
+            };
         }
 
         private void ConnectFaces()

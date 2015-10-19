@@ -10,7 +10,7 @@ namespace Cyber_Cube
         /// </summary>
         static void Main(string[] args)
         {
-            using (Game1 game = new Game1())
+            using (CubeGame game = new CubeGame())
             {
                 game.Run();
             }

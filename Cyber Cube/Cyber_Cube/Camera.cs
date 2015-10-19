@@ -8,10 +8,10 @@ namespace Cyber_Cube
 {
     public class Camera : GameComponent
     {
-        public new Game1 Game
+        public new CubeGame Game
         {
             get {
-                return base.Game as Game1;
+                return base.Game as CubeGame;
             }
         }
 

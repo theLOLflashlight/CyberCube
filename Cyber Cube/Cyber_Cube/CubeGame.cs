@@ -16,36 +16,55 @@ namespace Cyber_Cube
     /// <summary>
     /// This is the main type for your game
     /// </summary>
-    public class Game1 : Microsoft.Xna.Framework.Game
+    public class CubeGame
+        : Microsoft.Xna.Framework.Game
+        , IInputProvider< Action >
     {
+        private InputState< Action > mInput;
 
-        GraphicsDeviceManager graphics;
-        SpriteBatch mSpriteBatch;
+        public InputState< Action > Input
+        {
+            get {
+                return mInput;
+            }
+        }
 
-        public readonly InputState Input = new InputState();
-        public readonly Camera Camera;
+        InputState IInputProvider.Input
+        {
+            get {
+                return mInput;
+            }
+        }
 
-        private Cube mCube;
-        private SpriteFont mFont;
+        public Camera Camera { get; private set; }
+
         public Player Player { get; private set; }
 
-        private GameConsole mConsole;
         public Color BackgroundColor { get; private set; }
 
-        public Game1()
+        private GraphicsDeviceManager mGraphicsDeviceManager;
+
+        private SpriteBatch mSpriteBatch;
+        private SpriteFont mFont;
+
+        private Cube mCube;
+        public readonly GameConsole Console;
+
+        public CubeGame()
         {
-            graphics = new GraphicsDeviceManager( this );
+            mInput = new InputState< Action >();
+            mGraphicsDeviceManager = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
 
-            mConsole = new GameConsole( this );
+            Console = new GameConsole( this, this );
             Camera = new Camera( this );
             mCube = new Cube( this );
             Player = new Player( mCube );
 
-            mConsole.CommandExecuted += RunCommand;
-            mConsole.Close();
+            Console.CommandExecuted += RunCommand;
+            Console.Close();
 
-            Components.Add( mConsole );
+            Components.Add( Console );
             Components.Add( Player );
             Components.Add( mCube );
             Components.Add( Camera );
@@ -62,6 +81,43 @@ namespace Cyber_Cube
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
+
+
+            Input.AddBinding( Action.MoveLeft, Keys.Left );
+            Input.AddBinding( Action.MoveRight, Keys.Right );
+            //Input.AddBinding( Action.MoveUp, Keys.Up );
+            Input.AddBinding( Action.MoveDown, Keys.Down );
+            Input.AddPressedBinding( Action.Jump, Keys.Up );
+
+            Input.AddPressedBinding( Action.RotateLeft, Keys.Left );
+            Input.AddPressedBinding( Action.RotateRight, Keys.Right );
+            Input.AddPressedBinding( Action.RotateUp, Keys.Up );
+            Input.AddPressedBinding( Action.RotateDown, Keys.Down );
+            Input.AddPressedBinding( Action.RotateClockwise, Keys.RightShift );
+            Input.AddPressedBinding( Action.RotateAntiClockwise, Keys.RightControl );
+
+            Input.AddPressedBinding( Action.ToggleCubeMode, Keys.Space );
+
+
+            Input.AddBinding( Action.MoveLeft, Buttons.DPadLeft );
+            Input.AddBinding( Action.MoveRight, Buttons.DPadRight );
+            Input.AddBinding( Action.MoveUp, Buttons.DPadUp );
+            Input.AddBinding( Action.MoveDown, Buttons.DPadDown );
+
+            Input.AddPressedBinding( Action.RotateLeft, Buttons.DPadLeft );
+            Input.AddPressedBinding( Action.RotateRight, Buttons.DPadRight );
+            Input.AddPressedBinding( Action.RotateUp, Buttons.DPadUp );
+            Input.AddPressedBinding( Action.RotateDown, Buttons.DPadDown );
+            Input.AddPressedBinding( Action.RotateClockwise, Buttons.RightShoulder );
+            Input.AddPressedBinding( Action.RotateAntiClockwise, Buttons.LeftShoulder );
+
+            Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
+
+
+            Input.AddBinding( Action.MoveLeft, i => { return -i.GamePad.ThumbSticks.Left.X; } );
+            Input.AddBinding( Action.MoveRight, i => { return i.GamePad.ThumbSticks.Left.X; } );
+            Input.AddBinding( Action.MoveUp, i => { return i.GamePad.ThumbSticks.Left.Y; } );
+            Input.AddBinding( Action.MoveDown, i => { return -i.GamePad.ThumbSticks.Left.Y; } );
 
             base.Initialize();
         }
@@ -93,39 +149,39 @@ namespace Cyber_Cube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            Input.Update( gameTime );
+            Input.Refresh();
 
             // Allows the game to exit
             if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
                 this.Exit();
 
-            if ( mCube.Mode == Cube.CubeMode.Edit )
+            if ( !Input.HasFocus )
             {
-                if ( Input.Keyboard_WasKeyPressed( Keys.Right ) )
-                    mCube.RotateRight();
+                if ( mCube.Mode == Cube.CubeMode.Edit )
+                {
+                    if ( Input.GetAction( Action.RotateRight ) )
+                        mCube.RotateRight();
 
-                if ( Input.Keyboard_WasKeyPressed( Keys.Left ) )
-                    mCube.RotateLeft();
+                    if ( Input.GetAction( Action.RotateLeft ) )
+                        mCube.RotateLeft();
 
-                if ( Input.Keyboard_WasKeyPressed( Keys.Up ) )
-                    mCube.RotateUp();
+                    if ( Input.GetAction( Action.RotateUp ) )
+                        mCube.RotateUp();
 
-                if ( Input.Keyboard_WasKeyPressed( Keys.Down ) )
-                    mCube.RotateDown();
-            }
+                    if ( Input.GetAction( Action.RotateDown ) )
+                        mCube.RotateDown();
+                }
 
-            if ( Input.Keyboard_WasKeyPressed( Keys.RightShift ) )
-                mCube.RotateClockwise();
+                if ( Input.GetAction( Action.RotateClockwise ) )
+                    mCube.RotateClockwise();
 
-            if ( Input.Keyboard_WasKeyPressed( Keys.RightControl ) )
-                mCube.RotateAntiClockwise();
+                if ( Input.GetAction( Action.RotateAntiClockwise ) )
+                    mCube.RotateAntiClockwise();
 
-            if ( Input.Keyboard_WasKeyPressed( Keys.Space )
-                 || Input.GamePad_WasButtonPressed( Buttons.Start ) )
-            {
-                mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
-                             ? Cube.CubeMode.Play
-                             : Cube.CubeMode.Edit;
+                if ( Input.GetAction( Action.ToggleCubeMode ) )
+                    mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
+                                 ? Cube.CubeMode.Play
+                                 : Cube.CubeMode.Edit;
             }
 
             Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
@@ -133,10 +189,10 @@ namespace Cyber_Cube
             base.Update( gameTime );
 
             if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
-                mConsole.Open();
+                Console.Open();
 
             if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
-                mConsole.Close();
+                Console.Close();
         }
 
         /// <summary>
@@ -200,7 +256,7 @@ namespace Cyber_Cube
                 break;
 
             case "help":
-                mConsole.History.Add( @"Valid commands are:
+                Console.AddMessage( @"Valid commands are:
 [help]
 [background <xna color>]
 [exit]
@@ -212,7 +268,7 @@ namespace Cyber_Cube
                 return true;
 
             case "clear":
-                mConsole.History.Clear();
+                Console.ClearHistory();
                 return true;
             }
             return false;

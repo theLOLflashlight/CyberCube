@@ -6,31 +6,31 @@ using System.Text;
 
 namespace Cyber_Cube
 {
-    public enum CompassDirections
+    public enum CompassDirection
     {
         North, East, South, West
     }
 
-    public struct Direction : IEquatable< Direction >, IEquatable< CompassDirections >
+    public struct Direction : IEquatable< Direction >, IEquatable< CompassDirection >
     {
-        public readonly static Direction North = new Direction( CompassDirections.North );
-        public readonly static Direction East = new Direction( CompassDirections.East );
-        public readonly static Direction South = new Direction( CompassDirections.South );
-        public readonly static Direction West = new Direction( CompassDirections.West );
+        public readonly static Direction North = new Direction( CompassDirection.North );
+        public readonly static Direction East = new Direction( CompassDirection.East );
+        public readonly static Direction South = new Direction( CompassDirection.South );
+        public readonly static Direction West = new Direction( CompassDirection.West );
 
-        private readonly CompassDirections value;
+        private readonly CompassDirection value;
 
-        private Direction( CompassDirections direction )
+        private Direction( CompassDirection direction )
         {
             value = direction;
         }
 
-        public static implicit operator Direction( CompassDirections src )
+        public static implicit operator Direction( CompassDirection src )
         {
             return new Direction( src );
         }
 
-        public static implicit operator CompassDirections( Direction src )
+        public static implicit operator CompassDirection( Direction src )
         {
             return src.value;
         }
@@ -47,7 +47,7 @@ namespace Cyber_Cube
         /// <returns>The result of inverting a direction.</returns>
         public static Direction operator ~( Direction direction )
         {
-            return new Direction( (CompassDirections) (((int) direction.value + 2) % 4) );
+            return new Direction( (CompassDirection) (((int) direction.value + 2) % 4) );
         }
 
         /// <summary>
@@ -57,7 +57,7 @@ namespace Cyber_Cube
         /// <returns>The result of rotating a direction 90deg clockwise.</returns>
         public static Direction operator +( Direction direction )
         {
-            return new Direction( (CompassDirections) (((int) direction.value + 1) % 4) );
+            return new Direction( (CompassDirection) (((int) direction.value + 1) % 4) );
         }
 
         /// <summary>
@@ -67,7 +67,7 @@ namespace Cyber_Cube
         /// <returns>The result of rotating a direction 90deg anticlockwise.</returns>
         public static Direction operator -( Direction direction )
         {
-            return new Direction( (CompassDirections) (((int) direction.value + 3) % 4) );
+            return new Direction( (CompassDirection) (((int) direction.value + 3) % 4) );
         }
 
         /// <summary>
@@ -105,7 +105,7 @@ namespace Cyber_Cube
             return value == other.value;
         }
 
-        public bool Equals( CompassDirections other )
+        public bool Equals( CompassDirection other )
         {
             return value == other;
         }

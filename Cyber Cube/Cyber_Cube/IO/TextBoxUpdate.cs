@@ -19,11 +19,7 @@ namespace Cyber_Cube.IO
         {
             base.Update( gameTime );
 
-            InputState input = Game.Input;
             double currMillis = gameTime.TotalGameTime.TotalMilliseconds;
-
-            string oldText = Text;
-            int oldInputPos = InputPos;
 
             if ( currMillis - mLastCursorBlink >= CursorBlinkFrequency )
             {
@@ -31,16 +27,24 @@ namespace Cyber_Cube.IO
                 mLastCursorBlink = currMillis;
             }
 
+            if ( !Input.CheckFocus( this ) )
+                return;
+
+            string oldText = Text;
+            int oldInputPos = InputPos;
+
             Func<Keys, bool> notModKey = k => { return k < Keys.LeftShift || k > Keys.RightAlt; };
 
-            var currentKeys = input.Keyboard.GetPressedKeys().Where( notModKey );
-            var prevKeys = input.OldKeyboard.GetPressedKeys().Where( notModKey );
+            var currentKeys = Input.Keyboard.GetPressedKeys().Where( notModKey );
+            var prevKeys = Input.OldKeyboard.GetPressedKeys().Where( notModKey );
 
             var newKeys = currentKeys.Where( ck => !prevKeys.Any( pk => pk == ck ) ).ToList();
             var heldKeys = currentKeys.Intersect( prevKeys );
 
             if ( mRepeatKey.HasValue && !heldKeys.Contains( mRepeatKey.Value ) )
                 mRepeatKey = null;
+
+            var tmpKey = mRepeatKey;
 
             foreach ( var pair in mKeyHistory.ToArray() )
             {
@@ -50,12 +54,17 @@ namespace Cyber_Cube.IO
                     continue;
                 }
 
-                if ( !mRepeatKey.HasValue && currMillis - pair.Value >= this.RepeatDelay )
+                if ( pair.Key != mRepeatKey )
                 {
-                    mRepeatKey = pair.Key;
-                    mLastRepeat = currMillis;
+                    mRepeatKey = null;
+                    if ( currMillis - pair.Value >= this.RepeatDelay )
+                        mRepeatKey = pair.Key;
                 }
             }
+
+            if ( mRepeatKey != tmpKey )
+                mLastRepeat = currMillis;
+
 
             foreach ( Keys key in newKeys )
                 mKeyHistory[ key ] = currMillis;
@@ -66,27 +75,24 @@ namespace Cyber_Cube.IO
                 mLastRepeat = currMillis;
             }
 
-            bool isShiftDown = input.IsShiftDown();
-            //bool isCtrlDown = input.IsCtrlDown();
-
             foreach ( Keys key in newKeys )
             {
                 switch ( key )
                 {
                 case Keys.Home:
-                    mIsSelecting = isShiftDown;
+                    mIsSelecting = Input.IsShiftDown();
                     InputPos = 0;
                     break;
 
                 case Keys.End:
-                    mIsSelecting = isShiftDown;
+                    mIsSelecting = Input.IsShiftDown();
                     InputPos = Text.Length;
                     break;
 
                 case Keys.Left:
-                    mIsSelecting = isShiftDown;
+                    mIsSelecting = Input.IsShiftDown();
 
-                    if ( input.IsCtrlDown() )
+                    if ( Input.IsCtrlDown() )
                         InputPos = SkipLeft();
 
                     else if ( HasSelection && !mIsSelecting )
@@ -98,9 +104,9 @@ namespace Cyber_Cube.IO
                     break;
 
                 case Keys.Right:
-                    mIsSelecting = isShiftDown;
+                    mIsSelecting = Input.IsShiftDown();
 
-                    if ( input.IsCtrlDown() )
+                    if ( Input.IsCtrlDown() )
                         InputPos = SkipRight();
 
                     else if ( HasSelection && !mIsSelecting )
@@ -116,7 +122,7 @@ namespace Cyber_Cube.IO
                     {
                         int pos = HasSelection ? InputPos : InputPos - 1;
 
-                        if ( input.IsCtrlDown() )
+                        if ( Input.IsCtrlDown() )
                             pos = SkipLeft();
 
                         if ( pos < 0 )
@@ -138,7 +144,7 @@ namespace Cyber_Cube.IO
                     {
                         int pos = HasSelection ? InputPos : InputPos + 1;
 
-                        if ( input.IsCtrlDown() )
+                        if ( Input.IsCtrlDown() )
                             pos = SkipRight();
 
                         if ( pos > Text.Length )
@@ -169,10 +175,15 @@ namespace Cyber_Cube.IO
 
                     if ( char.IsLetter( glyph ) )
                     {
-                        if ( input.IsCtrlDown() )
+                        if ( Input.IsCtrlDown() )
                         {
                             switch ( glyph )
                             {
+                            case 'A':
+                                InputPos = Text.Length;
+                                SelectionAnchor = 0;
+                                break;
+
                             case 'X':
                                 this.Cut();
                                 break;
@@ -188,14 +199,14 @@ namespace Cyber_Cube.IO
                         }
                         else
                         {
-                            InsertText( !input.IsShiftDown()
+                            InsertText( !Input.IsShiftDown()
                                         ? char.ToLower( glyph )
                                         : glyph );
                         }
                     }
                     else if ( char.IsDigit( glyph ) )
                     {
-                        if ( !input.IsShiftDown() )
+                        if ( !Input.IsShiftDown() )
                             InsertText( glyph );
                         else
                             InsertText( ")!@#$%^&*(".ElementAt( glyph - '0' ) );
@@ -203,47 +214,47 @@ namespace Cyber_Cube.IO
                     break;
 
                 case Keys.OemTilde:
-                    InsertText( !input.IsShiftDown() ? "`" : "~" );
+                    InsertText( !Input.IsShiftDown() ? "`" : "~" );
                     break;
 
                 case Keys.OemMinus:
-                    InsertText( !input.IsShiftDown() ? "-" : "_" );
+                    InsertText( !Input.IsShiftDown() ? "-" : "_" );
                     break;
 
                 case Keys.OemPlus:
-                    InsertText( !input.IsShiftDown() ? "=" : "+" );
+                    InsertText( !Input.IsShiftDown() ? "=" : "+" );
                     break;
 
                 case Keys.OemOpenBrackets:
-                    InsertText( !input.IsShiftDown() ? "[" : "{" );
+                    InsertText( !Input.IsShiftDown() ? "[" : "{" );
                     break;
 
                 case Keys.OemCloseBrackets:
-                    InsertText( !input.IsShiftDown() ? "]" : "}" );
+                    InsertText( !Input.IsShiftDown() ? "]" : "}" );
                     break;
 
                 case Keys.OemPipe:
-                    InsertText( !input.IsShiftDown() ? "\\" : "|" );
+                    InsertText( !Input.IsShiftDown() ? "\\" : "|" );
                     break;
 
                 case Keys.OemSemicolon:
-                    InsertText( !input.IsShiftDown() ? ";" : ":" );
+                    InsertText( !Input.IsShiftDown() ? ";" : ":" );
                     break;
 
                 case Keys.OemQuotes:
-                    InsertText( !input.IsShiftDown() ? "'" : "\"" );
+                    InsertText( !Input.IsShiftDown() ? "'" : "\"" );
                     break;
 
                 case Keys.OemComma:
-                    InsertText( !input.IsShiftDown() ? "," : "<" );
+                    InsertText( !Input.IsShiftDown() ? "," : "<" );
                     break;
 
                 case Keys.OemPeriod:
-                    InsertText( !input.IsShiftDown() ? "." : ">" );
+                    InsertText( !Input.IsShiftDown() ? "." : ">" );
                     break;
 
                 case Keys.OemQuestion:
-                    InsertText( !input.IsShiftDown() ? "/" : "?" );
+                    InsertText( !Input.IsShiftDown() ? "/" : "?" );
                     break;
                 }
 

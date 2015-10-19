@@ -42,10 +42,16 @@ namespace Cyber_Cube
             Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
-        public void Rotate( CompassDirections direction )
+        public void Rotate( CompassDirection? direction )
+        {
+            if ( direction.HasValue )
+                Rotate( direction.Value );
+        }
+
+        public void Rotate( CompassDirection direction )
         {
             Face nextFace = CurrentFace.AdjacentFace( direction );
-            CompassDirections backTrack = FaceAdjacency( nextFace, CurrentFace );
+            CompassDirection backTrack = FaceAdjacency( nextFace, CurrentFace );
 
             CurrentFace = nextFace;
             UpDir = GetNextUpDirection( direction, backTrack );
@@ -54,19 +60,19 @@ namespace Cyber_Cube
             Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
-        private static CompassDirections FaceAdjacency( Face source, Face target )
+        private static CompassDirection FaceAdjacency( Face source, Face target )
         {
             if ( source.NorthFace == target )
-                return CompassDirections.North;
+                return CompassDirection.North;
 
             if ( source.EastFace == target )
-                return CompassDirections.East;
+                return CompassDirection.East;
 
             if ( source.SouthFace == target )
-                return CompassDirections.South;
+                return CompassDirection.South;
 
             if ( source.WestFace == target )
-                return CompassDirections.West;
+                return CompassDirection.West;
 
             throw new Exception( "Faces are not connected." );
         }

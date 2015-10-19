@@ -3,55 +3,72 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
 namespace Cyber_Cube.IO
 {
-    public class GameConsole : DrawableGameComponent
+    public class GameConsole : IODrawableGameComponent
     {
-        public new Game1 Game
-        {
-            get {
-                return base.Game as Game1;
-            }
-        }
-
-        private TextBox mTextBox;
-        private int mHistoryIndex = 0;
-
-        public readonly List<ConsoleMessage> History = new List<ConsoleMessage>();
+        public const string DEFAULT_INPUT_PROMPT = "> ";
 
         public delegate bool ExecuteCommand( string command );
 
         public event ExecuteCommand CommandExecuted;
 
-        private SpriteFont mFont;
-        private SpriteBatch mSpriteBatch;
-
-        public GameConsole( Game1 game )
-            : base( game )
+        public ReadOnlyCollection< ConsoleMessage > History
         {
-            mTextBox = new TextBox( game );
+            get {
+                return mHistory.AsReadOnly();
+            }
+        }
 
-            //Game.Components.ComponentAdded += ( s, e ) => {
-            //    if ( ReferenceEquals( e.GameComponent, this ) )
-            //        Game.Components.Add( mTextBox );
-            //};
-            //
-            //Game.Components.ComponentRemoved += ( s, e ) => {
-            //    if ( ReferenceEquals( e.GameComponent, this ) )
-            //        Game.Components.Remove( mTextBox );
-            //};
+        public int Height
+        {
+            get {
+                return mHeight;
+            }
+            set {
+                mHeight = value > 0 ? value : 0;
+            }
+        }
 
-            //this.EnabledChanged += ( s, e ) => { mTextBox.Enabled = this.Enabled; };
-            //this.VisibleChanged += ( s, e ) => { mTextBox.Visible = this.Visible; };
+        public string InputPrompt { get; set; }
+
+        public bool Opened
+        {
+            get {
+                return this.Enabled && this.Visible;
+            }
+        }
+
+        public bool Closed
+        {
+            get {
+                return !this.Enabled && !this.Visible;
+            }
+        }
+
+        private SpriteFont mFont;
+
+        private TextBox mTextBox;
+        private int mHeight;
+        private int mHistoryIndex = 0;
+        private List<ConsoleMessage> mHistory = new List<ConsoleMessage>();
+
+        public GameConsole( Game game, IInputProvider inputProvider )
+            : base( game, inputProvider )
+        {
+            mTextBox = new TextBox( game, inputProvider );
+            InputPrompt = DEFAULT_INPUT_PROMPT;
         }
 
         public void Open()
         {
             this.Enabled = true;
             this.Visible = true;
+            Input.Focus = mTextBox;
         }
 
         public void Close()
@@ -59,6 +76,7 @@ namespace Cyber_Cube.IO
             this.Enabled = false;
             this.Visible = false;
             mTextBox.Text = "";
+            Input.Focus = null;
         }
 
         public override void Initialize()
@@ -66,10 +84,8 @@ namespace Cyber_Cube.IO
             mTextBox.Initialize();
             base.Initialize();
 
-            mSpriteBatch = new SpriteBatch( GraphicsDevice );
-
+            Height = GraphicsDevice.Viewport.Height / 2;
             this.DrawOrder = 10;
-            //mTextBox.DrawOrder = this.DrawOrder + 1;
         }
 
         protected override void LoadContent()
@@ -79,14 +95,33 @@ namespace Cyber_Cube.IO
             mTextBox.Font = mFont;
         }
 
+        public void AddMessage( ConsoleMessage item )
+        {
+            mHistory.Add( item );
+        }
+
+        public void ClearHistory()
+        {
+            mHistoryIndex = 0;
+            mHistory.Clear();
+        }
+
+        private void RunCommand( string command )
+        {
+            mHistory.Add( new ConsoleInputMessage( command, InputPrompt ) );
+            mHistoryIndex = 0;
+
+            if ( CommandExecuted != null && !this.CommandExecuted( command ) )
+                mHistory.Add( new ConsoleErrorMessage( "unrecognized command '" + command + "'" ) );
+        }
+
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
-            InputState input = Game.Input;
 
             if ( History.Count > 0 )
             {
-                if ( input.Keyboard_WasKeyPressed( Keys.Up ) )
+                if ( Input.Keyboard_WasKeyPressed( Keys.Up ) )
                 {
                     for ( int i = mHistoryIndex + 1 ; i <= History.Count ; ++i )
                     {
@@ -98,7 +133,9 @@ namespace Cyber_Cube.IO
                     }
 
                     if ( mHistoryIndex == 0 )
+                    {
                         mTextBox.Text = "";
+                    }
                     else
                     {
                         mTextBox.Text = History[ History.Count - mHistoryIndex ].Message;
@@ -106,7 +143,7 @@ namespace Cyber_Cube.IO
                     }
                 }
 
-                if ( input.Keyboard_WasKeyPressed( Keys.Down ) )
+                if ( Input.Keyboard_WasKeyPressed( Keys.Down ) )
                 {
                     for ( int i = mHistoryIndex - 1 ; i >= 0 ; --i )
                     {
@@ -118,7 +155,9 @@ namespace Cyber_Cube.IO
                     }
 
                     if ( mHistoryIndex == 0 )
+                    {
                         mTextBox.Text = "";
+                    }
                     else
                     {
                         mTextBox.Text = History[ History.Count - mHistoryIndex ].Message;
@@ -128,24 +167,17 @@ namespace Cyber_Cube.IO
             }
 
 
-            if ( input.Keyboard_WasKeyPressed( Keys.Enter ) && !input.IsShiftDown() )
+            if ( Input.Keyboard_WasKeyPressed( Keys.Enter ) && !Input.IsShiftDown() )
             {
                 RunCommand( mTextBox.Text.TrimEnd( '\n' ) );
                 mTextBox.Text = "";
             }
+            // We need to prevent the textbox from receiving the enter key when 
+            // it was pressed to run a command.
             else if ( mTextBox.Enabled )
             {
                 mTextBox.Update( gameTime );
             }
-        }
-
-        private void RunCommand( string command )
-        {
-            History.Add( new ConsoleInputMessage( command ) );
-            mHistoryIndex = 0;
-
-            if ( CommandExecuted != null && !this.CommandExecuted( command ) )
-                History.Add( new ConsoleErrorMessage( "unrecognized command '" + command + "'" ) );
         }
 
         public override void Draw( GameTime gameTime )
@@ -154,32 +186,29 @@ namespace Cyber_Cube.IO
 
             mSpriteBatch.Begin();
 
-            Rectangle consoleRect = new Rectangle( 0, 0, GraphicsDevice.Viewport.Width, GraphicsDevice.Viewport.Height / 2 );
-
-            mSpriteBatch.DrawRect( consoleRect, new Color( 0, 0, 0, 128 ) );
-
-            var pos = mFont.MeasureString( "> " );
-
+            Rectangle consoleRect = new Rectangle( 0, 0, GraphicsDevice.Viewport.Width, Height );
             Rectangle line = consoleRect;
             line.Height = 1;
+
+            Vector2 pos = mFont.MeasureString( InputPrompt );
             line.Y = consoleRect.Bottom - (int) pos.Y;
 
+            mSpriteBatch.DrawRect( consoleRect, new Color( 0, 0, 0, 128 ) );
             mSpriteBatch.DrawRect( line, new Color( 0, 0, 0, 96 ) );
+            mSpriteBatch.DrawString( mFont, InputPrompt, new Vector2( 0, line.Y ), Color.White );
 
-            mTextBox.Position = new Vector2( pos.X, line.Y );
-
-            mSpriteBatch.DrawString( mFont, "> ", new Vector2( 0, line.Y ), Color.White );
-
-            History.Reverse();
             float yOffset = line.Y;
-            foreach ( ConsoleMessage msg in History )
+            mHistory.Reverse();
+            foreach ( ConsoleMessage msg in mHistory )
             {
                 yOffset -= mFont.MeasureString( msg.ToString() ).Y;
                 mSpriteBatch.DrawString( mFont, msg.ToString(), new Vector2( 0, yOffset ), msg.TextColor );
             }
-            History.Reverse();
+            mHistory.Reverse();
 
             mSpriteBatch.End();
+
+            mTextBox.Position = new Vector2( pos.X, line.Y );
 
             if ( mTextBox.Visible )
                 mTextBox.Draw( gameTime );
@@ -211,15 +240,17 @@ namespace Cyber_Cube.IO
 
     public class ConsoleInputMessage : ConsoleMessage
     {
+        private string mInputPrompt;
 
-        public ConsoleInputMessage( string message )
+        public ConsoleInputMessage( string message, string inputPrompt )
             : base( message, Color.White )
         {
+            mInputPrompt = inputPrompt;
         }
 
         public override string ToString()
         {
-            return "> " + Message;
+            return mInputPrompt + Message;
         }
 
     }

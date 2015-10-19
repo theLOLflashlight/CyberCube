@@ -9,18 +9,8 @@ using System.Threading;
 
 namespace Cyber_Cube.IO
 {
-    public partial class TextBox : DrawableGameComponent
+    public partial class TextBox : IODrawableGameComponent
     {
-        public new Game1 Game
-        {
-            get {
-                return base.Game as Game1;
-            }
-        }
-
-        private SpriteBatch mSpriteBatch;
-
-
         public SpriteFont Font { get; set; }
 
         private string mText = "";
@@ -120,22 +110,14 @@ namespace Cyber_Cube.IO
         public int CursorBlinkFrequency = 700;
         public bool EnableMultiLine = false;
 
-        public TextBox( Game1 game )
-            : base( game )
+        public TextBox( Game game, IInputProvider inputProvider )
+            : base( game, inputProvider )
         {
-        }
-
-        public TextBox( Game1 game, Vector2 position )
-            : this( game )
-        {
-            Position = position;
         }
 
         public override void Initialize()
         {
             base.Initialize();
-
-            mSpriteBatch = new SpriteBatch( GraphicsDevice );
         }
 
         private double mLastCursorBlink;
@@ -158,13 +140,13 @@ namespace Cyber_Cube.IO
                 box.Width  = (int) selectionDimen.X;
                 box.Height = (int) selectionDimen.Y;
 
-                Color color = Color.Blue;
+                Color color = Input.CheckFocus( this ) ? Color.Blue : Color.Gray;
                 color.A = 127;
 
                 mSpriteBatch.DrawRect( box, color );
             }
 
-            if ( mCursorVisible )
+            if ( mCursorVisible && Input.CheckFocus( this ) )
             {
                 int newlines = 0;
                 int lineStart = 0;
@@ -176,13 +158,13 @@ namespace Cyber_Cube.IO
                                 lineStart = i + 1;
 
                 float caretOffsetX = Font.MeasureString( Text.Substring( lineStart, InputPos - lineStart ) ).X;
-                float caretOffsetY = newlines * Font.MeasureString( " " ).Y;
+                float caretOffsetY = newlines * Font.Measure().Y;
 
                 Rectangle caret;
                 caret.X      = (int) (Position.X + caretOffsetX);
                 caret.Y      = (int) (Position.Y + caretOffsetY);
                 caret.Width  = 1;
-                caret.Height = (int) Font.MeasureString( " " ).Y;
+                caret.Height = (int) Font.Measure().Y;
             
                 mSpriteBatch.DrawRect( caret, Color.White );
             }
