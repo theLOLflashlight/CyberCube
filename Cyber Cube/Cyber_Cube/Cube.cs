@@ -113,31 +113,37 @@ namespace Cyber_Cube
             mFrontFace.EastFace = mRightFace;
             mFrontFace.SouthFace = mBottomFace;
             mFrontFace.WestFace = mLeftFace;
+			mFrontFace.OppositeFace = mBackFace;
 
             mBackFace.NorthFace = mBottomFace;
             mBackFace.EastFace = mRightFace;
             mBackFace.SouthFace = mTopFace;
             mBackFace.WestFace = mLeftFace;
+			mBackFace.OppositeFace = mFrontFace;
 
             mTopFace.NorthFace = mBackFace;
             mTopFace.EastFace = mRightFace;
             mTopFace.SouthFace = mFrontFace;
             mTopFace.WestFace = mLeftFace;
+			mTopFace.OppositeFace = mBottomFace;
 
             mBottomFace.NorthFace = mFrontFace;
             mBottomFace.EastFace = mRightFace;
             mBottomFace.SouthFace = mBackFace;
             mBottomFace.WestFace = mLeftFace;
+			mBottomFace.OppositeFace = mTopFace;
 
             mLeftFace.NorthFace = mFrontFace;
             mLeftFace.EastFace = mBottomFace;
             mLeftFace.SouthFace = mBackFace;
             mLeftFace.WestFace = mTopFace;
+			mLeftFace.OppositeFace = mRightFace;
 
             mRightFace.NorthFace = mFrontFace;
             mRightFace.EastFace = mTopFace;
             mRightFace.SouthFace = mBackFace;
             mRightFace.WestFace = mBottomFace;
+			mRightFace.OppositeFace = mLeftFace;
         }
 
         public override void Initialize()

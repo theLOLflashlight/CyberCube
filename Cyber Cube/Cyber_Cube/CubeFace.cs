@@ -30,6 +30,7 @@ namespace Cyber_Cube
             public Face EastFace { get; internal set; }
             public Face SouthFace { get; internal set; }
             public Face WestFace { get; internal set; }
+			public Face OppositeFace { get; internal set; }
 
             public string Name { get; private set; }
 

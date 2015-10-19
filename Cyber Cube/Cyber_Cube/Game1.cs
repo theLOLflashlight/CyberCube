@@ -47,7 +47,7 @@ namespace Cyber_Cube
 
             Components.Add( mConsole );
             Components.Add( Player );
-			Components.Add( new Enemy(mCube, mCube.mTopFace, new Vector2(-.5f, -.5f)) );
+			Components.Add( new Enemy(mCube, mCube.mFrontFace, new Vector2(-.5f, -.5f)) );
             Components.Add( mCube );
             Components.Add( Camera );
 
@@ -60,13 +60,12 @@ namespace Cyber_Cube
         /// related content. Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
+			base.Initialize();
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
-            base.Initialize();
 
             StorageManager.Instance.Initialize();
         }

@@ -50,12 +50,15 @@ namespace Cyber_Cube
 
         public override void Initialize()
         {
-            base.Initialize();
+			base.Initialize();
+			mSpriteBatch = new SpriteBatch(GraphicsDevice);
 
-            pixel = new Texture2D( GraphicsDevice, 2, 2 );
-            pixel.SetData( new[] { Color.White, Color.White, Color.White, Color.White } );
-
-            mSpriteBatch = new SpriteBatch( GraphicsDevice );
+            pixel = new Texture2D( GraphicsDevice, 10, 10);
+			Color[] data = new Color[pixel.Width * pixel.Height];
+			for (int i = 0; i < data.Length; i++) {
+				data[i] = Color.White;
+			}
+			pixel.SetData(data);
         }
 
         protected override void LoadContent()
