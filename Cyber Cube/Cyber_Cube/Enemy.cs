@@ -10,7 +10,9 @@ namespace CyberCube {
 	public class Enemy : Actor {
 
 		private Texture2D pixel;
+        private VertexPositionNormalTexture[] vertices;
 		private int tickCounter;
+        private Vector2 facingDirection;
 
 		public Enemy( Cube cube, Vector3 worldPos, Direction upDir )
 			: base(cube.Game, cube, worldPos, upDir) 
@@ -26,7 +28,12 @@ namespace CyberCube {
 			pixel.SetData( new[] { Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White } );
-		}
+
+            vertices = new VertexPositionNormalTexture[3];
+            vertices[0] = new VertexPositionNormalTexture(new Vector3(0, 0, 1), Vector3.UnitZ, new Vector2(0, 0));
+            vertices[1] = new VertexPositionNormalTexture(new Vector3(0.5f, 0, 1), Vector3.UnitZ, new Vector2(0.5f, 0));
+            vertices[2] = new VertexPositionNormalTexture(new Vector3(0.5f, 0.5f, 1), Vector3.UnitZ, new Vector2(0.5f, 0.5f));
+        }
 
 		protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
 		{
@@ -48,10 +55,12 @@ namespace CyberCube {
 			if (tickCounter < 160)
 			{
 				mVelocity2d.X += xScale * timeDiff;
+                facingDirection = Vector2.UnitX;
 			}
 			else if (tickCounter >= 240 && tickCounter < 400)
 			{
 				mVelocity2d.X -= xScale * timeDiff;
+                facingDirection = -Vector2.UnitX;
 			}
 			tickCounter++;
 			tickCounter %= 480;
@@ -60,19 +69,28 @@ namespace CyberCube {
 		}
 
 		public override void Draw(GameTime gameTime) {
-			base.Draw(gameTime);
-
-			// Find screen equivalent of 3D location in world
+            // Find screen equivalent of 3D location in world
 			Vector3 screenLocation = GraphicsDevice.Viewport.Project(
 				this.WorldPosition,
 				Cube.Effect.Projection,
 				Cube.Effect.View,
 				Cube.Effect.World );
 
-			// Draw our pixel texture there
+            //RasterizerState rasterizerState = new RasterizerState();
+            //rasterizerState.CullMode = CullMode.None;
+            //GraphicsDevice.RasterizerState = rasterizerState;
+
+            //foreach (EffectPass pass in Cube.Effect.CurrentTechnique.Passes)
+            //{
+            //    pass.Apply();
+            //    GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 1);
+            //}
+
 			mSpriteBatch.Begin();
-			mSpriteBatch.Draw(pixel, new Vector2(screenLocation.X - 1, screenLocation.Y - 1), Color.DeepSkyBlue);
-			mSpriteBatch.End();
+            mSpriteBatch.Draw(pixel, new Vector2(screenLocation.X - 1, screenLocation.Y - 1), Color.DeepSkyBlue);
+		    mSpriteBatch.End();
+
+            base.Draw(gameTime);
 		}
 	}
 }
