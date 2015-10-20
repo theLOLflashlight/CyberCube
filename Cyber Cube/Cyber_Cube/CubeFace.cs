@@ -135,14 +135,22 @@ namespace CyberCube
 
                 if ( Game.Player.CubeFace == this )
                 {
-                    Vector2 vec2d = Game.Player.ComputeFacePosition();
+					Vector2 playerVec2d = Game.Player.ComputeFacePosition();
+					Vector2 enemyVec2d = Game.Enemy.ComputeFacePosition();
 
-                    foreach ( Solid solid in mSolids )
-                        if ( solid.Rectangle.Contains( vec2d ) )
+					foreach ( Solid solid in mSolids ) {
+						if (solid.Rectangle.Contains( playerVec2d ))
                         {
                             solid.Color = Color.White;
-                            Game.Player.Collide( solid.Rectangle, vec2d );
+							Game.Player.Collide( solid.Rectangle, playerVec2d );
                         }
+
+						if (solid.Rectangle.Contains( enemyVec2d ))
+						{
+							solid.Color = Color.White;
+							Game.Enemy.Collide( solid.Rectangle, enemyVec2d );
+						}
+					}
                 }
             }
 

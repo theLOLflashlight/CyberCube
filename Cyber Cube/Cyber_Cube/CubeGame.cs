@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using CyberCube.IO;
+using CyberCube.MenuFiles;
 using System.Reflection;
 
 namespace CyberCube
@@ -40,6 +41,8 @@ namespace CyberCube
 
         public Player Player { get; private set; }
 
+		public Enemy Enemy { get; private set; }
+
         public Color BackgroundColor { get; private set; }
 
         private GraphicsDeviceManager mGraphicsDeviceManager;
@@ -49,6 +52,9 @@ namespace CyberCube
 
         private Cube mCube;
         public readonly GameConsole Console;
+
+        private Menu theMenu;
+        private string version;
 
         public CubeGame()
         {
@@ -60,17 +66,20 @@ namespace CyberCube
             Camera = new Camera( this );
             mCube = new Cube( this );
             Player = new Player( mCube, Vector3.UnitZ, Direction.North );
+			Enemy = new Enemy( mCube, new Vector3(-0.5f, 0.7f, 1.0f), Direction.North );
 
             Console.CommandExecuted += RunCommand;
             Console.Close();
 
             Components.Add( Console );
             Components.Add( Player );
-			//Components.Add( new Enemy(mCube, mCube.mTopFace, new Vector2(-.5f, -.5f)) );
+			Components.Add( Enemy );
             Components.Add( mCube );
             Components.Add( Camera );
 
             Components.Add( new GamerServicesComponent( this ) );
+
+            version = "v0.1 alpha";
         }
 
         /// <summary>
@@ -137,6 +146,7 @@ namespace CyberCube
             mFont = Content.Load<SpriteFont>( "MessageFont" );
 
             // TODO: use this.Content to load your game content here
+            theMenu = new Menu(this, version);
         }
 
         /// <summary>
@@ -155,56 +165,76 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            Input.Refresh();
-
-            // Allows the game to exit
-            if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
-                this.Exit();
-
-            if ( !Input.HasFocus )
+            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
             {
-                if ( mCube.Mode == Cube.CubeMode.Edit )
+                theMenu.Update();
+
+                switch(theMenu.CurrentMenuState)
                 {
-                        if ( Input.GetAction( Action.RotateRight ) )
-                        mCube.RotateRight();
-
-                        if ( Input.GetAction( Action.RotateLeft ) )
-                        mCube.RotateLeft();
-
-                        if ( Input.GetAction( Action.RotateUp ) )
-                            mCube.RotateTop();
-
-                        if ( Input.GetAction( Action.RotateDown ) )
-                            mCube.RotateBottom();
+                    case MenuState.LoadGame:
+                        break;
+                    case MenuState.LevelEditor:
+                        break;
+                    case MenuState.ExitGame:
+                        this.Exit();
+                        break;
+                    default:
+                        break;
                 }
-
-                if ( Input.GetAction( Action.RotateClockwise ) )
-                {
-                    mCube.RotateClockwise();
-                    --Player.UpDir;
-                }
-
-                if ( Input.GetAction( Action.RotateAntiClockwise ) )
-                {
-                    mCube.RotateAntiClockwise();
-                    ++Player.UpDir;
-                }
-
-                if ( Input.GetAction( Action.ToggleCubeMode ) )
-                mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
-                             ? Cube.CubeMode.Play
-                             : Cube.CubeMode.Edit;
             }
+            else
+            {
+                Input.Refresh();
 
-            Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
+                // Allows the game to exit
+                if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
+                    this.Exit();
 
-            base.Update( gameTime );
+                if ( !Input.HasFocus )
+                {
+                    if ( mCube.Mode == Cube.CubeMode.Edit )
+                    {
+                            if ( Input.GetAction( Action.RotateRight ) )
+                            mCube.RotateRight();
 
-            if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
-                Console.Open();
+                            if ( Input.GetAction( Action.RotateLeft ) )
+                            mCube.RotateLeft();
 
-            if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
-                Console.Close();
+                            if ( Input.GetAction( Action.RotateUp ) )
+                                mCube.RotateTop();
+
+                            if ( Input.GetAction( Action.RotateDown ) )
+                                mCube.RotateBottom();
+                    }
+
+                    if ( Input.GetAction( Action.RotateClockwise ) )
+                    {
+                        mCube.RotateClockwise();
+                        --Player.UpDir;
+                    }
+
+                    if ( Input.GetAction( Action.RotateAntiClockwise ) )
+                    {
+                        mCube.RotateAntiClockwise();
+                        ++Player.UpDir;
+                    }
+
+                    if ( Input.GetAction( Action.ToggleCubeMode ) )
+                    mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
+                                 ? Cube.CubeMode.Play
+                                 : Cube.CubeMode.Edit;
+                }
+
+                Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
+
+                base.Update( gameTime );
+
+                if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
+                    Console.Open();
+
+                if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
+                    Console.Close();
+            }
         }
 
         /// <summary>
@@ -213,35 +243,45 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            GraphicsDevice.Clear( BackgroundColor );
+            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
+            {
+                mSpriteBatch.Begin();
+                GraphicsDevice.Clear(Color.White);
+                theMenu.Draw(mSpriteBatch);
+                mSpriteBatch.End();
+            }
+            else
+            {
+                GraphicsDevice.Clear( BackgroundColor );
 
-            // TODO: Add your drawing code here
+                // TODO: Add your drawing code here
 
-            base.Draw( gameTime );
+                base.Draw( gameTime );
 
-            mSpriteBatch.Begin();
+                mSpriteBatch.Begin();
 
-            string output = mCube.CurrentFace.Name;
-            var pos = mFont.MeasureString( output );
+                string output = mCube.CurrentFace.Name;
+                var pos = mFont.MeasureString( output );
 
-            mSpriteBatch.DrawString( mFont,
-                                     output,
-                                     new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
-                                     Color.White,
-                                     mCube.UpDir.ToRadians(),
-                                     mFont.MeasureString( output ) / 2,
-                                     1,
-                                     SpriteEffects.None,
-                                     0 );
+                mSpriteBatch.DrawString( mFont,
+                                         output,
+                                         new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
+                                         Color.White,
+                                         mCube.UpDir.ToRadians(),
+                                         mFont.MeasureString( output ) / 2,
+                                         1,
+                                         SpriteEffects.None,
+                                         0 );
 
-            mSpriteBatch.DrawString( mFont, Camera.Position.ToString(), Vector2.Zero, Color.White );
-            mSpriteBatch.DrawString( mFont, Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
+                mSpriteBatch.DrawString( mFont, Camera.Position.ToString(), Vector2.Zero, Color.White );
+                mSpriteBatch.DrawString( mFont, Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
 
 
-            mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
-            mSpriteBatch.End();
+                mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
+                mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
+                mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
+                mSpriteBatch.End();
+            }
         }
 
         private bool RunCommand( string command )

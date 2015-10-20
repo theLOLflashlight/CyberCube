@@ -1,5 +1,6 @@
 ﻿using CyberCube.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -12,6 +13,7 @@ namespace CyberCube
     public class Player : Actor
     {
         private Texture2D pixel;
+        private Model model2D;
 
         public Player( Cube cube, Vector3 worldPos, Direction upDir  )
             : base( cube.Game, cube, worldPos, upDir )
@@ -28,6 +30,8 @@ namespace CyberCube
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White } );
+
+            model2D = Game.Content.Load<Model>("Models\\playerAlpha2D");
         }
 
         protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
