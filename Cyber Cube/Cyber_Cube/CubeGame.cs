@@ -79,8 +79,8 @@ namespace Cyber_Cube
         /// related content. Calling base.Initialize will enumerate through any components
         /// and initialize them as well.
         /// </summary>
-        protected override void Initialize()
-        {
+        protected override void Initialize() {
+			base.Initialize();
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
@@ -163,31 +163,31 @@ namespace Cyber_Cube
 
             if ( !Input.HasFocus )
             {
-                if ( mCube.Mode == Cube.CubeMode.Edit )
-                {
+            if ( mCube.Mode == Cube.CubeMode.Edit )
+            {
                     if ( Input.GetAction( Action.RotateRight ) )
-                        mCube.RotateRight();
+                    mCube.RotateRight();
 
                     if ( Input.GetAction( Action.RotateLeft ) )
-                        mCube.RotateLeft();
+                    mCube.RotateLeft();
 
                     if ( Input.GetAction( Action.RotateUp ) )
                         mCube.RotateTop();
 
                     if ( Input.GetAction( Action.RotateDown ) )
                         mCube.RotateBottom();
-                }
+            }
 
                 if ( Input.GetAction( Action.RotateClockwise ) )
-                    mCube.RotateClockwise();
+                mCube.RotateClockwise();
 
                 if ( Input.GetAction( Action.RotateAntiClockwise ) )
-                    mCube.RotateAntiClockwise();
+                mCube.RotateAntiClockwise();
 
                 if ( Input.GetAction( Action.ToggleCubeMode ) )
-                    mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
-                                 ? Cube.CubeMode.Play
-                                 : Cube.CubeMode.Edit;
+                mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
+                             ? Cube.CubeMode.Play
+                             : Cube.CubeMode.Edit;
             }
 
             Player.Enabled = mCube.Mode == Cube.CubeMode.Play;

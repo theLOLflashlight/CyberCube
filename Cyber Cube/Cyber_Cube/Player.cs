@@ -55,6 +55,7 @@ namespace Cyber_Cube
         public override void Initialize()
         {
             base.Initialize();
+			mSpriteBatch = new SpriteBatch(GraphicsDevice);
 
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
@@ -70,7 +71,7 @@ namespace Cyber_Cube
         public Vector3 TransformMovementTo3d( Vector2 vec2d )
         {
             var angle = Cube.UpDir.ToRadians() + CurrentFace.Rotation;
-            
+
             return new Vector3( vec2d, 0 )
                        .Transform( Utils.RotateOntoQ( Vector3.UnitZ, Normal ) )
                        .Rotate( Normal, angle );
