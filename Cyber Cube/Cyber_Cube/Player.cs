@@ -89,7 +89,7 @@ namespace CyberCube
                 Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
             }
 
-            mVelocity2d.X = Utils.Clamp( mVelocity2d.X, -1, +1 );
+            mVelocity2d.X = MathHelper.Clamp( mVelocity2d.X, -1, +1 );
 
             base.Update( gameTime );
 
