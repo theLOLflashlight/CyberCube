@@ -10,7 +10,7 @@ namespace CyberCube {
 	public class Enemy : Actor {
 
 		private Texture2D pixel;
-        private VertexPositionNormalTexture[] vertices;
+        private VertexPositionNormalTexture[] visionVertices;
 		private int tickCounter;
         private Vector2 facingDirection;
 
@@ -29,10 +29,10 @@ namespace CyberCube {
                                    Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White } );
 
-            vertices = new VertexPositionNormalTexture[3];
-            vertices[0] = new VertexPositionNormalTexture(new Vector3(0, 0, 1), Vector3.UnitZ, new Vector2(0, 0));
-            vertices[1] = new VertexPositionNormalTexture(new Vector3(0.5f, 0, 1), Vector3.UnitZ, new Vector2(0.5f, 0));
-            vertices[2] = new VertexPositionNormalTexture(new Vector3(0.5f, 0.5f, 1), Vector3.UnitZ, new Vector2(0.5f, 0.5f));
+            visionVertices = new VertexPositionNormalTexture[3];
+            visionVertices[0] = new VertexPositionNormalTexture(new Vector3(0, 0, 0), Vector3.UnitZ, new Vector2(0, 0));
+            visionVertices[1] = new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.UnitZ, new Vector2(0.5f, 0));
+            visionVertices[2] = new VertexPositionNormalTexture(new Vector3(0.5f, 0.5f, 0), Vector3.UnitZ, new Vector2(0.5f, 0.5f));
         }
 
 		protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
@@ -56,11 +56,15 @@ namespace CyberCube {
 			{
 				mVelocity2d.X += xScale * timeDiff;
                 facingDirection = Vector2.UnitX;
+                visionVertices[1] = new VertexPositionNormalTexture(new Vector3(0.5f, 0, 0), Vector3.UnitZ, new Vector2(0.5f, 0));
+                visionVertices[2] = new VertexPositionNormalTexture(new Vector3(0.5f, 0.5f, 0), Vector3.UnitZ, new Vector2(0.5f, 0.5f));
 			}
 			else if (tickCounter >= 240 && tickCounter < 400)
 			{
 				mVelocity2d.X -= xScale * timeDiff;
                 facingDirection = -Vector2.UnitX;
+                visionVertices[1] = new VertexPositionNormalTexture(new Vector3(-0.5f, 0, 0), Vector3.UnitZ, new Vector2(0.5f, 0));
+                visionVertices[2] = new VertexPositionNormalTexture(new Vector3(-0.5f, 0.5f, 0), Vector3.UnitZ, new Vector2(0.5f, 0.5f));
 			}
 			tickCounter++;
 			tickCounter %= 480;
@@ -76,15 +80,26 @@ namespace CyberCube {
 				Cube.Effect.View,
 				Cube.Effect.World );
 
-            //RasterizerState rasterizerState = new RasterizerState();
-            //rasterizerState.CullMode = CullMode.None;
-            //GraphicsDevice.RasterizerState = rasterizerState;
+            VertexPositionNormalTexture[] vertices = new VertexPositionNormalTexture[3];
+            Matrix translate = Matrix.CreateTranslation(WorldPosition);
+            for ( int i = 0; i < visionVertices.Length; i++ )
+            {
+                vertices[i] = new VertexPositionNormalTexture(
+                    visionVertices[i].Position.Transform(translate),
+                    visionVertices[i].Normal,
+                    visionVertices[i].TextureCoordinate
+                );
+            }
 
-            //foreach (EffectPass pass in Cube.Effect.CurrentTechnique.Passes)
-            //{
-            //    pass.Apply();
-            //    GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 1);
-            //}
+            RasterizerState rasterizerState = new RasterizerState();
+            rasterizerState.CullMode = CullMode.None;
+            GraphicsDevice.RasterizerState = rasterizerState;
+
+            foreach (EffectPass pass in Cube.Effect.CurrentTechnique.Passes)
+            {
+                pass.Apply();
+                GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, vertices, 0, 1);
+            }
 
 			mSpriteBatch.Begin();
             mSpriteBatch.Draw(pixel, new Vector2(screenLocation.X - 1, screenLocation.Y - 1), Color.DeepSkyBlue);
