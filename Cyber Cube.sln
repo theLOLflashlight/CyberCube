@@ -1,7 +1,7 @@
 ﻿
 Microsoft Visual Studio Solution File, Format Version 12.00
-# Visual Studio 14
-VisualStudioVersion = 14.0.23107.0
+# Visual Studio 2013
+VisualStudioVersion = 12.0.21005.1
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCube Windows", "Cyber Cube\Cyber_Cube\CyberCube Windows.csproj", "{167B0FD5-FD2F-444E-BBB9-2723201AE65B}"
 EndProject
@@ -41,6 +41,7 @@ Global
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|Mixed Platforms.Build.0 = Debug|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|Mixed Platforms.Deploy.0 = Debug|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|x86.ActiveCfg = Debug|Xbox 360
+		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|x86.Build.0 = Debug|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Debug|Xbox 360.Deploy.0 = Debug|Xbox 360
@@ -48,6 +49,7 @@ Global
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|Mixed Platforms.Build.0 = Release|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|Mixed Platforms.Deploy.0 = Release|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|x86.ActiveCfg = Release|Xbox 360
+		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|x86.Build.0 = Release|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|Xbox 360.Build.0 = Release|Xbox 360
 		{909DC58A-0787-477E-9E5D-75634D5A28C4}.Release|Xbox 360.Deploy.0 = Release|Xbox 360

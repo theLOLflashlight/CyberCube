@@ -40,6 +40,8 @@ namespace CyberCube
 
         public Player Player { get; private set; }
 
+		public Enemy Enemy { get; private set; }
+
         public Color BackgroundColor { get; private set; }
 
         private GraphicsDeviceManager mGraphicsDeviceManager;
@@ -60,13 +62,14 @@ namespace CyberCube
             Camera = new Camera( this );
             mCube = new Cube( this );
             Player = new Player( mCube, Vector3.UnitZ, Direction.North );
+			Enemy = new Enemy( mCube, new Vector3(-0.5f, 0.7f, 1.0f), Direction.North );
 
             Console.CommandExecuted += RunCommand;
             Console.Close();
 
             Components.Add( Console );
             Components.Add( Player );
-			//Components.Add( new Enemy(mCube, mCube.mTopFace, new Vector2(-.5f, -.5f)) );
+			Components.Add( Enemy );
             Components.Add( mCube );
             Components.Add( Camera );
 
