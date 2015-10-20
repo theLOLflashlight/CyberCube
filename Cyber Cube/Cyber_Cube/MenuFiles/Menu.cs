@@ -15,17 +15,6 @@ namespace CyberCube.MenuFiles
 {
     public class Menu
     {
-        public enum MenuState
-        {
-            MainMenu,
-            PlayingGame,
-            LoadGame,
-            LevelEditor,
-            Controls,
-            Credits,
-            ExitGame,
-        }
-
         enum Highlight
         {
             NewGame,
