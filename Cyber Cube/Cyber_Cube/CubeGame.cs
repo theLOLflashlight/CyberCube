@@ -165,17 +165,17 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != Menu.MenuState.PlayingGame)
+            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
             {
                 theMenu.Update();
 
                 switch(theMenu.CurrentMenuState)
                 {
-                    case Menu.MenuState.LoadGame:
+                    case MenuState.LoadGame:
                         break;
-                    case Menu.MenuState.LevelEditor:
+                    case MenuState.LevelEditor:
                         break;
-                    case Menu.MenuState.ExitGame:
+                    case MenuState.ExitGame:
                         this.Exit();
                         break;
                     default:
@@ -243,7 +243,7 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != Menu.MenuState.PlayingGame)
+            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
             {
                 mSpriteBatch.Begin();
                 GraphicsDevice.Clear(Color.White);
