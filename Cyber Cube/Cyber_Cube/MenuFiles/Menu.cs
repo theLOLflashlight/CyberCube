@@ -51,13 +51,13 @@ namespace CyberCube.MenuFiles
 
         public Menu(Game game, string s)
         {
-            titleCard = game.Content.Load<Texture2D>("TitleCard");
+            titleCard = game.Content.Load<Texture2D>("MenuItems\\TitleCard");
 
-            bNewGame = game.Content.Load<Texture2D>("menuNewGame");
-            bLoadGame = game.Content.Load<Texture2D>("menuLoadGame");
-            bLevelEdit = game.Content.Load<Texture2D>("menuLevelEditor");
-            bControls = game.Content.Load<Texture2D>("menuControls");
-            bExit = game.Content.Load<Texture2D>("menuExit");
+            bNewGame = game.Content.Load<Texture2D>("MenuItems\\menuNewGame");
+            bLoadGame = game.Content.Load<Texture2D>("MenuItems\\menuLoadGame");
+            bLevelEdit = game.Content.Load<Texture2D>("MenuItems\\menuLevelEditor");
+            bControls = game.Content.Load<Texture2D>("MenuItems\\menuControls");
+            bExit = game.Content.Load<Texture2D>("MenuItems\\menuExit");
 
             vString = game.Content.Load<SpriteFont>("ConsoleFont");
             verString = s;
