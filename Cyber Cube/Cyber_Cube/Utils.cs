@@ -50,7 +50,7 @@ namespace CyberCube
 
         public static float Clamp( float n, float min, float max )
         {
-            return Math.Max( min, Math.Min( max, n ) );
+            return Math.Max( Math.Min( n, max ), min );
         }
 
         public static Vector2 NearestPointOn( this Vector2 vec, Rectangle rec )

@@ -212,5 +212,53 @@ namespace CyberCube
             base.Draw( gameTime );
         }
 
+        public Face GetFaceFromPosition( Vector3 vec )
+        {
+            var x = vec.X;
+            var y = vec.Y;
+            var z = vec.Z;
+
+            var l = -1;
+            var t = 1;
+            var r = 1;
+            var e = -1;
+            var f = 1;
+            var b = -1;
+
+            x = Utils.Clamp( x, l, r );
+            y = Utils.Clamp( y, e, t );
+            z = Utils.Clamp( z, b, f );
+
+            var dl = Math.Abs( x - l );
+            var dr = Math.Abs( x - r );
+            var dt = Math.Abs( y - t );
+            var de = Math.Abs( y - e );
+            var df = Math.Abs( z - f );
+            var db = Math.Abs( z - b );
+
+            var m = Math.Min( Math.Min( df, Math.Min( dl, dr ) ),
+                              Math.Min( db, Math.Min( dt, de ) ) );
+
+            if ( m == df )
+                return mFrontFace;
+
+            if ( m == db )
+                return mBackFace;
+
+            if ( m == dt )
+                return mTopFace;
+
+            if ( m == de )
+                return mBottomFace;
+
+            if ( m == dl )
+                return mLeftFace;
+
+            if ( m == dr )
+                return mRightFace;
+
+            throw new Tools.WtfException();
+        }
+
     }
 }

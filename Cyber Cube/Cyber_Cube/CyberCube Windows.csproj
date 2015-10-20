@@ -60,6 +60,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionEnum.cs" />
+    <Compile Include="Actor.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Cube.cs" />

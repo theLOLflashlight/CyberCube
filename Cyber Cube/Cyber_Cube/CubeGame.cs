@@ -59,7 +59,7 @@ namespace CyberCube
             Console = new GameConsole( this, this );
             Camera = new Camera( this );
             mCube = new Cube( this );
-            Player = new Player( mCube );
+            Player = new Player( mCube, Vector3.UnitZ, Direction.North );
 
             Console.CommandExecuted += RunCommand;
             Console.Close();
@@ -163,26 +163,32 @@ namespace CyberCube
 
             if ( !Input.HasFocus )
             {
-            if ( mCube.Mode == Cube.CubeMode.Edit )
-            {
-                    if ( Input.GetAction( Action.RotateRight ) )
-                    mCube.RotateRight();
+                if ( mCube.Mode == Cube.CubeMode.Edit )
+                {
+                        if ( Input.GetAction( Action.RotateRight ) )
+                        mCube.RotateRight();
 
-                    if ( Input.GetAction( Action.RotateLeft ) )
-                    mCube.RotateLeft();
+                        if ( Input.GetAction( Action.RotateLeft ) )
+                        mCube.RotateLeft();
 
-                    if ( Input.GetAction( Action.RotateUp ) )
-                        mCube.RotateTop();
+                        if ( Input.GetAction( Action.RotateUp ) )
+                            mCube.RotateTop();
 
-                    if ( Input.GetAction( Action.RotateDown ) )
-                        mCube.RotateBottom();
-            }
+                        if ( Input.GetAction( Action.RotateDown ) )
+                            mCube.RotateBottom();
+                }
 
                 if ( Input.GetAction( Action.RotateClockwise ) )
-                mCube.RotateClockwise();
+                {
+                    mCube.RotateClockwise();
+                    --Player.UpDir;
+                }
 
                 if ( Input.GetAction( Action.RotateAntiClockwise ) )
-                mCube.RotateAntiClockwise();
+                {
+                    mCube.RotateAntiClockwise();
+                    ++Player.UpDir;
+                }
 
                 if ( Input.GetAction( Action.ToggleCubeMode ) )
                 mCube.Mode = mCube.Mode == Cube.CubeMode.Edit

@@ -56,18 +56,18 @@ namespace CyberCube
                 BackgroundColor = Color.Transparent;
 
                 Vector3[] face = new Vector3[ 6 ];
-                // TopLeft
-                face[ 0 ] = new Vector3( -1, 1, 0.0f );
-                // BottomLeft
-                face[ 1 ] = new Vector3( -1, -1, 0.0f );
-                // TopRight
-                face[ 2 ] = new Vector3( 1, 1, 0.0f );
-                // BottomLeft
-                face[ 3 ] = new Vector3( -1, -1, 0.0f );
-                // BottomRight
-                face[ 4 ] = new Vector3( 1, -1, 0.0f );
-                // TopRight
-                face[ 5 ] = new Vector3( 1, 1, 0.0f );
+                // top left
+                face[ 0 ] = new Vector3( -1, 1, 0 );
+                // bottom left
+                face[ 1 ] = new Vector3( -1, -1, 0 );
+                // top right
+                face[ 2 ] = new Vector3( 1, 1, 0 );
+                // bottom left
+                face[ 3 ] = new Vector3( -1, -1, 0 );
+                // bottom right
+                face[ 4 ] = new Vector3( 1, -1, 0 );
+                // top right
+                face[ 5 ] = new Vector3( 1, 1, 0 );
 
                 Vector2 textureTopLeft = Vector2.Zero;
                 Vector2 textureTopRight = Vector2.UnitX;
@@ -78,27 +78,27 @@ namespace CyberCube
                                   * Matrix.CreateFromAxisAngle( Normal, Rotation );
 
                 mVertexData[ 0 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 0 ], rotation ) + Normal,
+                    face[ 0 ].Transform( rotation ) + Normal,
                     Normal, textureTopLeft );
 
                 mVertexData[ 1 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 1 ], rotation ) + Normal,
+                    face[ 1 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 mVertexData[ 2 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 2 ], rotation ) + Normal,
+                    face[ 2 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
 
                 mVertexData[ 3 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 3 ], rotation ) + Normal,
+                    face[ 3 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 mVertexData[ 4 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 4 ], rotation ) + Normal,
+                    face[ 4 ].Transform( rotation ) + Normal,
                     Normal, textureBottomRight );
 
                 mVertexData[ 5 ] = new VertexPositionNormalTexture(
-                    Vector3.Transform( face[ 5 ], rotation ) + Normal,
+                    face[ 5 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
             }
 

@@ -112,19 +112,25 @@ namespace CyberCube
         /// <returns>The face-direction which would point towards the top of the screen.</returns>
         private Direction GetNextUpDirection( Direction rotation, Direction backwards )
         {
+            return Cube.GetNextUpDirection( UpDir, rotation, backwards );
+        }
+
+
+        public static Direction GetNextUpDirection( Direction up, Direction rotation, Direction backwards )
+        {
             // This method was derived by generalizing a triply nested switch statement which 
             // contained [4^3 = 64] cases.
 
-            if ( UpDir == rotation )
+            if ( up == rotation )
                 return ~backwards;
 
-            if ( UpDir == +rotation )
+            if ( up == +rotation )
                 return -backwards;
 
-            if ( UpDir == ~rotation )
+            if ( up == ~rotation )
                 return backwards;
 
-            if ( UpDir == -rotation )
+            if ( up == -rotation )
                 return +backwards;
 
             // There are only 4 possible values for directions.
