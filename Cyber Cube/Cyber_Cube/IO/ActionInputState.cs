@@ -16,7 +16,7 @@ namespace Cyber_Cube.IO
         public struct ActionState
         {
             public readonly Action Action;
-            public readonly float Value;
+            public float Value;
 
             public ActionState( Action action, float value )
             {
@@ -29,12 +29,7 @@ namespace Cyber_Cube.IO
             {
             }
 
-            public static implicit operator Action( ActionState input )
-            {
-                return input.Action;
-            }
-
-            public static implicit operator bool ( ActionState input )
+            public static implicit operator bool( ActionState input )
             {
                 return input.Value != 0;
             }

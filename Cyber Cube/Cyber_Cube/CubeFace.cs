@@ -113,6 +113,7 @@ namespace Cyber_Cube
 
                 mSolids.Add( new Solid( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
                 mSolids.Add( new Solid( new Rectangle( WIDTH / 10, 2 * HEIGHT / 3, WIDTH / 3, 10 ) ) );
+                mSolids.Add( new Solid( new Rectangle( WIDTH - 15, 15, 10, HEIGHT / 3 ) ) );
             }
 
             protected override void LoadContent()
@@ -247,7 +248,25 @@ namespace Cyber_Cube
                 case CompassDirection.West:
                     return WestFace;
                 }
-                return this;
+
+                throw new Tools.WtfException();
+            }
+
+            public CompassDirection BackwardsDirectionFrom( Face target )
+            {
+                if ( NorthFace == target )
+                    return CompassDirection.North;
+
+                if ( EastFace == target )
+                    return CompassDirection.East;
+
+                if ( SouthFace == target )
+                    return CompassDirection.South;
+
+                if ( WestFace == target )
+                    return CompassDirection.West;
+
+                throw new Exception( "Faces are not connected." );
             }
         }
     }

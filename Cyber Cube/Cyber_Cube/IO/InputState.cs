@@ -81,12 +81,12 @@ namespace Cyber_Cube.IO
 
         // Was *Any* Key
 
-        public bool Keyboard_WasAnyKeyPressed( Keys[] keys )
+        public bool Keyboard_WasAnyKeyPressed( IEnumerable<Keys> keys )
         {
             return keys.Any( k => { return Keyboard_WasKeyPressed( k ); } );
         }
 
-        public bool Keyboard_WasAnyKeyReleased( Keys[] keys )
+        public bool Keyboard_WasAnyKeyReleased( IEnumerable<Keys> keys )
         {
             return keys.Any( k => { return Keyboard_WasKeyReleased( k ); } );
         }
@@ -105,12 +105,12 @@ namespace Cyber_Cube.IO
 
         // Was *Any* Button
 
-        public bool GamePad_WasAnyButtonPressed( Buttons[] buttons )
+        public bool GamePad_WasAnyButtonPressed( IEnumerable<Buttons> buttons )
         {
             return buttons.Any( b => { return GamePad_WasButtonPressed( b ); } );
         }
 
-        public bool GamePad_WasAnyButtonReleased( Buttons[] buttons )
+        public bool GamePad_WasAnyButtonReleased( IEnumerable<Buttons> buttons )
         {
             return buttons.Any( b => { return GamePad_WasButtonReleased( b ); } );
         }

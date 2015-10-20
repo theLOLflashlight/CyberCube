@@ -20,6 +20,9 @@ namespace Cyber_Cube
         private Face mLeftFace;
         private Face mRightFace;
 
+        /// <summary>
+        /// Gets each face of the cube.
+        /// </summary>
         public IEnumerable< Face > Faces
         {
             get {

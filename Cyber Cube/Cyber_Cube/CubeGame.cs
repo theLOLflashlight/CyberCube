@@ -66,8 +66,11 @@ namespace Cyber_Cube
 
             Components.Add( Console );
             Components.Add( Player );
+			//Components.Add( new Enemy(mCube, mCube.mTopFace, new Vector2(-.5f, -.5f)) );
             Components.Add( mCube );
             Components.Add( Camera );
+
+            Components.Add( new GamerServicesComponent( this ) );
         }
 
         /// <summary>
@@ -85,7 +88,7 @@ namespace Cyber_Cube
 
             Input.AddBinding( Action.MoveLeft, Keys.Left );
             Input.AddBinding( Action.MoveRight, Keys.Right );
-            //Input.AddBinding( Action.MoveUp, Keys.Up );
+            Input.AddBinding( Action.MoveUp, Keys.Up );
             Input.AddBinding( Action.MoveDown, Keys.Down );
             Input.AddPressedBinding( Action.Jump, Keys.Up );
 
@@ -103,6 +106,7 @@ namespace Cyber_Cube
             Input.AddBinding( Action.MoveRight, Buttons.DPadRight );
             Input.AddBinding( Action.MoveUp, Buttons.DPadUp );
             Input.AddBinding( Action.MoveDown, Buttons.DPadDown );
+            Input.AddPressedBinding( Action.Jump, Buttons.A );
 
             Input.AddPressedBinding( Action.RotateLeft, Buttons.DPadLeft );
             Input.AddPressedBinding( Action.RotateRight, Buttons.DPadRight );
@@ -114,12 +118,14 @@ namespace Cyber_Cube
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
 
-            Input.AddBinding( Action.MoveLeft, i => { return -i.GamePad.ThumbSticks.Left.X; } );
-            Input.AddBinding( Action.MoveRight, i => { return i.GamePad.ThumbSticks.Left.X; } );
-            Input.AddBinding( Action.MoveUp, i => { return i.GamePad.ThumbSticks.Left.Y; } );
-            Input.AddBinding( Action.MoveDown, i => { return -i.GamePad.ThumbSticks.Left.Y; } );
+            Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
+            Input.AddBinding( Action.MoveRight, i => i.GamePad.ThumbSticks.Left.X );
+            Input.AddBinding( Action.MoveUp, i => i.GamePad.ThumbSticks.Left.Y );
+            Input.AddBinding( Action.MoveDown, i => -i.GamePad.ThumbSticks.Left.Y );
 
             base.Initialize();
+
+            StorageManager.Instance.Initialize();
         }
 
         /// <summary>
@@ -166,10 +172,10 @@ namespace Cyber_Cube
                         mCube.RotateLeft();
 
                     if ( Input.GetAction( Action.RotateUp ) )
-                        mCube.RotateUp();
+                        mCube.RotateTop();
 
                     if ( Input.GetAction( Action.RotateDown ) )
-                        mCube.RotateDown();
+                        mCube.RotateBottom();
                 }
 
                 if ( Input.GetAction( Action.RotateClockwise ) )

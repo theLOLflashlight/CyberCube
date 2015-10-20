@@ -42,10 +42,10 @@ namespace Cyber_Cube
             batch.Draw( texture, rect, color );
         }
 
-        public static bool Contains( this Rectangle rec, Vector2 vec )
+        public static bool Contains( this Rectangle rec, Vector2 vec, float e = 0 )
         {
-            return vec.X >= rec.Left && vec.X <= rec.Right
-                 && vec.Y >= rec.Top && vec.Y <= rec.Bottom;
+            return vec.X + e >= rec.Left && vec.X - e <= rec.Right
+                 && vec.Y + e >= rec.Top && vec.Y - e <= rec.Bottom;
         }
 
         public static float Clamp( float n, float min, float max )

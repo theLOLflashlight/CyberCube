@@ -12,7 +12,6 @@ namespace Cyber_Cube
     public class Player : DrawableCubeGameComponent
     {
         public Vector3 WorldPosition = Vector3.UnitZ;
-        public Vector3 Velocity = Vector3.Zero;
 
         public Cube Cube { get; private set; }
 
@@ -32,6 +31,19 @@ namespace Cyber_Cube
             }
         }
 
+        private Vector2 mVelocity2D = Vector2.Zero;
+
+        private bool mCollided = false;
+
+        private Vector2 mGroundNormal;
+
+        public bool FreeFall
+        {
+            get {
+                return mGroundNormal == Vector2.Zero;
+            }
+        }
+
         public Player( Cube cube )
             : base( cube.Game )
         {
@@ -44,8 +56,10 @@ namespace Cyber_Cube
         {
             base.Initialize();
 
-            pixel = new Texture2D( GraphicsDevice, 2, 2 );
-            pixel.SetData( new[] { Color.White, Color.White, Color.White, Color.White } );
+            pixel = new Texture2D( GraphicsDevice, 3, 3 );
+            pixel.SetData( new[] { Color.White, Color.White, Color.White,
+                                   Color.White, Color.White, Color.White,
+                                   Color.White, Color.White, Color.White } );
         }
 
         protected override void LoadContent()
@@ -82,8 +96,6 @@ namespace Cyber_Cube
             return Transform3dTo2d( WorldPosition ) * adjustingFactor + new Vector2( adjustingFactor );
         }
 
-        private Vector2 mGroundNormal;
-
         public void Collide( Rectangle rec )
         {
             Collide( rec, ComputeFacePosition() );
@@ -112,23 +124,13 @@ namespace Cyber_Cube
 
             WorldPosition = Transform2dTo3d( vec );
             WorldPosition += Normal;
+            ClampWorldPosition();
             //Game.Camera.Target = WorldPosition;
-        }
-
-        private Vector2 mVelocity2D = Vector2.Zero;
-
-        private bool mCollided = false;
-
-        public bool FreeFall
-        {
-            get {
-                return mGroundNormal == Vector2.Zero;
-            }
         }
 
         public void Jump()
         {
-            mVelocity2D.Y = 2f;
+            mVelocity2D.Y = FreeFall ? 1.5f : 2f;
         }
 
         public override void Update( GameTime gameTime )
@@ -139,13 +141,27 @@ namespace Cyber_Cube
 
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
+            mVelocity2D.Y -= 5f * timeDiff;
+            var xScale = FreeFall ? 2 : 10;
+
             var delta2d = Vector2.Zero;
             if ( !input.HasFocus )
             {
-                delta2d.X += input.GetAction( Action.MoveRight ).Value;
-                delta2d.X -= input.GetAction( Action.MoveLeft ).Value;
-                delta2d.Y += input.GetAction( Action.MoveUp ).Value;
-                delta2d.Y -= input.GetAction( Action.MoveDown ).Value;
+                //delta2d.X += input.GetAction( Action.MoveRight ).Value;
+                //delta2d.X -= input.GetAction( Action.MoveLeft ).Value;
+                //delta2d.Y += input.GetAction( Action.MoveUp ).Value;
+                //delta2d.Y -= input.GetAction( Action.MoveDown ).Value;
+
+                var actionRight = input.GetAction( Action.MoveRight );
+                var actionLeft = input.GetAction( Action.MoveLeft );
+
+                if ( !actionRight && !actionLeft )
+                    Utils.FloatApproach( ref mVelocity2D.X, 0, xScale * timeDiff );
+
+                mVelocity2D.X += actionRight.Value * (xScale + 1) * timeDiff;
+                mVelocity2D.X -= actionLeft.Value * (xScale + 1) * timeDiff;
+
+                mVelocity2D.X = Math.Max( Math.Min( mVelocity2D.X, 1 ), -1 );
 
                 if ( input.GetAction( Action.Jump ) )
                     this.Jump();
@@ -158,8 +174,16 @@ namespace Cyber_Cube
                     delta2d.Y *= Math.Abs( tmp.Y );
                 }
             }
+            else
+            {
+                Utils.FloatApproach( ref mVelocity2D.X, 0, xScale * timeDiff );
+            }
 
-            mVelocity2D.Y -= 5f * timeDiff;
+            if ( mGroundNormal.X > 0 )
+                mVelocity2D.X = Math.Max( 0, mVelocity2D.X );
+
+            else if ( mGroundNormal.X < 0 )
+                mVelocity2D.X = Math.Min( 0, mVelocity2D.X );
 
             if ( mGroundNormal.Y > 0 )
                 mVelocity2D.Y = Math.Max( 0, mVelocity2D.Y );
@@ -168,49 +192,54 @@ namespace Cyber_Cube
                 mVelocity2D.Y = Math.Min( 0, mVelocity2D.Y );
 
 
+            delta2d += mVelocity2D;
+            WorldPosition += TransformMovementTo3d( delta2d ) * timeDiff;
+
+            Cube.Rotate( ClampWorldPosition() );
+            Game.Camera.Target = WorldPosition;
+
+
             if ( !mCollided )
                 mGroundNormal = Vector2.Zero;
             mCollided = false;
+        }
 
-            delta2d += mVelocity2D;
-
-            Vector3 delta3d = TransformMovementTo3d( delta2d );
-            WorldPosition += delta3d * timeDiff;
-
+        private CompassDirection? ClampWorldPosition()
+        {
             if ( WorldPosition.X > 1 )
             {
                 WorldPosition.X = 1;
-                Cube.Rotate( CurrentFace.VectorToDirection( Vector3.UnitX ) );
+                return CurrentFace.VectorToDirection( Vector3.UnitX );
             }
             else if ( WorldPosition.X < -1 )
             {
                 WorldPosition.X = -1;
-                Cube.Rotate( CurrentFace.VectorToDirection( -Vector3.UnitX ) );
+                return CurrentFace.VectorToDirection( -Vector3.UnitX );
             }
 
             if ( WorldPosition.Y > 1 )
             {
                 WorldPosition.Y = 1;
-                Cube.Rotate( CurrentFace.VectorToDirection( Vector3.UnitY ) );
+                return CurrentFace.VectorToDirection( Vector3.UnitY );
             }
             else if ( WorldPosition.Y < -1 )
             {
                 WorldPosition.Y = -1;
-                Cube.Rotate( CurrentFace.VectorToDirection( -Vector3.UnitY ) );
+                return CurrentFace.VectorToDirection( -Vector3.UnitY );
             }
 
             if ( WorldPosition.Z > 1 )
             {
                 WorldPosition.Z = 1;
-                Cube.Rotate( CurrentFace.VectorToDirection( Vector3.UnitZ ) );
+                return CurrentFace.VectorToDirection( Vector3.UnitZ );
             }
             else if ( WorldPosition.Z < -1 )
             {
                 WorldPosition.Z = -1;
-                Cube.Rotate( CurrentFace.VectorToDirection( -Vector3.UnitZ ) );
+                return CurrentFace.VectorToDirection( -Vector3.UnitZ );
             }
 
-            Game.Camera.Target = WorldPosition;
+            return null;
         }
 
         public override void Draw( GameTime gameTime )
@@ -229,8 +258,8 @@ namespace Cyber_Cube
             
             mSpriteBatch.Draw( pixel,
                                new Vector2(
-                                   screenLocation.X,
-                                   screenLocation.Y ),
+                                   screenLocation.X - 1,
+                                   screenLocation.Y - 1 ),
                                Color.Black );
 
             mSpriteBatch.End();

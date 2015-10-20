@@ -8,26 +8,50 @@ namespace Cyber_Cube
 {
     public partial class Cube
     {
+        /// Note: the term "face-direction" is used to mean a direction relative to a face. If text 
+        /// were to be rendered on a face, the North face-direction would always pass through the 
+        /// bottom then the top of the text and the East face-direction would always point in the 
+        /// direction that the text is to be read (assuming a ltr language).
+
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current right edge 
+        /// becomes the current face.
+        /// </summary>
         public void RotateRight()
         {
             Rotate( +UpDir );
         }
 
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current left edge 
+        /// becomes the current face.
+        /// </summary>
         public void RotateLeft()
         {
             Rotate( -UpDir );
         }
 
-        public void RotateUp()
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current top edge 
+        /// becomes the current face.
+        /// </summary>
+        public void RotateTop()
         {
             Rotate( UpDir );
         }
 
-        public void RotateDown()
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current bottom edge 
+        /// becomes the current face.
+        /// </summary>
+        public void RotateBottom()
         {
             Rotate( ~UpDir );
         }
 
+        /// <summary>
+        /// Rotates the camera about the cube so that the current top edge becomes the right edge.
+        /// </summary>
         public void RotateClockwise()
         {
             --UpDir;
@@ -35,6 +59,9 @@ namespace Cyber_Cube
             Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
+        /// <summary>
+        /// Rotates the camera about the cube so that the current top edge becomes the left edge.
+        /// </summary>
         public void RotateAntiClockwise()
         {
             ++UpDir;
@@ -42,56 +69,66 @@ namespace Cyber_Cube
             Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current edge in the 
+        /// specified face-direction becomes the current face. The input direction is cube 
+        /// orientation-agnostic.
+        /// </summary>
+        /// <param name="direction">The direction to rotate towards, relative to the current 
+        /// face.</param>
+        public void Rotate( CompassDirection direction )
+        {
+            Face nextFace = CurrentFace.AdjacentFace( direction );
+            CompassDirection backDir = nextFace.BackwardsDirectionFrom( CurrentFace );
+
+            UpDir = GetNextUpDirection( direction, backDir );
+            CurrentFace = nextFace;
+
+            Game.Camera.AnimatePosition( CurrentFace.Normal * CameraDistance, CameraDistance );
+            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+        }
+
+        /// <summary>
+        /// Rotates the camera about the cube so that the face adjacent to the current edge in the 
+        /// specified face-direction becomes the current face. The input direction is cube 
+        /// orientation-agnostic. This is a convenience overload accepting a 
+        /// Nullable&lt;CompassDirection&gt; as a parameter.
+        /// </summary>
+        /// <param name="direction">The direction to rotate towards, relative to the current 
+        /// face, or null for no rotation.</param>
         public void Rotate( CompassDirection? direction )
         {
             if ( direction.HasValue )
                 Rotate( direction.Value );
         }
 
-        public void Rotate( CompassDirection direction )
+        /// <summary>
+        /// Gets the face-direction which would point towards the top of the screen after a 
+        /// rotation in a specified direction, given that a second rotation in another specified 
+        /// face-direction will undo the first rotation.
+        /// </summary>
+        /// <param name="rotation">The direction the cube will be rotated.</param>
+        /// <param name="backwards">A direction which would undo the first rotation.</param>
+        /// <returns>The face-direction which would point towards the top of the screen.</returns>
+        private Direction GetNextUpDirection( Direction rotation, Direction backwards )
         {
-            Face nextFace = CurrentFace.AdjacentFace( direction );
-            CompassDirection backTrack = FaceAdjacency( nextFace, CurrentFace );
+            // This method was derived by generalizing a triply nested switch statement which 
+            // contained [4^3 = 64] cases.
 
-            CurrentFace = nextFace;
-            UpDir = GetNextUpDirection( direction, backTrack );
-
-            Game.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
-        }
-
-        private static CompassDirection FaceAdjacency( Face source, Face target )
-        {
-            if ( source.NorthFace == target )
-                return CompassDirection.North;
-
-            if ( source.EastFace == target )
-                return CompassDirection.East;
-
-            if ( source.SouthFace == target )
-                return CompassDirection.South;
-
-            if ( source.WestFace == target )
-                return CompassDirection.West;
-
-            throw new Exception( "Faces are not connected." );
-        }
-
-        private Direction GetNextUpDirection( Direction rotation, Direction backTrack )
-        {
             if ( UpDir == rotation )
-                return ~backTrack;
+                return ~backwards;
 
             if ( UpDir == +rotation )
-                return -backTrack;
+                return -backwards;
 
             if ( UpDir == ~rotation )
-                return backTrack;
+                return backwards;
 
             if ( UpDir == -rotation )
-                return +backTrack;
+                return +backwards;
 
-            throw new Exception( "WTF" ); // What a Terrible Failure.
+            // There are only 4 possible values for directions.
+            throw new Tools.WtfException();
         }
     }
 }

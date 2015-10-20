@@ -12,9 +12,8 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Storage;
-#if WINDOWS
 using System.Xml.Serialization;
-#endif
+using System.Xml;
 
 namespace Cyber_Cube
 {
@@ -81,31 +80,20 @@ namespace Cyber_Cube
 
         /// <summary>
         /// Currently loaded player data.
+        /// 
+        /// TODO: Change this to private and make accessors for it once testing is completed.
         /// </summary>
-        private GameDataStorage data;
-
-        /// <summary>
-        /// TODO: Remove this, this is just for convenience.
-        /// </summary>
-        public Vector3 PlayersWorldPosition { get { return data.PlayerDataSaves[ 0 ].PlayerWorldPosition; } }
+        public GameDataStorage data;
 
         /// <summary>
         /// Represents a storage device for user data, such as a memory unit or hard drive.
         /// </summary>
         private StorageDevice storageDevice;
 
-#if WINDOWS
         /// <summary>
         /// Serializer for the 'data' variable into XML if on a Windows machine.
         /// </summary>
         private XmlSerializer serializer;
-#endif
-
-        /// <summary>
-        /// Temporary variable, unsure meaning.
-        /// TODO: Determine usefulness of variable.
-        /// </summary>
-        private bool GameSaveRequested = false;
 
         static StorageManager()
         {
@@ -127,9 +115,7 @@ namespace Cyber_Cube
         {
             // TODO: Define how many saves there will be.
             this.data = new GameDataStorage( 1 );
-#if WINDOWS
             serializer = new XmlSerializer( typeof( GameDataStorage ) );
-#endif
         }
 
         private StorageContainer InitializeStorageContainer( IAsyncResult result )
@@ -163,7 +149,7 @@ namespace Cyber_Cube
         private void SaveGameDataStorage( IAsyncResult result )
         {
             StorageContainer container = this.InitializeStorageContainer( result );
-            
+
             // If the file exists, delete it and re-create it.
             if( container.FileExists( fileName ) )
                 container.DeleteFile( fileName );
@@ -171,15 +157,7 @@ namespace Cyber_Cube
             // Open the file, stream the data, and close the file.
             using( Stream stream = container.CreateFile( fileName ) )
             {
-#if WINDOWS
                 serializer.Serialize( stream, data );
-#else
-                using( StreamWriter sw = new StreamWriter( stream ) )
-                {
-                    // TODO: Implement Xbox serialization to stream here.
-                    sw.Close();
-                }
-#endif
             }
 
             // Ends the saving operation.
@@ -201,7 +179,7 @@ namespace Cyber_Cube
         /// <summary>
         /// AsyncCallback for StorageDevice.BeginShowSelector. Holds actual loading functionality.
         /// </summary>
-        private void LoadGameDataStorage( IAsyncResult result ) 
+        private void LoadGameDataStorage( IAsyncResult result )
         {
             StorageContainer container = this.InitializeStorageContainer( result );
 
@@ -209,15 +187,7 @@ namespace Cyber_Cube
             {
                 using( Stream stream = container.OpenFile( fileName, FileMode.Open ) )
                 {
-#if WINDOWS
                     data = (GameDataStorage)serializer.Deserialize( stream );
-#else
-                    using( StreamReader sr = new StreamReader( stream ) )
-                    {
-                        // TODO: Implement Xbox deserialization from stream here
-                        sr.Close();
-                    }
-#endif
                 }
             }
 
