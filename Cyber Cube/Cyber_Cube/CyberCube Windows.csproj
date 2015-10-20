@@ -81,7 +81,6 @@
     <Compile Include="CubeGame.cs" />
     <Compile Include="Solid.cs" />
     <Compile Include="StorageManager.cs" />
-    <Compile Include="Tools\CompositeKeyDictionary.cs" />
     <Compile Include="Tools\Exceptions.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>

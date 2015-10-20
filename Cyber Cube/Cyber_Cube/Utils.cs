@@ -48,11 +48,6 @@ namespace CyberCube
                  && vec.Y + e >= rec.Top && vec.Y - e <= rec.Bottom;
         }
 
-        public static float Clamp( float n, float min, float max )
-        {
-            return Math.Max( Math.Min( n, max ), min );
-        }
-
         public static Vector2 NearestPointOn( this Vector2 vec, Rectangle rec )
         {
             var x = vec.X;
@@ -63,8 +58,8 @@ namespace CyberCube
             var r = rec.Right;
             var b = rec.Bottom;
 
-            x = Clamp( x, l, r );
-            y = Clamp( y, t, b );
+            x = MathHelper.Clamp( x, l, r );
+            y = MathHelper.Clamp( y, t, b );
 
             var dl = Math.Abs( x - l );
             var dr = Math.Abs( x - r );

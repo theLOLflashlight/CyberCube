@@ -225,9 +225,9 @@ namespace CyberCube
             var f = 1;
             var b = -1;
 
-            x = Utils.Clamp( x, l, r );
-            y = Utils.Clamp( y, e, t );
-            z = Utils.Clamp( z, b, f );
+            x = MathHelper.Clamp( x, l, r );
+            y = MathHelper.Clamp( y, e, t );
+            z = MathHelper.Clamp( z, b, f );
 
             var dl = Math.Abs( x - l );
             var dr = Math.Abs( x - r );

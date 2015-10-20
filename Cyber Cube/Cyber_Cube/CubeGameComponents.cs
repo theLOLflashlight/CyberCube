@@ -12,7 +12,7 @@ namespace CyberCube
         public new CubeGame Game
         {
             get {
-                return base.Game as CubeGame;
+                return (CubeGame) base.Game;
             }
         }
 
@@ -28,7 +28,7 @@ namespace CyberCube
         public new CubeGame Game
         {
             get {
-                return base.Game as CubeGame;
+                return (CubeGame) base.Game;
             }
         }
         protected SpriteBatch mSpriteBatch

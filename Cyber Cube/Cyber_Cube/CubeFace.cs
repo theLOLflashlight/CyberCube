@@ -133,7 +133,7 @@ namespace CyberCube
                 foreach ( Solid solid in mSolids )
                     solid.Color = Color.Black;
 
-                if ( Game.Player.Normal == this.Normal )
+                if ( Game.Player.CubeFace == this )
                 {
                     Vector2 vec2d = Game.Player.ComputeFacePosition();
 
