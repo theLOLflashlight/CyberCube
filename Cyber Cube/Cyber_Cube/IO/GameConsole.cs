@@ -7,7 +7,7 @@ using System.Collections.ObjectModel;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube.IO
+namespace CyberCube.IO
 {
     public class GameConsole : IODrawableGameComponent
     {

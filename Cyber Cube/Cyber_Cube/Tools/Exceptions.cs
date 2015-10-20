@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube.Tools
+namespace CyberCube.Tools
 {
     /// <summary>
     /// What a Terrible Failure. Represents an error that should never happen.

@@ -7,8 +7,8 @@
     <Platform Condition=" '$(Platform)' == '' ">x86</Platform>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
-    <RootNamespace>Cyber_Cube</RootNamespace>
-    <AssemblyName>Cyber_Cube</AssemblyName>
+    <RootNamespace>CyberCube</RootNamespace>
+    <AssemblyName>CyberCube</AssemblyName>
     <TargetFrameworkVersion>v4.0</TargetFrameworkVersion>
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
@@ -91,9 +91,10 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <ProjectReference Include="..\Cyber_CubeContent\Cyber_CubeContent.contentproj">
-      <Name>Cyber_CubeContent</Name>
+    <ProjectReference Include="..\Cyber_CubeContent\CyberCubeContent.contentproj">
+      <Name>CyberCubeContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
+      <Project>{FB88EB67-FC26-4548-9607-B575B694AE10}</Project>
     </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildBinPath)\Microsoft.CSharp.targets" />

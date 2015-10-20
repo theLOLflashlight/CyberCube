@@ -15,7 +15,7 @@ using Microsoft.Xna.Framework.Storage;
 using System.Xml.Serialization;
 using System.Xml;
 
-namespace Cyber_Cube
+namespace CyberCube
 {
     /// <summary>
     /// Holds an array of saves.

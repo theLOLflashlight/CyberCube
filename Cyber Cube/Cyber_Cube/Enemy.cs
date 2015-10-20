@@ -1,4 +1,4 @@
-﻿using Cyber_Cube.IO;
+﻿using CyberCube.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -6,19 +6,19 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube {
+namespace CyberCube {
 	class Enemy : DrawableGameComponent {
 
 		private Texture2D enemyTexture;
 		private SpriteBatch mSpriteBatch;
 
 		private Cube mCube;
-		private Cyber_Cube.Cube.Face face;
+		private CyberCube.Cube.Face face;
 		private Vector2 position;
 		private Vector3 WorldPosition = Vector3.UnitZ;
 		private Direction movingDirection;
 
-		public Enemy(Cube cube, Cyber_Cube.Cube.Face face, Vector2 position)
+		public Enemy(Cube cube, CyberCube.Cube.Face face, Vector2 position)
 			: base(cube.Game) {
 				mCube = cube;
 				this.face = face;
@@ -54,7 +54,7 @@ namespace Cyber_Cube {
 			}
 
 
-			var angle = mCube.UpDir.ToRadians() + face.Orientation.ToRadians();
+			var angle = mCube.UpDir.ToRadians() + face.Rotation;
 			var delta3d = new Vector3(delta2d, 0)
 					.Transform(Utils.RotateOntoQ(Vector3.UnitZ, face.Normal))
 					.Rotate(mCube.CurrentFace.Normal, angle);

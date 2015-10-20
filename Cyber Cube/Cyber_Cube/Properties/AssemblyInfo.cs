@@ -5,8 +5,8 @@ using System.Runtime.InteropServices;
 // General Information about an assembly is controlled through the following 
 // set of attributes. Change these attribute values to modify the information
 // associated with an assembly.
-[assembly: AssemblyTitle( "Cyber_Cube" )]
-[assembly: AssemblyProduct( "Cyber_Cube" )]
+[assembly: AssemblyTitle( "CyberCube" )]
+[assembly: AssemblyProduct( "CyberCube" )]
 [assembly: AssemblyDescription( "" )]
 [assembly: AssemblyCompany( "" )]
 [assembly: AssemblyCopyright( "Copyright ©  2015" )]

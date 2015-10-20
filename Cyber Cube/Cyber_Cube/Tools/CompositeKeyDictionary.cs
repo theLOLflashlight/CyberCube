@@ -3,7 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube.Tools
+namespace CyberCube.Tools
 {
     [Serializable]
     public class CompositeKeyDictionary<K1, K2, V> : Dictionary<Tuple<K1, K2>, V>

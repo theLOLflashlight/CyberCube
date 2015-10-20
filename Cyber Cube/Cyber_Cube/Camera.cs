@@ -4,7 +4,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube
+namespace CyberCube
 {
     public class Camera : GameComponent
     {

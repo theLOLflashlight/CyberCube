@@ -1,4 +1,4 @@
-﻿using Cyber_Cube.IO;
+﻿using CyberCube.IO;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -7,7 +7,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace Cyber_Cube
+namespace CyberCube
 {
     public class Player : DrawableCubeGameComponent
     {
@@ -55,7 +55,6 @@ namespace Cyber_Cube
         public override void Initialize()
         {
             base.Initialize();
-			mSpriteBatch = new SpriteBatch(GraphicsDevice);
 
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,

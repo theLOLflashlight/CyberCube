@@ -7,7 +7,7 @@ using System.Linq;
 using System.Text;
 using System.Threading;
 
-namespace Cyber_Cube.IO
+namespace CyberCube.IO
 {
     public partial class TextBox : IODrawableGameComponent
     {

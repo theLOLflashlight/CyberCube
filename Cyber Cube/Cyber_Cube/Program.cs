@@ -1,6 +1,6 @@
 using System;
 
-namespace Cyber_Cube
+namespace CyberCube
 {
 #if WINDOWS || XBOX
     static class Program

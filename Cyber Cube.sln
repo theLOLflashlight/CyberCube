@@ -3,9 +3,9 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 # Visual Studio 14
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyber_Cube", "Cyber Cube\Cyber_Cube\Cyber_Cube.csproj", "{167B0FD5-FD2F-444E-BBB9-2723201AE65B}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCube Windows", "Cyber Cube\Cyber_Cube\CyberCube Windows.csproj", "{167B0FD5-FD2F-444E-BBB9-2723201AE65B}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Cyber_CubeContent", "Cyber Cube\Cyber_CubeContent\Cyber_CubeContent.contentproj", "{FB88EB67-FC26-4548-9607-B575B694AE10}"
+Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCubeContent", "Cyber Cube\Cyber_CubeContent\CyberCubeContent.contentproj", "{FB88EB67-FC26-4548-9607-B575B694AE10}"
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution

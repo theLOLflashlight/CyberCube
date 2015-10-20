@@ -6,7 +6,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 
-namespace Cyber_Cube
+namespace CyberCube
 {
     /// <summary>
     /// Represents an entire level. Contains the 6 faces of the cube.
