@@ -10,6 +10,9 @@ namespace CyberCube {
 	public class Enemy : Actor {
 
 		private Texture2D pixel;
+        private Model model3D;
+        private float aspectRatio;
+
 		private VertexPositionColorTexture[] visionVertices;
 		private int tickCounter;
         private Vector2 facingDirection;
@@ -23,6 +26,9 @@ namespace CyberCube {
 
 		public override void Initialize() {
 			base.Initialize();
+
+            model3D = Game.Content.Load<Model>("Models\\enemyAlpha3D");
+            aspectRatio = GraphicsDevice.Viewport.AspectRatio;
 
 			pixel = new Texture2D( GraphicsDevice, 3, 3 );
 			pixel.SetData( new[] { Color.White, Color.White, Color.White,

@@ -128,6 +128,9 @@ namespace CyberCube
 
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
+            Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
+            Input.AddPressedBinding( Action.PauseGame, Keys.P);
+
 
             Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
             Input.AddBinding( Action.MoveRight, i => i.GamePad.ThumbSticks.Left.X );
@@ -254,7 +257,7 @@ namespace CyberCube
                 if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                     Console.Close();
 
-                if ( Input.Keyboard_WasKeyReleased( Keys.P ))
+                if ( Input.GetAction( Action.PauseGame ))
                 {
                     thePauseMenu.EnterPauseMenu();
                     theMenu.CurrentMenuState = GameState.PauseGame;
