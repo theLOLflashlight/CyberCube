@@ -60,6 +60,7 @@
     <Compile Include="CubeGameComponents.cs" />
     <Compile Include="CubeRotation.cs" />
     <Compile Include="Enemy.cs" />
+    <Compile Include="GameHud.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
     <Compile Include="IO\IInputProvider.cs" />
@@ -67,6 +68,7 @@
     <Compile Include="IO\IOGameComponents.cs" />
     <Compile Include="IO\TextBox.cs" />
     <Compile Include="IO\TextBoxUpdate.cs" />
+    <Compile Include="Line.cs" />
     <Compile Include="MenuFiles\Menu.cs" />
     <Compile Include="MenuFiles\MenuEnum.cs" />
     <Compile Include="Player.cs" />

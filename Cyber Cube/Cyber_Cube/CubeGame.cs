@@ -52,17 +52,22 @@ namespace CyberCube
 
         private Cube mCube;
         public readonly GameConsole Console;
+        public readonly GameHud Hud;
 
-        private Menu theMenu;
+        private Menu mMenu;
         private string version;
 
         public CubeGame()
         {
             mInput = new InputState< Action >();
+
+            SetUpBinds();
+
             mGraphicsDeviceManager = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
 
             Console = new GameConsole( this, this );
+            Hud = new GameHud( this );
             Camera = new Camera( this );
             mCube = new Cube( this );
             Player = new Player( mCube, Vector3.UnitZ, Direction.North );
@@ -72,6 +77,7 @@ namespace CyberCube
             Console.Close();
 
             Components.Add( Console );
+            Components.Add( Hud );
             Components.Add( Player );
 			Components.Add( Enemy );
             Components.Add( mCube );
@@ -82,19 +88,8 @@ namespace CyberCube
             version = "v0.1 alpha";
         }
 
-        /// <summary>
-        /// Allows the game to perform any initialization it needs to before starting to run.
-        /// This is where it can query for any required services and load any non-graphic
-        /// related content. Calling base.Initialize will enumerate through any components
-        /// and initialize them as well.
-        /// </summary>
-        protected override void Initialize() {
-			base.Initialize();
-            IsMouseVisible = true;
-            BackgroundColor = Color.CornflowerBlue;
-            mSpriteBatch = new SpriteBatch( GraphicsDevice );
-
-
+        private void SetUpBinds()
+        {
             Input.AddBinding( Action.MoveLeft, Keys.Left );
             Input.AddBinding( Action.MoveRight, Keys.Right );
             Input.AddBinding( Action.MoveUp, Keys.Up );
@@ -131,8 +126,20 @@ namespace CyberCube
             Input.AddBinding( Action.MoveRight, i => i.GamePad.ThumbSticks.Left.X );
             Input.AddBinding( Action.MoveUp, i => i.GamePad.ThumbSticks.Left.Y );
             Input.AddBinding( Action.MoveDown, i => -i.GamePad.ThumbSticks.Left.Y );
+        }
 
-            base.Initialize();
+        /// <summary>
+        /// Allows the game to perform any initialization it needs to before starting to run.
+        /// This is where it can query for any required services and load any non-graphic
+        /// related content. Calling base.Initialize will enumerate through any components
+        /// and initialize them as well.
+        /// </summary>
+        protected override void Initialize()
+        {
+			base.Initialize();
+            IsMouseVisible = true;
+            BackgroundColor = Color.CornflowerBlue;
+            mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             StorageManager.Instance.Initialize();
         }
@@ -146,7 +153,7 @@ namespace CyberCube
             mFont = Content.Load<SpriteFont>( "MessageFont" );
 
             // TODO: use this.Content to load your game content here
-            theMenu = new Menu(this, version);
+            mMenu = new Menu(this, version);
         }
 
         /// <summary>
@@ -165,11 +172,13 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
-            {
-                theMenu.Update();
+            Input.Refresh();
 
-                switch(theMenu.CurrentMenuState)
+            if (mMenu.CurrentMenuState != MenuState.PlayingGame)
+            {
+                mMenu.Update();
+
+                switch(mMenu.CurrentMenuState)
                 {
                     case MenuState.LoadGame:
                         break;
@@ -184,7 +193,6 @@ namespace CyberCube
             }
             else
             {
-                Input.Refresh();
 
                 // Allows the game to exit
                 if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
@@ -243,44 +251,34 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
+            if (mMenu.CurrentMenuState != MenuState.PlayingGame)
             {
                 mSpriteBatch.Begin();
                 GraphicsDevice.Clear(Color.White);
-                theMenu.Draw(mSpriteBatch);
+                mMenu.Draw(mSpriteBatch);
                 mSpriteBatch.End();
             }
             else
             {
                 GraphicsDevice.Clear( BackgroundColor );
 
-                // TODO: Add your drawing code here
-
                 base.Draw( gameTime );
 
-                mSpriteBatch.Begin();
+                /*mSpriteBatch.Begin();
 
                 string output = mCube.CurrentFace.Name;
                 var pos = mFont.MeasureString( output );
 
                 mSpriteBatch.DrawString( mFont,
                                          output,
-                                         new Vector2( Window.ClientBounds.Width - pos.X, pos.Y ),
+                                         new Vector2( GraphicsDevice.Viewport.Width - pos.X, pos.Y ),
                                          Color.White,
                                          mCube.UpDir.ToRadians(),
                                          mFont.MeasureString( output ) / 2,
                                          1,
                                          SpriteEffects.None,
                                          0 );
-
-                mSpriteBatch.DrawString( mFont, Camera.Position.ToString(), Vector2.Zero, Color.White );
-                mSpriteBatch.DrawString( mFont, Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
-
-
-                mSpriteBatch.DrawString( mFont, "X: " + Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
-                mSpriteBatch.DrawString( mFont, "Y: " + Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
-                mSpriteBatch.DrawString( mFont, "Z: " + Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
-                mSpriteBatch.End();
+                mSpriteBatch.End();*/
             }
         }
 

@@ -45,6 +45,11 @@ namespace CyberCube
 
             private Texture2D pixel;
 
+            public List< Solid > Solids
+            {
+                get; private set;
+            }
+
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube.Game )
             {
@@ -54,6 +59,8 @@ namespace CyberCube
                 UpVec = Vector3.Normalize( up );
                 Rotation = orientation.ToRadians();
                 BackgroundColor = Color.Transparent;
+
+                Solids = new List<Solid>();
 
                 Vector3[] face = new Vector3[ 6 ];
                 // top left
@@ -112,9 +119,19 @@ namespace CyberCube
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
-                mSolids.Add( new Solid( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
-                mSolids.Add( new Solid( new Rectangle( WIDTH / 10, 2 * HEIGHT / 3, WIDTH / 3, 10 ) ) );
-                mSolids.Add( new Solid( new Rectangle( WIDTH - 15, 15, 10, HEIGHT / 3 ) ) );
+                Solids.Clear();
+                Solids.Add( new RecSolid( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
+                Solids.Add( new RecSolid( new Rectangle( 10, 70, 30, 10 ) ) );
+                Solids.Add( new RecSolid( new Rectangle( WIDTH - 15, 15, 10, 30 ) ) );
+
+                Solids.Add( new OneWayLine( new Line2( 10, 20, 40, 20 ) ) );
+                Solids.Add( new OneWayLine( new Line2( 10, 40, 40, 40 ) ) );
+
+                Solids.Add( new OneWayLine( new Line2( 70, 50, 70, 20 ) ) );
+
+                Solids.Add( new OneWayLine( new Line2( 38, 91, 38, 79 ) ) );
+                Solids.Add( new OneWayLine( new Line2( 24, 91, 24, 79 ) ) );
+                Solids.Add( new OneWayLine( new Line2( 10, 91, 10, 79 ) ) );
             }
 
             protected override void LoadContent()
@@ -124,34 +141,9 @@ namespace CyberCube
                 mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
             }
 
-            private List< Solid > mSolids = new List<Solid>();
-
             public override void Update( GameTime gameTime )
             {
                 base.Update( gameTime );
-
-                foreach ( Solid solid in mSolids )
-                    solid.Color = Color.Black;
-
-                if ( Game.Player.CubeFace == this )
-                {
-					Vector2 playerVec2d = Game.Player.ComputeFacePosition();
-					Vector2 enemyVec2d = Game.Enemy.ComputeFacePosition();
-
-					foreach ( Solid solid in mSolids ) {
-						if (solid.Rectangle.Contains( playerVec2d ))
-                        {
-                            solid.Color = Color.White;
-							Game.Player.Collide( solid.Rectangle, playerVec2d );
-                        }
-
-						if (solid.Rectangle.Contains( enemyVec2d ))
-						{
-							solid.Color = Color.White;
-							Game.Enemy.Collide( solid.Rectangle, enemyVec2d );
-						}
-					}
-                }
             }
 
             public override void Draw( GameTime gameTime )
@@ -169,8 +161,9 @@ namespace CyberCube
                                         SpriteEffects.None,
                                         0 );
 
-                foreach ( Solid solid in mSolids )
-                    mSpriteBatch.Draw( pixel, solid.Rectangle, solid.Color );
+                foreach ( Solid solid in Solids )
+                    solid.Draw( mSpriteBatch, pixel );
+                    //mSpriteBatch.Draw( pixel, solid.Rectangle, solid.Color );
 
                 //Vector2 vec2d = Game.Player.ComputeFacePosition();
                 //vec2d = vec2d.Rounded();

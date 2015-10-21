@@ -120,7 +120,7 @@ namespace CyberCube
                                new Vector2(
                                    screenLocation.X - 1,
                                    screenLocation.Y - 1 ),
-                               Color.Black );
+                               FreeFall ? Color.Black : Color.White );
 
             mSpriteBatch.End();
         }

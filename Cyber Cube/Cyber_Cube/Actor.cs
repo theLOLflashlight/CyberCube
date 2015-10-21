@@ -20,6 +20,11 @@ namespace CyberCube
             }
         }
 
+        public Vector3 OldWorldPosition
+        {
+            get; private set;
+        }
+
         protected Vector2 mVelocity2d = Vector2.Zero;
 
         public Vector2 Velocity2d
@@ -77,35 +82,57 @@ namespace CyberCube
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
         }
 
+        private void ApplyGroundNormal( Vector2 groundNormal )
+        {
+            if ( groundNormal.X > 0 )
+                mVelocity2d.X = Math.Max( 0, mVelocity2d.X );
+
+            else if ( groundNormal.X < 0 )
+                mVelocity2d.X = Math.Min( 0, mVelocity2d.X );
+
+            if ( groundNormal.Y > 0 )
+                mVelocity2d.Y = Math.Max( 0, mVelocity2d.Y );
+
+            else if ( groundNormal.Y < 0 )
+                mVelocity2d.Y = Math.Min( 0, mVelocity2d.Y );
+        }
+
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
-
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
+            CollisionPass();
+            ApplyGroundNormal( mGroundNormal );
 
-            if ( mGroundNormal.X > 0 )
-                mVelocity2d.X = Math.Max( 0, mVelocity2d.X );
-
-            else if ( mGroundNormal.X < 0 )
-                mVelocity2d.X = Math.Min( 0, mVelocity2d.X );
-
-            if ( mGroundNormal.Y > 0 )
-                mVelocity2d.Y = Math.Max( 0, mVelocity2d.Y );
-
-            else if ( mGroundNormal.Y < 0 )
-                mVelocity2d.Y = Math.Min( 0, mVelocity2d.Y );
-
-
+            OldWorldPosition = WorldPosition;
             mWorldPosition += TransformMovementTo3d( mVelocity2d ) * timeDiff;
+
+            mWorldPosition.X = (float) Math.Round( mWorldPosition.X, 7 );
+            mWorldPosition.Y = (float) Math.Round( mWorldPosition.Y, 7 );
+            mWorldPosition.Z = (float) Math.Round( mWorldPosition.Z, 7 );
 
             foreach ( var dir in ClampWorldPosition() )
                 ApplyRotation( dir );
 
-
             if ( !mCollided )
                 mGroundNormal = Vector2.Zero;
             mCollided = false;
+        }
+
+        private void CollisionPass()
+        {
+            Vector2 facePos = ComputeFacePosition();
+            Vector2 oldFacePos = ComputeOldFacePosition();
+
+			foreach ( Solid solid in CubeFace.Solids )
+            {
+                Vector2 groundNormal = Vector2.Zero;
+                Vector2? pos = solid.Collide( facePos, oldFacePos, ref groundNormal );
+
+                if ( pos != null )
+                    this.Collide( pos.Value, groundNormal );
+			}
         }
 
         protected virtual void ApplyRotation( CompassDirection dir )
@@ -126,6 +153,14 @@ namespace CyberCube
                    + new Vector2( adjustingFactor );
         }
 
+        public Vector2 ComputeOldFacePosition()
+        {
+            float adjustingFactor = Cube.Face.SIZE / 2;
+            return Transform3dTo2d( OldWorldPosition )
+                   * adjustingFactor
+                   + new Vector2( adjustingFactor );
+        }
+
         public void SetFacePosition( Vector2 vec2d )
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
@@ -138,24 +173,14 @@ namespace CyberCube
                 ApplyRotation( dir );
         }
 
-        public void Collide( Rectangle rec )
+        public void Collide( Vector2 newPos, Vector2 normal )
         {
-            Collide( rec, ComputeFacePosition() );
-        }
-
-        public void Collide( Rectangle rec, Vector2 facePos )
-        {
-            Vector2 perimiterPos = facePos.NearestPointOn( rec );
-
-            Vector2 groundNormal = facePos - perimiterPos;
-            if ( groundNormal != Vector2.Zero )
+            if ( normal != Vector2.Zero )
             {
-                mGroundNormal = Vector2.Normalize( groundNormal );
-                mGroundNormal = mGroundNormal.Rotate( UpDir.ToRadians() ).Rounded();
+                mGroundNormal = normal.Rotate( -UpDir.ToRadians() ).Rounded();
+                SetFacePosition( newPos );
                 mCollided = true;
             }
-
-            SetFacePosition( perimiterPos );
         }
 
         public Vector3 Transform2dTo3d( Vector2 vec2d )
