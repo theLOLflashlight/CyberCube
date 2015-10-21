@@ -14,6 +14,7 @@ namespace CyberCube
     {
         private Texture2D pixel;
         private Model model2D;
+		private float aspectRatio;
 
         public Player( Cube cube, Vector3 worldPos, Direction upDir  )
             : base( cube.Game, cube, worldPos, upDir )
@@ -32,6 +33,7 @@ namespace CyberCube
                                    Color.White, Color.White, Color.White } );
 
             model2D = Game.Content.Load<Model>("Models\\playerAlpha2D");
+			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
         protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
@@ -104,7 +106,6 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            base.Draw( gameTime );
 
             // Find screen equivalent of 3D location in world
             Vector3 screenLocation = GraphicsDevice.Viewport.Project(
@@ -113,16 +114,45 @@ namespace CyberCube
                 Cube.Effect.View,
                 Cube.Effect.World );
 
-            // Draw our pixel texture there
-            mSpriteBatch.Begin();
-            
-            mSpriteBatch.Draw( pixel,
-                               new Vector2(
-                                   screenLocation.X - 1,
-                                   screenLocation.Y - 1 ),
-                               Color.Black );
+			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
+			//Matrix[] transforms = (new Matrix[model2D.Bones.Count]);
+			//model2D.CopyAbsoluteBoneTransformsTo( transforms );
 
-            mSpriteBatch.End();
+			//// Draw the model. A model can have multiple meshes, so loop.
+			//foreach (ModelMesh mesh in model2D.Meshes)
+			//{
+			//	// This is where the mesh orientation is set, as well 
+			//	// as our camera and projection.
+			//	foreach (BasicEffect effect in mesh.Effects)
+			//	{
+			//		effect.EnableDefaultLighting();
+			//		effect.World = transforms[mesh.ParentBone.Index] *
+			//			Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, 0 ) *
+			//			Matrix.CreateScale( 0.001f );
+			//		if (Cube.CurrentFace.Normal == Vector3.UnitZ)
+			//		{
+			//			effect.World *= Matrix.CreateRotationY( MathHelper.PiOver4 );
+			//		} 
+			//		effect.View = Matrix.CreateLookAt( Game.Camera.Position,
+			//			Vector3.Zero, Game.Camera.UpVector );
+			//		effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+			//			MathHelper.ToRadians( 45.0f ), aspectRatio,
+			//			1.0f, 10000.0f );
+			//	}
+			//	// Draw the mesh, using the effects set above.
+			//	mesh.Draw();
+			//}
+
+			// Draw our pixel texture there
+			mSpriteBatch.Begin();
+			mSpriteBatch.Draw( pixel,
+							   new Vector2(
+								   screenLocation.X - 1,
+								   screenLocation.Y - 1 ),
+							   Color.Black );
+			mSpriteBatch.End();
+
+			base.Draw( gameTime );
         }
 
     }
