@@ -5,11 +5,13 @@ using System.Text;
 
 namespace CyberCube.MenuFiles
 {
-    public enum MenuState
+    public enum GameState
     {
         MainMenu,
         PlayingGame,
+        PauseGame,
         LoadGame,
+        SaveGame,
         LevelEditor,
         Controls,
         Credits,

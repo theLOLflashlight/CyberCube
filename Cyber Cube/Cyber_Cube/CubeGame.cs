@@ -56,6 +56,8 @@ namespace CyberCube
         private Menu theMenu;
         private string version;
 
+        private PauseMenu thePauseMenu;
+
         public CubeGame()
         {
             mInput = new InputState< Action >();
@@ -147,6 +149,7 @@ namespace CyberCube
 
             // TODO: use this.Content to load your game content here
             theMenu = new Menu(this, version);
+            thePauseMenu = new PauseMenu(this);
         }
 
         /// <summary>
@@ -165,24 +168,40 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Update( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
+            if (theMenu.CurrentMenuState == GameState.MainMenu)
             {
                 theMenu.Update();
 
                 switch(theMenu.CurrentMenuState)
                 {
-                    case MenuState.LoadGame:
+                    case GameState.LoadGame:
                         break;
-                    case MenuState.LevelEditor:
+                    case GameState.LevelEditor:
                         break;
-                    case MenuState.ExitGame:
+                    case GameState.ExitGame:
                         this.Exit();
                         break;
                     default:
                         break;
                 }
             }
-            else
+            else if (theMenu.CurrentMenuState == GameState.PauseGame)
+            {
+                thePauseMenu.Update();
+
+                switch(thePauseMenu.Status)
+                {
+                    case 1:
+                        theMenu.CurrentMenuState = GameState.PlayingGame;
+                        break;
+                    case 4:
+                        theMenu.CurrentMenuState = GameState.MainMenu;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (theMenu.CurrentMenuState == GameState.PlayingGame)
             {
                 Input.Refresh();
 
@@ -234,6 +253,12 @@ namespace CyberCube
 
                 if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                     Console.Close();
+
+                if ( Input.Keyboard_WasKeyReleased( Keys.P ))
+                {
+                    thePauseMenu.EnterPauseMenu();
+                    theMenu.CurrentMenuState = GameState.PauseGame;
+                }
             }
         }
 
@@ -243,14 +268,20 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (theMenu.CurrentMenuState != MenuState.PlayingGame)
+            if (theMenu.CurrentMenuState == GameState.MainMenu)
             {
                 mSpriteBatch.Begin();
                 GraphicsDevice.Clear(Color.White);
                 theMenu.Draw(mSpriteBatch);
                 mSpriteBatch.End();
             }
-            else
+            else if (theMenu.CurrentMenuState == GameState.PauseGame)
+            {
+                mSpriteBatch.Begin();
+                thePauseMenu.Draw(mSpriteBatch);
+                mSpriteBatch.End();
+            }
+            else if (theMenu.CurrentMenuState == GameState.PlayingGame)
             {
                 GraphicsDevice.Clear( BackgroundColor );
 
