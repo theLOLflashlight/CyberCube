@@ -25,7 +25,7 @@ namespace CyberCube.MenuFiles
             Exit,
         }
 
-        public MenuState CurrentMenuState { get; set; }
+        public GameState CurrentMenuState { get; set; }
         private Highlight currentHighlight;
 
         private float winWidth;
@@ -62,10 +62,10 @@ namespace CyberCube.MenuFiles
             vString = game.Content.Load<SpriteFont>("ConsoleFont");
             verString = s;
 
-            winWidth = game.Window.ClientBounds.Width;
-            winHeight = game.Window.ClientBounds.Height;
+            winWidth = game.GraphicsDevice.Viewport.Width;
+            winHeight = game.GraphicsDevice.Viewport.Height;
 
-            CurrentMenuState = MenuState.MainMenu;
+            CurrentMenuState = GameState.MainMenu;
             currentHighlight = Highlight.NewGame;
 
             selected = new Color(255, 255, 255, 255);
@@ -147,7 +147,7 @@ namespace CyberCube.MenuFiles
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
-                        CurrentMenuState = MenuState.PlayingGame;
+                        CurrentMenuState = GameState.PlayingGame;
                         break;
                     case Highlight.LoadGame:
 
@@ -159,7 +159,7 @@ namespace CyberCube.MenuFiles
 
                         break;
                     case Highlight.Exit:
-                        CurrentMenuState = MenuState.ExitGame;
+                        CurrentMenuState = GameState.ExitGame;
                         break;
                     default:
                         break;

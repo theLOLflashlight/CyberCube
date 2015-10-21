@@ -57,6 +57,8 @@ namespace CyberCube
         private Menu mMenu;
         private string version;
 
+        private PauseMenu thePauseMenu;
+
         public CubeGame()
         {
             mInput = new InputState< Action >();
@@ -121,6 +123,9 @@ namespace CyberCube
 
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
+            Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
+            Input.AddPressedBinding( Action.PauseGame, Keys.P);
+
 
             Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
             Input.AddBinding( Action.MoveRight, i => i.GamePad.ThumbSticks.Left.X );
@@ -136,7 +141,7 @@ namespace CyberCube
         /// </summary>
         protected override void Initialize()
         {
-			base.Initialize();
+            base.Initialize();
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
@@ -154,6 +159,7 @@ namespace CyberCube
 
             // TODO: use this.Content to load your game content here
             mMenu = new Menu(this, version);
+            thePauseMenu = new PauseMenu(this);
         }
 
         /// <summary>
@@ -180,18 +186,34 @@ namespace CyberCube
 
                 switch(mMenu.CurrentMenuState)
                 {
-                    case MenuState.LoadGame:
+                    case GameState.LoadGame:
                         break;
-                    case MenuState.LevelEditor:
+                    case GameState.LevelEditor:
                         break;
-                    case MenuState.ExitGame:
+                    case GameState.ExitGame:
                         this.Exit();
                         break;
                     default:
                         break;
                 }
             }
-            else
+            else if (mMenu.CurrentMenuState == GameState.PauseGame)
+            {
+                thePauseMenu.Update();
+
+                switch(thePauseMenu.Status)
+                {
+                    case 1:
+                        mMenu.CurrentMenuState = GameState.PlayingGame;
+                        break;
+                    case 4:
+                        mMenu.CurrentMenuState = GameState.MainMenu;
+                        break;
+                    default:
+                        break;
+                }
+            }
+            else if (mMenu.CurrentMenuState == GameState.PlayingGame)
             {
 
                 // Allows the game to exit
@@ -242,6 +264,12 @@ namespace CyberCube
 
                 if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                     Console.Close();
+
+                if ( Input.GetAction( Action.PauseGame ))
+                {
+                    thePauseMenu.EnterPauseMenu();
+                    mMenu.CurrentMenuState = GameState.PauseGame;
+                }
             }
         }
 
@@ -258,7 +286,13 @@ namespace CyberCube
                 mMenu.Draw(mSpriteBatch);
                 mSpriteBatch.End();
             }
-            else
+            else if (mMenu.CurrentMenuState == GameState.PauseGame)
+            {
+                mSpriteBatch.Begin();
+                thePauseMenu.Draw(mSpriteBatch);
+                mSpriteBatch.End();
+            }
+            else if (mMenu.CurrentMenuState == GameState.PlayingGame)
             {
                 GraphicsDevice.Clear( BackgroundColor );
 

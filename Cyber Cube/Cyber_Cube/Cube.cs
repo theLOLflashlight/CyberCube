@@ -260,5 +260,20 @@ namespace CyberCube
             throw new Tools.WtfException();
         }
 
+		public Vector2 ComputeFacePosition( Vector3 worldPosition, Face cubeFace )
+		{
+			float adjustingFactor = Cube.Face.SIZE / 2;
+			return Transform3dTo2d( worldPosition, cubeFace )
+				   * adjustingFactor
+				   + new Vector2( adjustingFactor );
+		}
+
+		private Vector2 Transform3dTo2d( Vector3 vec3d, Face cubeFace )
+		{
+			vec3d = vec3d.Rotate( cubeFace.Normal, -cubeFace.Rotation )
+						 .Transform( Utils.RotateOntoQ( cubeFace.Normal, Vector3.UnitZ ) );
+			return new Vector2( vec3d.X, -vec3d.Y );
+		}
+
     }
 }

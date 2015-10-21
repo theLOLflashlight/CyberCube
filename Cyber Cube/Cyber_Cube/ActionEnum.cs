@@ -9,6 +9,6 @@ namespace CyberCube
     {
         MoveLeft, MoveRight, MoveUp, MoveDown, Jump,
         RotateLeft, RotateRight, RotateUp, RotateDown, RotateClockwise, RotateAntiClockwise,
-        ToggleCubeMode
+        ToggleCubeMode, PauseGame
     }
 }
