@@ -70,6 +70,7 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
+    <Compile Include="GUI.cs" />
     <Compile Include="IO\IInputProvider.cs" />
     <Compile Include="IO\InputState.cs" />
     <Compile Include="IO\IOGameComponents.cs" />

@@ -13,7 +13,7 @@ namespace CyberCube
     public class Player : Actor
     {
         private Texture2D pixel;
-        private Model model2D;
+        private Model model3D;
 		private float aspectRatio;
 
         public Player( Cube cube, Vector3 worldPos, Direction upDir  )
@@ -32,7 +32,7 @@ namespace CyberCube
                                    Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White } );
 
-            model2D = Game.Content.Load<Model>("Models\\playerAlpha2D");
+            model3D = Game.Content.Load<Model>("Models\\playerAlpha3D");
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
@@ -114,34 +114,37 @@ namespace CyberCube
                 Cube.Effect.View,
                 Cube.Effect.World );
 
+            /*
 			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
-			//Matrix[] transforms = (new Matrix[model2D.Bones.Count]);
-			//model2D.CopyAbsoluteBoneTransformsTo( transforms );
+			Matrix[] transforms = (new Matrix[model3D.Bones.Count]);
+			model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
-			//// Draw the model. A model can have multiple meshes, so loop.
-			//foreach (ModelMesh mesh in model2D.Meshes)
-			//{
-			//	// This is where the mesh orientation is set, as well 
-			//	// as our camera and projection.
-			//	foreach (BasicEffect effect in mesh.Effects)
-			//	{
-			//		effect.EnableDefaultLighting();
-			//		effect.World = transforms[mesh.ParentBone.Index] *
-			//			Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, 0 ) *
-			//			Matrix.CreateScale( 0.001f );
-			//		if (Cube.CurrentFace.Normal == Vector3.UnitZ)
-			//		{
-			//			effect.World *= Matrix.CreateRotationY( MathHelper.PiOver4 );
-			//		} 
-			//		effect.View = Matrix.CreateLookAt( Game.Camera.Position,
-			//			Vector3.Zero, Game.Camera.UpVector );
-			//		effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-			//			MathHelper.ToRadians( 45.0f ), aspectRatio,
-			//			1.0f, 10000.0f );
-			//	}
-			//	// Draw the mesh, using the effects set above.
-			//	mesh.Draw();
-			//}
+			// Draw the model. A model can have multiple meshes, so loop.
+			foreach (ModelMesh mesh in model3D.Meshes)
+			{
+				// This is where the mesh orientation is set, as well 
+				// as our camera and projection.
+				foreach (BasicEffect effect in mesh.Effects)
+				{
+					effect.EnableDefaultLighting();
+					effect.World = transforms[mesh.ParentBone.Index] *
+						Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, 0 ) *
+						Matrix.CreateScale( 0.0008f );
+					if (Cube.CurrentFace.Normal == Vector3.UnitZ)
+					{
+						effect.World *= Matrix.CreateRotationY( MathHelper.PiOver4 );
+					} 
+					effect.View = Matrix.CreateLookAt( Game.Camera.Position,
+						Vector3.Zero, Game.Camera.UpVector );
+					effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+						MathHelper.ToRadians( 45.0f ), aspectRatio,
+						1.0f, 10000.0f );
+				}
+				// Draw the mesh, using the effects set above.
+				mesh.Draw();
+			}
+
+            */
 
 			// Draw our pixel texture there
 			mSpriteBatch.Begin();

@@ -83,20 +83,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Models\playerAlpha2D.fbx">
-      <Name>playerAlpha2D</Name>
+    <Compile Include="Models\enemyAlpha3D.fbx">
+      <Name>enemyAlpha3D</Name>
+      <Importer>FbxImporter</Importer>
+      <Processor>ModelProcessor</Processor>
+    </Compile>
+    <Compile Include="Models\playerAlpha3D.fbx">
+      <Name>playerAlpha3D</Name>
       <Importer>FbxImporter</Importer>
       <Processor>ModelProcessor</Processor>
     </Compile>
   </ItemGroup>
-  <ItemGroup>
-    <Compile Include="Models\enemyAlpha2D.fbx">
-      <Name>enemyAlpha2D</Name>
-      <Importer>FbxImporter</Importer>
-      <Processor>ModelProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup />
   <ItemGroup>
     <Compile Include="PauseItems\pauseQuitMenu.png">
       <Name>pauseQuitMenu</Name>
