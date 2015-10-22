@@ -80,6 +80,7 @@
     <Compile Include="MenuFiles\GameEnum.cs" />
     <Compile Include="MenuFiles\Menu.cs" />
     <Compile Include="MenuFiles\PauseMenu.cs" />
+    <Compile Include="Physics\Constants.cs" />
     <Compile Include="Physics\Solid.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />

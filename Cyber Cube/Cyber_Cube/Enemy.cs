@@ -54,10 +54,10 @@ namespace CyberCube {
 		{
 			float timeDiff = (float)gameTime.ElapsedGameTime.TotalSeconds;
 
-			mVelocity2d.Y -= 5f * timeDiff;
+			//mVelocity2d.Y -= 5f * timeDiff;
 			var xScale = FreeFall ? 0f : 8f;
 
-			Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
+			//Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
 
 			if (SeePlayer( Game.Player ))
 			{
@@ -105,7 +105,7 @@ namespace CyberCube {
 				visionVertices[1].Position = WorldPosition + (new Vector3( -0.5f, -0.01f, 0 ));
 				visionVertices[2].Position = WorldPosition + (new Vector3( -0.5f, 0.25f, 0 ));
 			}
-			mVelocity2d.X += xScale * timeDiff;
+			//mVelocity2d.X += xScale * timeDiff;
 
 			tickCounter++;
 			tickCounter %= 480;

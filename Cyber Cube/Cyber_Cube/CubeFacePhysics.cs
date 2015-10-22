@@ -16,39 +16,55 @@ namespace CyberCube
         {
             private World mWorld;
 
-            private readonly List< Solid > mSolids = new List<Solid>();
+            public World World
+            {
+                get {
+                    return mWorld;
+                }
+            }
 
-            public const float UNIT_TO_PIXEL = 10;
-            public const float PIXEL_TO_UNIT = 1 / UNIT_TO_PIXEL;
+            private readonly List< Solid > mSolids = new List<Solid>();
 
             private void SetUpWorld()
             {
-                mWorld = new World( new Vector2( 0, 9.8f ) );
+                mWorld = new World( Vector2.Zero );
+
+                var box = new RecSolid(
+                        Game,
+                        mWorld,
+                        new Rectangle( 360, 0, 100, 100 ),
+                        BodyType.Dynamic, 30 );
+
+                box.Body.UseAdHocGravity = true;
+                box.Body.AdHocGravity = new Vector2( 0, 9.8f );
+
+                mSolids.Add( box );
 
                 mSolids.Add(
                     new RecSolid(
                         Game,
                         mWorld,
-                        new Rectangle( 36, 0, 10, 10 ),
-                        BodyType.Dynamic ) );
+                        new Rectangle( 0, HEIGHT - 100, WIDTH, 100 ) ) );
 
                 mSolids.Add(
                     new RecSolid(
                         Game,
                         mWorld,
-                        new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
+                        new Rectangle( 100, 700, 300, 100 ) ) );
 
                 mSolids.Add(
                     new RecSolid(
                         Game,
                         mWorld,
-                        new Rectangle( 10, 70, 30, 10 ) ) );
+                        new Rectangle( WIDTH - 150, 150, 100, 300 ) ) );
 
-                mSolids.Add(
-                    new RecSolid(
-                        Game,
-                        mWorld,
-                        new Rectangle( WIDTH - 15, 15, 10, 30 ) ) );
+                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 200, 400, 200 ) ) );
+                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 550, 300 ) ) );
+                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 400, 400, 400 ) ) );
+                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 700, 500, 700, 200 ) ) );
+                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 380, 910, 380, 790 ) ) );
+                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 240, 910, 240, 790 ) ) );
+                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 910, 100, 790 ) ) );
             }
 
             private void LoadPhysics()
@@ -60,7 +76,7 @@ namespace CyberCube
             {
                 base.Update( gameTime );
 
-                //mWorld.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
+                mWorld.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
             }
 
             private void DrawBodies( GameTime gameTime )

@@ -3,6 +3,8 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
 
 namespace CyberCube
 {
@@ -13,6 +15,42 @@ namespace CyberCube
 
         protected Vector3 mWorldPosition;
 
+        protected Body Body
+        {
+            get; private set;
+        }
+
+        public Vector2 Velocity
+        {
+            get {
+                return Body.LinearVelocity;
+            }
+            set {
+                Body.LinearVelocity = value;
+            }
+        }
+
+        public float VelocityX
+        {
+            get {
+                return Body.LinearVelocity.X;
+            }
+            set {
+                Body.LinearVelocity = new Vector2( value, VelocityY );
+            }
+        }
+
+        public float VelocityY
+        {
+            get {
+                return Body.LinearVelocity.Y;
+            }
+            set {
+                Body.LinearVelocity = new Vector2( VelocityX, value );
+            }
+        }
+
+
         public Vector3 WorldPosition
         {
             get {
@@ -20,28 +58,10 @@ namespace CyberCube
             }
         }
 
-        public Vector3 OldWorldPosition
-        {
-            get; private set;
-        }
-
-        protected Vector2 mVelocity2d = Vector2.Zero;
-
-        public Vector2 Velocity2d
-        {
-            get {
-                return mVelocity2d;
-            }
-        }
-
-        private bool mCollided = false;
-
-        private Vector2 mGroundNormal;
-
         public bool FreeFall
         {
             get {
-                return mGroundNormal == Vector2.Zero;
+                return true;
             }
         }
 
@@ -62,9 +82,19 @@ namespace CyberCube
             }
         }
 
+        private Direction mUpDir;
+
         public Direction UpDir
         {
-            get; set;
+            get {
+                return mUpDir;
+            }
+            set {
+                mUpDir = value;
+                Body.Rotation = mUpDir.ToRadians();
+                Body.AdHocGravity = Vector2.UnitY.Rotate( -Body.Rotation ).Rounded();
+                Body.Awake = true;
+            }
         }
 
         public Actor( CubeGame game )
@@ -77,62 +107,44 @@ namespace CyberCube
         {
             Cube = cube;
             mWorldPosition = worldPos;
-            UpDir = upDir;
+            mUpDir = upDir;
 
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
         }
 
-        private void ApplyGroundNormal( Vector2 groundNormal )
+        protected virtual Body CreateBody( World world )
         {
-            if ( groundNormal.X > 0 )
-                mVelocity2d.X = Math.Max( 0, mVelocity2d.X );
+            Body body = BodyFactory.CreateCircle(
+                CubeFace.World,
+                3 * Physics.Constants.PIXEL_TO_UNIT,
+                1,
+                ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
 
-            else if ( groundNormal.X < 0 )
-                mVelocity2d.X = Math.Min( 0, mVelocity2d.X );
+            body.BodyType = BodyType.Dynamic;
+            body.Rotation = UpDir.ToRadians();
 
-            if ( groundNormal.Y > 0 )
-                mVelocity2d.Y = Math.Max( 0, mVelocity2d.Y );
+            return body;
+        }
 
-            else if ( groundNormal.Y < 0 )
-                mVelocity2d.Y = Math.Min( 0, mVelocity2d.Y );
+        public override void Initialize()
+        {
+            base.Initialize();
+            Body = CreateBody( CubeFace.World );
+
+            Body.FixedRotation = true;
+            Body.GravityScale = 20f;
+            Body.UseAdHocGravity = true;
+            Body.AdHocGravity = new Vector2( 0, 1 );
         }
 
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
-            float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            //float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            CollisionPass();
-            ApplyGroundNormal( mGroundNormal );
+            //Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation ).Rounded();
 
-            OldWorldPosition = WorldPosition;
-            mWorldPosition += TransformMovementTo3d( mVelocity2d ) * timeDiff;
-
-            mWorldPosition.X = (float) Math.Round( mWorldPosition.X, 7 );
-            mWorldPosition.Y = (float) Math.Round( mWorldPosition.Y, 7 );
-            mWorldPosition.Z = (float) Math.Round( mWorldPosition.Z, 7 );
-
-            foreach ( var dir in ClampWorldPosition() )
-                ApplyRotation( dir );
-
-            if ( !mCollided )
-                mGroundNormal = Vector2.Zero;
-            mCollided = false;
-        }
-
-        private void CollisionPass()
-        {
-            Vector2 facePos = ComputeFacePosition();
-            Vector2 oldFacePos = ComputeOldFacePosition();
-
-			foreach ( Solid2 solid in CubeFace.Solid2s )
-            {
-                Vector2 groundNormal = Vector2.Zero;
-                Vector2? pos = solid.Collide( facePos, oldFacePos, ref groundNormal );
-
-                if ( pos != null )
-                    this.Collide( pos.Value, groundNormal );
-			}
+            SetFacePosition( Body.Position * Physics.Constants.UNIT_TO_PIXEL );
         }
 
         protected virtual void ApplyRotation( CompassDirection dir )
@@ -140,8 +152,18 @@ namespace CyberCube
             Cube.Face nextFace = CubeFace.AdjacentFace( dir );
             var backDir = nextFace.BackwardsDirectionFrom( CubeFace );
 
+            Body body = Body.DeepClone( nextFace.World );
+            CubeFace.World.RemoveBody( Body );
+            Body = body;
+
+            float pastRotation = Body.Rotation;
+
             this.UpDir = Cube.GetNextUpDirection( UpDir, dir, backDir );
             this.CubeFace = nextFace;
+
+            Body.Position = ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT;
+
+            Velocity = Velocity.Rotate( pastRotation - Body.Rotation );
         }
 
 
@@ -149,14 +171,6 @@ namespace CyberCube
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
             return Transform3dTo2d( WorldPosition )
-                   * adjustingFactor
-                   + new Vector2( adjustingFactor );
-        }
-
-        public Vector2 ComputeOldFacePosition()
-        {
-            float adjustingFactor = Cube.Face.SIZE / 2;
-            return Transform3dTo2d( OldWorldPosition )
                    * adjustingFactor
                    + new Vector2( adjustingFactor );
         }
@@ -171,16 +185,6 @@ namespace CyberCube
 
             foreach ( var dir in ClampWorldPosition() )
                 ApplyRotation( dir );
-        }
-
-        public void Collide( Vector2 newPos, Vector2 normal )
-        {
-            if ( normal != Vector2.Zero )
-            {
-                mGroundNormal = normal.Rotate( -UpDir.ToRadians() ).Rounded();
-                SetFacePosition( newPos );
-                mCollided = true;
-            }
         }
 
         public Vector3 Transform2dTo3d( Vector2 vec2d )

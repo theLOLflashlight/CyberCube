@@ -80,7 +80,7 @@ namespace CyberCube
             return new Vector2( r, y );
         }
 
-        public static void FloatApproach( ref float f0, float f1, float step )
+        public static void Lerp( ref float f0, float f1, float step )
         {
             if ( f0 > f1 )
                 f0 -= Math.Min( f0 - f1, step );

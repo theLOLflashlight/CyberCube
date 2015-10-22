@@ -16,7 +16,7 @@ namespace CyberCube
         private Model model3D;
 		private float aspectRatio;
 
-        public Player( Cube cube, Vector3 worldPos, Direction upDir  )
+        public Player( Cube cube, Vector3 worldPos, Direction upDir )
             : base( cube.Game, cube, worldPos, upDir )
         {
             this.Visible = true;
@@ -26,12 +26,14 @@ namespace CyberCube
         protected override void LoadContent()
         {
             base.LoadContent();
-            model3D = Game.Content.Load<Model>("Models\\playerAlpha3D");
+            model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            Body.Mass = 68;
 
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
@@ -50,9 +52,15 @@ namespace CyberCube
                        .Rotate( Normal, angle );
         }
 
-        public void Jump()
+        public void Jump( ref Vector2 velocity )
         {
-            mVelocity2d.Y = FreeFall ? 1.5f : 2f;
+            velocity.Y = FreeFall ? -10f : -20f;
+        }
+
+        public void JumpEnd( ref Vector2 velocity )
+        {
+            if ( FreeFall && velocity.Y < 0 )
+                velocity.Y *= 0.6f;
         }
 
         public override void Update( GameTime gameTime )
@@ -61,42 +69,35 @@ namespace CyberCube
 
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            mVelocity2d.Y -= 5f * timeDiff;
-            var xScale = FreeFall ? 2 : 10;
+            var xScale = (FreeFall ? 20 : 100);
+
+            Vector2 velocity = Velocity.Rotate( Body.Rotation );
 
             if ( !input.HasFocus )
             {
-                //delta2d.X += input.GetAction( Action.MoveRight ).Value;
-                //delta2d.X -= input.GetAction( Action.MoveLeft ).Value;
-                //delta2d.Y += input.GetAction( Action.MoveUp ).Value;
-                //delta2d.Y -= input.GetAction( Action.MoveDown ).Value;
-
                 var actionRight = input.GetAction( Action.MoveRight );
                 var actionLeft = input.GetAction( Action.MoveLeft );
 
                 if ( !actionRight && !actionLeft )
-                    Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
+                    Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
 
-                mVelocity2d.X += actionRight.Value * (xScale + 1) * timeDiff;
-                mVelocity2d.X -= actionLeft.Value * (xScale + 1) * timeDiff;
+                velocity.X += actionRight.Value * (xScale + 1) * timeDiff;
+                velocity.X -= actionLeft.Value * (xScale + 1) * timeDiff;
 
                 if ( input.GetAction( Action.Jump ) )
-                    this.Jump();
+                    this.Jump( ref velocity );
 
-                //if ( delta2d != Vector2.Zero )
-                //{
-                //    var tmp = delta2d;
-                //    delta2d.Normalize();
-                //    delta2d.X *= Math.Abs( tmp.X );
-                //    delta2d.Y *= Math.Abs( tmp.Y );
-                //}
+                if ( input.GetAction( Action.JumpEnd ) )
+                    this.JumpEnd( ref velocity );
             }
             else
             {
-                Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
+                Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
             }
 
-            mVelocity2d.X = MathHelper.Clamp( mVelocity2d.X, -1, +1 );
+            velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
+
+            Velocity = velocity.Rotate( -Body.Rotation );
 
             base.Update( gameTime );
 

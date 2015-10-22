@@ -14,7 +14,7 @@ namespace CyberCube
     {
         public partial class Face : DrawableCubeGameComponent
         {
-            public const int SIZE = 100;
+            public const int SIZE = 1000;
             public const int WIDTH = SIZE;
             public const int HEIGHT = SIZE;
 
@@ -47,7 +47,7 @@ namespace CyberCube
                 get; private set;
             }
 
-            public Texture2D Texture
+            public RenderTarget2D Texture
             {
                 get; private set;
             }
@@ -80,7 +80,7 @@ namespace CyberCube
                 Solid2s = new List<Solid2>();
 
                 SetUpVertices();
-                //SetUpWorld();
+                SetUpWorld();
 
                 Game.Components.ComponentAdded += ( s, e ) => {
                     if ( ReferenceEquals( this, e.GameComponent ) )
@@ -148,7 +148,7 @@ namespace CyberCube
             {
                 base.Initialize();
 
-                Texture = new Texture2D( GraphicsDevice, WIDTH, HEIGHT );
+                Texture = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT );
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
@@ -174,7 +174,7 @@ namespace CyberCube
                 base.LoadContent();
 
                 mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
-                //LoadPhysics();
+                LoadPhysics();
             }
 
             public override void Draw( GameTime gameTime )
@@ -186,12 +186,12 @@ namespace CyberCube
                                         Color.Black,
                                         0, // Rotation is handled via texture orientation.
                                         mFont.MeasureString( Name ) / 2,
-                                        1,
+                                        10,
                                         SpriteEffects.None,
                                         0 );
 
-                foreach ( Solid2 solid in Solid2s )
-                    solid.Draw( mSpriteBatch, pixel );
+                //foreach ( Solid2 solid in Solid2s )
+                //    solid.Draw( mSpriteBatch, pixel );
 
                 //Vector2 vec2d = Game.Player.ComputeFacePosition();
                 //vec2d = vec2d.Rounded();
@@ -201,18 +201,18 @@ namespace CyberCube
 
                 mSpriteBatch.End();
 
-                //DrawBodies( gameTime );
+                DrawBodies( gameTime );
             }
 
             public void Render2D( GameTime gameTime )
             {
                 // Huge memory performance improvement gained by disposing of render target.
-                using ( var renderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT ) )
-                {
+                //using ( var renderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT ) )
+                //{
                     var tmp = GraphicsDevice.GetRenderTargets();
 
                     // Set the current graphics device to the render target and clear it
-                    GraphicsDevice.SetRenderTarget( renderTarget );
+                    GraphicsDevice.SetRenderTarget( Texture );
                     GraphicsDevice.Clear( BackgroundColor );
 
                     this.Draw( gameTime );
@@ -221,10 +221,10 @@ namespace CyberCube
                     GraphicsDevice.SetRenderTargets( tmp );
                     GraphicsDevice.Clear( Game.BackgroundColor );
 
-                    int[] data = new int[ WIDTH * HEIGHT ];
-                    renderTarget.GetData( data );
-                    Texture.SetData( data );
-                }
+                    //int[] data = new int[ WIDTH * HEIGHT ];
+                    //renderTarget.GetData( data );
+                    //Texture.SetData( data );
+                //}
             }
 
             public void Render3D( Effect effect )

@@ -43,7 +43,7 @@ namespace CyberCube
 
         public float CameraDistance { get; private set; }
 
-        public enum CubeMode { Edit, Play }
+        public enum CubeMode { Play, Edit }
 
         public CubeMode Mode { get; set; }
 
@@ -197,6 +197,10 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
+            //var Faces = from f in this.Faces
+            //            where f.Normal != -CurrentFace.Normal
+            //            select f;
+
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 

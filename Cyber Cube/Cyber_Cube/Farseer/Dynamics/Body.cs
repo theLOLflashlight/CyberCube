@@ -124,7 +124,8 @@ namespace FarseerPhysics.Dynamics
 
         // ANDREW: Custom addition
         public Vector2 AdHocGravity = Vector2.Zero;
-        public bool UseAdHocGravity = false;
+
+        public bool UseAdHocGravity { get; set; }
 
         /// <summary>
         /// Set the user data. Use this to store your application specific data.
@@ -1341,6 +1342,9 @@ namespace FarseerPhysics.Dynamics
             body.IgnoreCCD = IgnoreCCD;
             body.IgnoreGravity = IgnoreGravity;
             body._torque = _torque;
+
+            body.UseAdHocGravity = UseAdHocGravity;
+            body.AdHocGravity = AdHocGravity;
 
             return body;
         }
