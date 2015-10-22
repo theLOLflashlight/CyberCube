@@ -31,6 +31,7 @@ namespace CyberCube
                 return (CubeGame) base.Game;
             }
         }
+
         protected SpriteBatch mSpriteBatch
         {
             get; private set;
@@ -46,5 +47,7 @@ namespace CyberCube
             base.Initialize();
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
         }
+
+        public override abstract void Draw( GameTime gameTime );
     }
 }

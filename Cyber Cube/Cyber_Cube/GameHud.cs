@@ -36,8 +36,6 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            base.Draw( gameTime );
-
             double drawRate = 1 / gameTime.ElapsedGameTime.TotalSeconds; 
 
             mSpriteBatch.Begin();

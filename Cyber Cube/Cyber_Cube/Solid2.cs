@@ -7,7 +7,7 @@ using System.Text;
 
 namespace CyberCube
 {
-    public abstract class Solid
+    public abstract class Solid2
     {
         public abstract Vector2? Collide( Vector2 pos, Vector2 oldPos, ref Vector2 normal );
 
@@ -15,7 +15,7 @@ namespace CyberCube
 
     }
 
-    public class OneWayLine : Solid
+    public class OneWayLine : Solid2
     {
         public Line2 Line;
 
@@ -136,11 +136,11 @@ namespace CyberCube
         }
     }
 
-    public class RecSolid : Solid
+    public class RecSolid2 : Solid2
     {
         public Rectangle Rec;
 
-        public RecSolid( Rectangle rec )
+        public RecSolid2( Rectangle rec )
         {
             Rec = rec;
         }

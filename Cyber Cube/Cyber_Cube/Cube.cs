@@ -208,8 +208,6 @@ namespace CyberCube
 
             foreach ( Face face in Faces )
                 face.Render3D( Effect );
-
-            base.Draw( gameTime );
         }
 
         public Face GetFaceFromPosition( Vector3 vec )

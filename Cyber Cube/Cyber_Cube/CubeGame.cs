@@ -57,7 +57,7 @@ namespace CyberCube
         private Menu mMenu;
         private string version;
 
-        private PauseMenu thePauseMenu;
+        private PauseMenu mPauseMenu;
 
         public CubeGame()
         {
@@ -159,7 +159,7 @@ namespace CyberCube
 
             // TODO: use this.Content to load your game content here
             mMenu = new Menu(this, version);
-            thePauseMenu = new PauseMenu(this);
+            mPauseMenu = new PauseMenu(this);
         }
 
         /// <summary>
@@ -180,7 +180,7 @@ namespace CyberCube
         {
             Input.Refresh();
 
-            if (mMenu.CurrentMenuState != MenuState.PlayingGame)
+            if (mMenu.CurrentMenuState != GameState.PlayingGame)
             {
                 mMenu.Update();
 
@@ -199,9 +199,9 @@ namespace CyberCube
             }
             else if (mMenu.CurrentMenuState == GameState.PauseGame)
             {
-                thePauseMenu.Update();
+                mPauseMenu.Update();
 
-                switch(thePauseMenu.Status)
+                switch(mPauseMenu.Status)
                 {
                     case 1:
                         mMenu.CurrentMenuState = GameState.PlayingGame;
@@ -267,7 +267,7 @@ namespace CyberCube
 
                 if ( Input.GetAction( Action.PauseGame ))
                 {
-                    thePauseMenu.EnterPauseMenu();
+                    mPauseMenu.EnterPauseMenu();
                     mMenu.CurrentMenuState = GameState.PauseGame;
                 }
             }
@@ -279,7 +279,7 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (mMenu.CurrentMenuState != MenuState.PlayingGame)
+            if (mMenu.CurrentMenuState != GameState.PlayingGame)
             {
                 mSpriteBatch.Begin();
                 GraphicsDevice.Clear(Color.White);
@@ -289,7 +289,7 @@ namespace CyberCube
             else if (mMenu.CurrentMenuState == GameState.PauseGame)
             {
                 mSpriteBatch.Begin();
-                thePauseMenu.Draw(mSpriteBatch);
+                mPauseMenu.Draw(mSpriteBatch);
                 mSpriteBatch.End();
             }
             else if (mMenu.CurrentMenuState == GameState.PlayingGame)

@@ -23,6 +23,12 @@ namespace CyberCube
             this.DrawOrder = 1;
         }
 
+        protected override void LoadContent()
+        {
+            base.LoadContent();
+            model3D = Game.Content.Load<Model>("Models\\playerAlpha3D");
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -32,7 +38,6 @@ namespace CyberCube
                                    Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White } );
 
-            model3D = Game.Content.Load<Model>("Models\\playerAlpha3D");
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
@@ -106,7 +111,39 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            base.Draw( gameTime );
+            if ( Cube.Mode == Cube.CubeMode.Play )
+            {
+			    // Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
+			    Matrix[] transforms = (new Matrix[model3D.Bones.Count]);
+			    model3D.CopyAbsoluteBoneTransformsTo( transforms );
+
+			    // Draw the model. A model can have multiple meshes, so loop.
+			    foreach (ModelMesh mesh in model3D.Meshes)
+			    {
+				    // This is where the mesh orientation is set, as well 
+				    // as our camera and projection.
+				    foreach (BasicEffect effect in mesh.Effects)
+				    {
+					    effect.EnableDefaultLighting();
+					    effect.World = transforms[mesh.ParentBone.Index] *
+						    Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, WorldPosition.Z ) *
+						    Matrix.CreateScale( 0.0008f );
+
+                        Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
+                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, UpDir.ToRadians() );
+
+                        effect.World *= m;
+
+					    effect.View = Matrix.CreateLookAt( Game.Camera.Position,
+						    Vector3.Zero, Game.Camera.UpVector );
+					    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
+						    MathHelper.ToRadians( 45.0f ), aspectRatio,
+						    1.0f, 10000.0f );
+				    }
+				    // Draw the mesh, using the effects set above.
+				    mesh.Draw();
+			    }
+            }
 
             // Find screen equivalent of 3D location in world
             Vector3 screenLocation = GraphicsDevice.Viewport.Project(
@@ -114,38 +151,6 @@ namespace CyberCube
                 Cube.Effect.Projection,
                 Cube.Effect.View,
                 Cube.Effect.World );
-
-            /*
-			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
-			Matrix[] transforms = (new Matrix[model3D.Bones.Count]);
-			model3D.CopyAbsoluteBoneTransformsTo( transforms );
-
-			// Draw the model. A model can have multiple meshes, so loop.
-			foreach (ModelMesh mesh in model3D.Meshes)
-			{
-				// This is where the mesh orientation is set, as well 
-				// as our camera and projection.
-				foreach (BasicEffect effect in mesh.Effects)
-				{
-					effect.EnableDefaultLighting();
-					effect.World = transforms[mesh.ParentBone.Index] *
-						Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, 0 ) *
-						Matrix.CreateScale( 0.0008f );
-					if (Cube.CurrentFace.Normal == Vector3.UnitZ)
-					{
-						effect.World *= Matrix.CreateRotationY( MathHelper.PiOver4 );
-					} 
-					effect.View = Matrix.CreateLookAt( Game.Camera.Position,
-						Vector3.Zero, Game.Camera.UpVector );
-					effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-						MathHelper.ToRadians( 45.0f ), aspectRatio,
-						1.0f, 10000.0f );
-				}
-				// Draw the mesh, using the effects set above.
-				mesh.Draw();
-			}
-
-            */
 
             // Draw our pixel texture there
             mSpriteBatch.Begin();

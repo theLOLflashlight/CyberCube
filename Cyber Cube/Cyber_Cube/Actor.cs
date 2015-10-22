@@ -125,7 +125,7 @@ namespace CyberCube
             Vector2 facePos = ComputeFacePosition();
             Vector2 oldFacePos = ComputeOldFacePosition();
 
-			foreach ( Solid solid in CubeFace.Solids )
+			foreach ( Solid2 solid in CubeFace.Solid2s )
             {
                 Vector2 groundNormal = Vector2.Zero;
                 Vector2? pos = solid.Collide( facePos, oldFacePos, ref groundNormal );

@@ -169,8 +169,6 @@ namespace CyberCube {
 			mSpriteBatch.Begin();
             mSpriteBatch.Draw(pixel, new Vector2(screenLocation.X - 1, screenLocation.Y - 1), Color.DeepSkyBlue);
 		    mSpriteBatch.End();
-
-            base.Draw(gameTime);
 		}
 	}
 }
