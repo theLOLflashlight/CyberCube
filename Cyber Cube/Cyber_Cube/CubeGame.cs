@@ -182,7 +182,7 @@ namespace CyberCube
         {
             Input.Refresh();
 
-            if (mMenu.CurrentMenuState != GameState.PlayingGame)
+            if (mMenu.CurrentMenuState == GameState.MainMenu)
             {
                 mMenu.Update();
 
@@ -281,7 +281,7 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (mMenu.CurrentMenuState != GameState.PlayingGame)
+            if (mMenu.CurrentMenuState == GameState.MainMenu)
             {
                 mSpriteBatch.Begin();
                 GraphicsDevice.Clear(Color.White);
