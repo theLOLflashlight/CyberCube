@@ -1,5 +1,6 @@
 ﻿using CyberCube.Graphics;
 using FarseerPhysics.Collision.Shapes;
+using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
@@ -144,43 +145,58 @@ namespace CyberCube.Physics
         {
             mLine = line;
 
-            Vector2 edge = mLine.P1 - mLine.P0;
+            Vector2 center;
+            center.X = (mLine.X0 + mLine.X1) / 2;
+            center.Y = (mLine.Y0 + mLine.Y1) / 2;
 
-            Body = BodyFactory.CreateBody( world/*, (mLine.P0 + edge / 2) * Constants.PIXEL_TO_UNIT*/ );
+            Body = BodyFactory.CreateBody( world );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
-
-            float angle = (float) Math.Atan2( edge.Y, edge.X );
 
             mEdge = FixtureFactory.AttachEdge(
                     mLine.P0 * Constants.PIXEL_TO_UNIT,
                     mLine.P1 * Constants.PIXEL_TO_UNIT,
                     Body );
 
-            mExclusionRec = FixtureFactory.AttachRectangle(
-                mLine.Length * Constants.PIXEL_TO_UNIT,
-                5,
-                1,
-                new Vector2( 0, -2.5f ),
-                Body );
+            float width = mLine.Length;
+            float height = 100;
+            if ( mLine.Y0 == mLine.Y1 )
+            {
+                width = 100;
+                height = mLine.Length;
+            }
 
-            //mExclusionRec.Body.Rotation = angle;
+            Vector2 off = mLine.Y0 == mLine.Y1
+                          ? Vector2.UnitY * ((height / 2) + 2)
+                          : Vector2.UnitX * ((width / 2) + 2);
+
+            if ( mLine.X1 < mLine.X0 || mLine.Y1 > mLine.Y0 )
+                off = -off;
+
+            mExclusionRec = FixtureFactory.AttachRectangle(
+                width * Constants.PIXEL_TO_UNIT,
+                height * Constants.PIXEL_TO_UNIT,
+                1,
+                (center + off) * Constants.PIXEL_TO_UNIT,
+                Body );
 
             mExclusionRec.IsSensor = true;
 
-            //mExclusionRec.OnCollision += ( a, b, c ) => {
-            //    mEdge.IgnoreCollisionWith( b );
-            //    return true;
-            //};
-            //
-            //mExclusionRec.OnSeparation += ( a, b ) => {
-            //    mEdge.RestoreCollisionWith( b );
-            //};
+            mExclusionRec.OnCollision += ( a, b, c ) => {
+                mEdge.IgnoreCollisionWith( b );
+                return true;
+            };
+            
+            mExclusionRec.OnSeparation += ( a, b ) => {
+                mEdge.RestoreCollisionWith( b );
+            };
         }
 
         public override void Draw( GameTime gameTime )
         {
+            //mExclusionRec.Body.DrawBody( GraphicsDevice, Texture, gameTime );
+
             mSpriteBatch.Begin();
 
             Vector2 edge = mLine.P1 - mLine.P0;

@@ -58,10 +58,10 @@ namespace CyberCube
                         mWorld,
                         new Rectangle( WIDTH - 150, 150, 100, 300 ) ) );
 
-                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 200, 400, 200 ) ) );
-                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 550, 300 ) ) );
+                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 100, 200 ) ) );
                 mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 400, 400, 400 ) ) );
                 mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 700, 500, 700, 200 ) ) );
+                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 550, 300 ) ) );
                 //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 380, 910, 380, 790 ) ) );
                 //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 240, 910, 240, 790 ) ) );
                 //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 910, 100, 790 ) ) );
