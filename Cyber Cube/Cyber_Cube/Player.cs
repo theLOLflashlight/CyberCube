@@ -43,15 +43,6 @@ namespace CyberCube
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
-        protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
-        {
-            var angle = UpDir.ToRadians() + CubeFace.Rotation;
-
-            return new Vector3( vec2d, 0 )
-                       .Transform( Utils.RotateOntoQ( Vector3.UnitZ, Normal ) )
-                       .Rotate( Normal, angle );
-        }
-
         public void Jump( ref Vector2 velocity )
         {
             velocity.Y = FreeFall ? -10f : -20f;
@@ -131,7 +122,7 @@ namespace CyberCube
 						    Matrix.CreateScale( 0.0008f );
 
                         Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
-                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, UpDir.ToRadians() );
+                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, UpDir.Angle );
 
                         effect.World *= m;
 

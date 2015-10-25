@@ -11,6 +11,20 @@ namespace CyberCube
         public Vector2 P0;
         public Vector2 P1;
 
+        public float Length
+        {
+            get {
+                return (P1 - P0).Length();
+            }
+        }
+
+        public Vector2 Direction
+        {
+            get {
+                return Vector2.Normalize( P1 - P0 );
+            }
+        }
+
         public Line2( Vector2 p0, Vector2 p1 )
         {
             P0 = p0;
@@ -23,9 +37,17 @@ namespace CyberCube
             P1 = new Vector2( x1, y1 );
         }
 
-        private static float Cross( Vector2 v, Vector2 w )
+        public void Reverse()
         {
-            return v.X * w.Y - v.Y * w.X;
+            var tmp = P0;
+            P0 = P1;
+            P1 = tmp;
+        }
+
+        public void Reverse( out Line2 outLine )
+        {
+            outLine.P0 = P1;
+            outLine.P1 = P0;
         }
 
         public Vector2? Intersection( Vector2 p0, Vector2 p1 )
@@ -40,9 +62,9 @@ namespace CyberCube
             var q = l.P0;
             var s = l.P1 - l.P0;
 
-            var qp_s = (float) Math.Round( Cross( q - p, s ), 3 );
-            var qp_r = (float) Math.Round( Cross( q - p, r ), 3 );
-            var r_s = (float) Math.Round( Cross( r, s ), 3 );
+            var qp_s = (float) Math.Round( Utils.Cross( q - p, s ), 3 );
+            var qp_r = (float) Math.Round( Utils.Cross( q - p, r ), 3 );
+            var r_s = (float) Math.Round(  Utils.Cross( r, s ), 3 );
 
             float t = qp_s / r_s;
             float u = qp_r / r_s;
@@ -83,6 +105,47 @@ namespace CyberCube
                 return P0 + (t * (P1 - P0));
             }
         }
+
+        public float X0
+        {
+            get {
+                return P0.X;
+            }
+            set {
+                P0.X = value;
+            }
+        }
+
+        public float X1
+        {
+            get {
+                return P1.X;
+            }
+            set {
+                P1.X = value;
+            }
+        }
+
+        public float Y0
+        {
+            get {
+                return P0.Y;
+            }
+            set {
+                P0.Y = value;
+            }
+        }
+
+        public float Y1
+        {
+            get {
+                return P1.Y;
+            }
+            set {
+                P1.Y = value;
+            }
+        }
+
     }
 
     public struct Line3
@@ -90,10 +153,37 @@ namespace CyberCube
         public Vector3 P0;
         public Vector3 P1;
 
+        public float Length
+        {
+            get {
+                return (P1 - P0).Length();
+            }
+        }
+
+        public Vector3 Direction
+        {
+            get {
+                return Vector3.Normalize( P1 - P0 );
+            }
+        }
+
         public Line3( Vector3 p0, Vector3 p1 )
         {
             P0 = p0;
             P1 = p1;
+        }
+
+        public void Reverse()
+        {
+            var tmp = P0;
+            P0 = P1;
+            P1 = tmp;
+        }
+
+        public void Reverse( out Line3 outLine )
+        {
+            outLine.P0 = P1;
+            outLine.P1 = P0;
         }
 
         public Vector3 this[ float t ]
@@ -102,5 +192,86 @@ namespace CyberCube
                 return P0 + (t * (P1 - P0));
             }
         }
+
+        public float? Intersects( BoundingBox box )
+        {
+            return new Ray( P0, Direction ).Intersects( box );
+        }
+
+        public float? Intersects( BoundingSphere sphere )
+        {
+            return new Ray( P0, Direction ).Intersects( sphere );
+        }
+
+        public float? Intersects( BoundingFrustum frustum )
+        {
+            return new Ray( P0, Direction ).Intersects( frustum );
+        }
+
+        public float? Intersects( Plane plane )
+        {
+            return new Ray( P0, Direction ).Intersects( plane );
+        }
+
+        public float X0
+        {
+            get {
+                return P0.X;
+            }
+            set {
+                P0.X = value;
+            }
+        }
+
+        public float X1
+        {
+            get {
+                return P1.X;
+            }
+            set {
+                P1.X = value;
+            }
+        }
+
+        public float Y0
+        {
+            get {
+                return P0.Y;
+            }
+            set {
+                P0.Y = value;
+            }
+        }
+
+        public float Y1
+        {
+            get {
+                return P1.Y;
+            }
+            set {
+                P1.Y = value;
+            }
+        }
+
+        public float Z0
+        {
+            get {
+                return P0.Z;
+            }
+            set {
+                P0.Z = value;
+            }
+        }
+
+        public float Z1
+        {
+            get {
+                return P1.Z;
+            }
+            set {
+                P1.Z = value;
+            }
+        }
+
     }
 }

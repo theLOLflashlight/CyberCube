@@ -25,32 +25,83 @@ namespace CyberCube.IO
             }
         }
 
-        public GamePadState GamePad { get; private set; }
-        public GamePadState OldGamePad { get; private set; }
+        public MouseState Mouse { get; private set; }
+        public MouseState OldMouse { get; private set; }
 
         public KeyboardState Keyboard { get; private set; }
         public KeyboardState OldKeyboard { get; private set; }
 
-        public MouseState Mouse { get; private set; }
-        public MouseState OldMouse { get; private set; }
+        public GamePadState GamePad { get; private set; }
+        public GamePadState OldGamePad { get; private set; }
+
 
         public InputState()
         {
-            GamePad = Microsoft.Xna.Framework.Input.GamePad.GetState( PlayerIndex.One );
-            Keyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            Keyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            GamePad = Microsoft.Xna.Framework.Input.GamePad.GetState( PlayerIndex.One );
         }
 
         public void Refresh()
         {
-            OldGamePad = GamePad;
-            OldKeyboard = Keyboard;
             OldMouse = Mouse;
+            OldKeyboard = Keyboard;
+            OldGamePad = GamePad;
 
-            GamePad = Microsoft.Xna.Framework.Input.GamePad.GetState( PlayerIndex.One );
-            Keyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
+            Keyboard = Microsoft.Xna.Framework.Input.Keyboard.GetState();
+            GamePad = Microsoft.Xna.Framework.Input.GamePad.GetState( PlayerIndex.One );
         }
+        
+        //public bool Mouse_WasLeftClicked()
+        //{
+        //    return Mouse.LeftButton == ButtonState.Released && OldMouse.LeftButton == ButtonState.Pressed;
+        //}
+        //
+        //public bool Mouse_WasRightClicked()
+        //{
+        //    return Mouse.RightButton == ButtonState.Released && OldMouse.RightButton == ButtonState.Pressed;
+        //}
+        //
+        //public bool Mouse_WasMiddleClicked()
+        //{
+        //    return Mouse.MiddleButton == ButtonState.Released && OldMouse.MiddleButton == ButtonState.Pressed;
+        //}
+
+        // Mouse Was Pressed
+
+        public bool Mouse_WasLeftPressed()
+        {
+            return Mouse.LeftButton == ButtonState.Pressed && OldMouse.LeftButton != ButtonState.Pressed;
+        }
+
+        public bool Mouse_WasRightPressed()
+        {
+            return Mouse.RightButton == ButtonState.Pressed && OldMouse.RightButton != ButtonState.Pressed;
+        }
+
+        public bool Mouse_WasMiddlePressed()
+        {
+            return Mouse.MiddleButton == ButtonState.Pressed && OldMouse.MiddleButton != ButtonState.Pressed;
+        }
+
+        // Mouse Was Released
+
+        public bool Mouse_WasLeftReleased()
+        {
+            return Mouse.LeftButton == ButtonState.Released && OldMouse.LeftButton != ButtonState.Released;
+        }
+
+        public bool Mouse_WasRightReleased()
+        {
+            return Mouse.RightButton == ButtonState.Released && OldMouse.RightButton != ButtonState.Released;
+        }
+
+        public bool Mouse_WasMiddleReleased()
+        {
+            return Mouse.MiddleButton == ButtonState.Released && OldMouse.MiddleButton != ButtonState.Released;
+        }
+
 
         public bool IsShiftDown()
         {

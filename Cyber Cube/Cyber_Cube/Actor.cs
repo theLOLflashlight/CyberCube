@@ -10,14 +10,29 @@ namespace CyberCube
 {
     public abstract class Actor : DrawableCubeGameComponent
     {
-
-        protected abstract Vector3 TransformMovementTo3d( Vector2 vec2d );
-
         protected Vector3 mWorldPosition;
+
+        public Vector3 WorldPosition
+        {
+            get {
+                return mWorldPosition;
+            }
+        }
 
         protected Body Body
         {
             get; private set;
+        }
+
+        public Vector2 Position
+        {
+            get {
+                return Body.Position * Physics.Constants.UNIT_TO_PIXEL;
+            }
+            set {
+                Body.Position = value * Physics.Constants.PIXEL_TO_UNIT;
+                SetFacePosition( value );
+            }
         }
 
         public Vector2 Velocity
@@ -50,13 +65,6 @@ namespace CyberCube
             }
         }
 
-
-        public Vector3 WorldPosition
-        {
-            get {
-                return mWorldPosition;
-            }
-        }
 
         public bool FreeFall
         {
@@ -91,7 +99,7 @@ namespace CyberCube
             }
             set {
                 mUpDir = value;
-                Body.Rotation = mUpDir.ToRadians();
+                Body.Rotation = mUpDir.Angle;
                 Body.AdHocGravity = Vector2.UnitY.Rotate( -Body.Rotation ).Rounded();
                 Body.Awake = true;
             }
@@ -121,9 +129,29 @@ namespace CyberCube
                 ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
 
             body.BodyType = BodyType.Dynamic;
-            body.Rotation = UpDir.ToRadians();
+            body.Rotation = UpDir.Angle;
 
             return body;
+        }
+
+        public Vector2 Gravity
+        {
+            get {
+                return Body.GravityScale *
+                       (Body.UseAdHocGravity
+                       ? Body.AdHocGravity
+                       : CubeFace.World.Gravity);
+            }
+            set {
+                Body.UseAdHocGravity = true;
+                Body.GravityScale = value.Length();
+                Body.AdHocGravity = Vector2.Normalize( value );
+            }
+        }
+
+        public void ResetGravity()
+        {
+            Body.UseAdHocGravity = false;
         }
 
         public override void Initialize()
@@ -134,15 +162,12 @@ namespace CyberCube
             Body.FixedRotation = true;
             Body.GravityScale = 20f;
             Body.UseAdHocGravity = true;
-            Body.AdHocGravity = new Vector2( 0, 1 );
+            Body.AdHocGravity = Vector2.UnitY;
         }
 
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
-            //float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
-            //Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation ).Rounded();
 
             SetFacePosition( Body.Position * Physics.Constants.UNIT_TO_PIXEL );
         }
@@ -152,9 +177,11 @@ namespace CyberCube
             Cube.Face nextFace = CubeFace.AdjacentFace( dir );
             var backDir = nextFace.BackwardsDirectionFrom( CubeFace );
 
+            float mass = Body.Mass;
             Body body = Body.DeepClone( nextFace.World );
             CubeFace.World.RemoveBody( Body );
             Body = body;
+            Body.Mass = mass;
 
             float pastRotation = Body.Rotation;
 
@@ -167,7 +194,7 @@ namespace CyberCube
         }
 
 
-        public Vector2 ComputeFacePosition()
+        protected Vector2 ComputeFacePosition()
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
             return Transform3dTo2d( WorldPosition )
@@ -175,7 +202,7 @@ namespace CyberCube
                    + new Vector2( adjustingFactor );
         }
 
-        public void SetFacePosition( Vector2 vec2d )
+        private void SetFacePosition( Vector2 vec2d )
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
             vec2d -= new Vector2( adjustingFactor );
@@ -209,7 +236,7 @@ namespace CyberCube
                 mWorldPosition.X = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitX );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
             else if ( mWorldPosition.X < -1 )
@@ -217,7 +244,7 @@ namespace CyberCube
                 mWorldPosition.X = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitX );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
 
@@ -226,7 +253,7 @@ namespace CyberCube
                 mWorldPosition.Y = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitY );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
             else if ( mWorldPosition.Y < -1 )
@@ -234,7 +261,7 @@ namespace CyberCube
                 mWorldPosition.Y = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitY );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
 
@@ -243,7 +270,7 @@ namespace CyberCube
                 mWorldPosition.Z = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitZ );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
             else if ( mWorldPosition.Z < -1 )
@@ -251,7 +278,7 @@ namespace CyberCube
                 mWorldPosition.Z = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitZ );
-                if ( dir.HasValue )
+                if ( dir != null )
                     yield return dir.Value;
             }
         }

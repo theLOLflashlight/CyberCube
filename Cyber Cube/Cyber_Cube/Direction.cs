@@ -23,19 +23,19 @@ namespace CyberCube
         /// <summary>
         /// Static member representing the North direction.
         /// </summary>
-        public readonly static Direction North = new Direction( CompassDirection.North );
+        public readonly static Direction Up = new Direction( CompassDirection.North );
         /// <summary>
         /// Static member representing the East direction.
         /// </summary>
-        public readonly static Direction East = new Direction( CompassDirection.East );
+        public readonly static Direction Right = new Direction( CompassDirection.East );
         /// <summary>
         /// Static member representing the South direction.
         /// </summary>
-        public readonly static Direction South = new Direction( CompassDirection.South );
+        public readonly static Direction Down = new Direction( CompassDirection.South );
         /// <summary>
         /// Static member representing the West direction.
         /// </summary>
-        public readonly static Direction West = new Direction( CompassDirection.West );
+        public readonly static Direction Left = new Direction( CompassDirection.West );
 
 
         /// <summary>
@@ -70,12 +70,13 @@ namespace CyberCube
         }
 
         /// <summary>
-        /// Converts a direction to radians offset from north.
+        /// Gets the direction expressed as radians, offset from the *north* position.
         /// </summary>
-        /// <returns>The angle offset from North in radians.</returns>
-        public float ToRadians()
+        public float Angle
         {
-            return -MathHelper.PiOver2 * (int) value;
+            get {
+                return -MathHelper.PiOver2 * (int) value;
+            }
         }
 
         /// <summary>

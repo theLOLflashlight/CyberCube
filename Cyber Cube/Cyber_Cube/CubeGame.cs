@@ -59,8 +59,14 @@ namespace CyberCube
 
         private PauseMenu mPauseMenu;
 
+        public bool Initialized
+        {
+            get; private set;
+        }
+
         public CubeGame()
         {
+            Initialized = false;
             mInput = new InputState< Action >();
 
             SetUpBinds();
@@ -72,8 +78,8 @@ namespace CyberCube
             Hud = new GameHud( this );
             Camera = new Camera( this );
             mCube = new Cube( this );
-            Player = new Player( mCube, Vector3.UnitZ, Direction.North );
-			Enemy = new Enemy( mCube, new Vector3(-0.5f, 0.7f, 1.0f), Direction.North );
+            Player = new Player( mCube, Vector3.UnitZ, Direction.Up );
+			Enemy = new Enemy( mCube, new Vector3(-0.5f, 0.7f, 1.0f), Direction.Up );
 
             Console.CommandExecuted += RunCommand;
             Console.Close();
@@ -149,6 +155,7 @@ namespace CyberCube
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             StorageManager.Instance.Initialize();
+            Initialized = true;
         }
 
         /// <summary>
@@ -309,7 +316,7 @@ namespace CyberCube
                                          output,
                                          new Vector2( GraphicsDevice.Viewport.Width - pos.X, pos.Y ),
                                          Color.White,
-                                         mCube.UpDir.ToRadians(),
+                                         mCube.UpDir.Angle,
                                          mFont.MeasureString( output ) / 2,
                                          1,
                                          SpriteEffects.None,

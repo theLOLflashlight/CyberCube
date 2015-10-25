@@ -62,10 +62,10 @@ namespace CyberCube
                 get; private set;
             }
 
-            public List< Solid2 > Solid2s
-            {
-                get; private set;
-            }
+            //public List< Solid2 > Solid2s
+            //{
+            //    get; private set;
+            //}
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube.Game )
@@ -74,10 +74,10 @@ namespace CyberCube
                 Name = name;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
-                Rotation = orientation.ToRadians();
+                Rotation = orientation.Angle;
                 BackgroundColor = Color.Transparent;
 
-                Solid2s = new List<Solid2>();
+                //Solid2s = new List<Solid2>();
 
                 SetUpVertices();
                 SetUpWorld();
@@ -154,19 +154,19 @@ namespace CyberCube
 
                 this.Visible = false;
 
-                Solid2s.Clear();
-                Solid2s.Add( new RecSolid2( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
-                Solid2s.Add( new RecSolid2( new Rectangle( 10, 70, 30, 10 ) ) );
-                Solid2s.Add( new RecSolid2( new Rectangle( WIDTH - 15, 15, 10, 30 ) ) );
-
-                Solid2s.Add( new OneWayLine( new Line2( 10, 20, 40, 20 ) ) );
-                Solid2s.Add( new OneWayLine( new Line2( 10, 40, 40, 40 ) ) );
-
-                Solid2s.Add( new OneWayLine( new Line2( 70, 50, 70, 20 ) ) );
-
-                Solid2s.Add( new OneWayLine( new Line2( 38, 91, 38, 79 ) ) );
-                Solid2s.Add( new OneWayLine( new Line2( 24, 91, 24, 79 ) ) );
-                Solid2s.Add( new OneWayLine( new Line2( 10, 91, 10, 79 ) ) );
+                //Solid2s.Clear();
+                //Solid2s.Add( new RecSolid2( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
+                //Solid2s.Add( new RecSolid2( new Rectangle( 10, 70, 30, 10 ) ) );
+                //Solid2s.Add( new RecSolid2( new Rectangle( WIDTH - 15, 15, 10, 30 ) ) );
+                //
+                //Solid2s.Add( new OneWayLine( new Line2( 10, 20, 40, 20 ) ) );
+                //Solid2s.Add( new OneWayLine( new Line2( 10, 40, 40, 40 ) ) );
+                //
+                //Solid2s.Add( new OneWayLine( new Line2( 70, 50, 70, 20 ) ) );
+                //
+                //Solid2s.Add( new OneWayLine( new Line2( 38, 91, 38, 79 ) ) );
+                //Solid2s.Add( new OneWayLine( new Line2( 24, 91, 24, 79 ) ) );
+                //Solid2s.Add( new OneWayLine( new Line2( 10, 91, 10, 79 ) ) );
             }
 
             protected override void LoadContent()
@@ -177,18 +177,31 @@ namespace CyberCube
                 LoadPhysics();
             }
 
+            public Vector2 Transform3dTo2d( Vector3 vec3d )
+            {
+                vec3d = vec3d.Rotate( Normal, -Rotation )
+                             .Transform( Utils.RotateOntoQ( Normal, Vector3.UnitZ ) );
+                return new Vector2( vec3d.X, -vec3d.Y );
+            }
+
+            public Vector2 ConvertWorldToFace( Vector3 vec3d )
+            {
+                return Transform3dTo2d( vec3d ) * (SIZE / 2f) + new Vector2( SIZE / 2f );
+            }
+
             public override void Draw( GameTime gameTime )
             {
-                mSpriteBatch.Begin();
-                mSpriteBatch.DrawString( mFont,
-                                        Name,
-                                        new Vector2( WIDTH, HEIGHT ) / 2,
-                                        Color.Black,
-                                        0, // Rotation is handled via texture orientation.
-                                        mFont.MeasureString( Name ) / 2,
-                                        10,
-                                        SpriteEffects.None,
-                                        0 );
+                DrawBodies( gameTime );
+                //mSpriteBatch.Begin();
+                //mSpriteBatch.DrawString( mFont,
+                //                        Name,
+                //                        new Vector2( WIDTH, HEIGHT ) / 2,
+                //                        Color.Black,
+                //                        0, // Rotation is handled via texture orientation.
+                //                        mFont.MeasureString( Name ) / 2,
+                //                        10,
+                //                        SpriteEffects.None,
+                //                        0 );
 
                 //foreach ( Solid2 solid in Solid2s )
                 //    solid.Draw( mSpriteBatch, pixel );
@@ -199,9 +212,7 @@ namespace CyberCube
                 //
                 //mSpriteBatch.Draw( pixel, new Rectangle( 10 * (int) vec2d.X, 10 * (int) vec2d.Y, 10, 10 ), new Color( 0, 0, 0, 128 ) );
 
-                mSpriteBatch.End();
-
-                DrawBodies( gameTime );
+                //mSpriteBatch.End();
             }
 
             public void Render2D( GameTime gameTime )

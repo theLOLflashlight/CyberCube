@@ -41,14 +41,6 @@ namespace CyberCube {
 			visionVertices[2] = new VertexPositionColorTexture( new Vector3( 0.5f, 0.5f, 0 ), Color.LightGoldenrodYellow, new Vector2( 0.5f, 0.5f ) );
         }
 
-		protected override Vector3 TransformMovementTo3d( Vector2 vec2d )
-		{
-			var angle = UpDir.ToRadians() + CubeFace.Rotation;
-
-			return new Vector3( vec2d, 0 )
-					   .Transform( Utils.RotateOntoQ( Vector3.UnitZ, Normal ) )
-					   .Rotate( Normal, angle );
-		}
 
 		public override void Update(GameTime gameTime) 
 		{
@@ -117,7 +109,7 @@ namespace CyberCube {
 		// we determine if we see the player by using the triangle vision and see if it contains the player 
 		private bool SeePlayer( Player player )
 		{
-			Vector2 playerPosition = player.ComputeFacePosition();
+			Vector2 playerPosition = player.Position;
 			Vector2 pointA = Cube.ComputeFacePosition( visionVertices[0].Position, CubeFace );
 			Vector2 pointB = Cube.ComputeFacePosition( visionVertices[1].Position, CubeFace );
 			Vector2 pointC = Cube.ComputeFacePosition( visionVertices[2].Position, CubeFace );

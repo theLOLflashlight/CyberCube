@@ -1,4 +1,6 @@
-﻿using FarseerPhysics.Dynamics;
+﻿using CyberCube.Graphics;
+using FarseerPhysics.Collision.Shapes;
+using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -50,11 +52,21 @@ namespace CyberCube.Physics
             }
         }
 
+        public Texture2D Texture;
+
         public Solid( CubeGame game, World world )
             : base( game )
         {
             mWorld = world;
             this.Visible = false;
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            Texture = new Texture2D( GraphicsDevice, 1, 1 );
+            Texture.SetData( new[] { Color.White } );
         }
 
         public abstract override void Draw( GameTime gameTime );
@@ -65,13 +77,11 @@ namespace CyberCube.Physics
     {
         protected readonly Rectangle mRec;
 
-        private Texture2D mTexture;
-
         public RecSolid( CubeGame game,
                          World world,
                          Rectangle rec,
                          BodyType bodyType = BodyType.Static,
-                         float mass = 1)
+                         float mass = 1 )
             : base( game, world )
         {
             mRec = rec;
@@ -89,32 +99,26 @@ namespace CyberCube.Physics
             Body.Mass = mass;
         }
 
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            mTexture = new Texture2D( GraphicsDevice, 1, 1 );
-            mTexture.SetData( new[] { Color.White } );
-        }
-
         public override void Draw( GameTime gameTime )
         {
+            //Body.DrawBody( GraphicsDevice, mTexture, gameTime );
+
             mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.Opaque );
 
             Vector2 position = Body.Position * Constants.UNIT_TO_PIXEL;
             Vector2 scale = new Vector2(
-                mRec.Width / (float) mTexture.Width,
-                mRec.Height / (float) mTexture.Height );
+                mRec.Width / (float) Texture.Width,
+                mRec.Height / (float) Texture.Height );
 
             mSpriteBatch.Draw(
-                mTexture,
+                Texture,
                 position,
                 null,
                 Color.Black,
                 Body.Rotation,
                 new Vector2(
-                    mTexture.Width / 2.0f,
-                    mTexture.Height / 2.0f ),
+                    Texture.Width / 2.0f,
+                    Texture.Height / 2.0f ),
                 scale,
                 SpriteEffects.None,
                 0 );
@@ -128,7 +132,8 @@ namespace CyberCube.Physics
     {
         protected readonly Line2 mLine;
 
-        private Texture2D mTexture;
+        protected readonly Fixture mEdge;
+        protected readonly Fixture mExclusionRec;
 
         public EdgeSolid( CubeGame game,
                           World world,
@@ -139,21 +144,39 @@ namespace CyberCube.Physics
         {
             mLine = line;
 
-            Body = BodyFactory.CreateEdge(
-                    world,
-                    mLine.P0 * Constants.PIXEL_TO_UNIT,
-                    mLine.P1 * Constants.PIXEL_TO_UNIT );
+            Vector2 edge = mLine.P1 - mLine.P0;
+
+            Body = BodyFactory.CreateBody( world/*, (mLine.P0 + edge / 2) * Constants.PIXEL_TO_UNIT*/ );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
-        }
 
-        public override void Initialize()
-        {
-            base.Initialize();
+            float angle = (float) Math.Atan2( edge.Y, edge.X );
 
-            mTexture = new Texture2D( GraphicsDevice, 1, 1 );
-            mTexture.SetData( new[] { Color.White } );
+            mEdge = FixtureFactory.AttachEdge(
+                    mLine.P0 * Constants.PIXEL_TO_UNIT,
+                    mLine.P1 * Constants.PIXEL_TO_UNIT,
+                    Body );
+
+            mExclusionRec = FixtureFactory.AttachRectangle(
+                mLine.Length * Constants.PIXEL_TO_UNIT,
+                5,
+                1,
+                new Vector2( 0, -2.5f ),
+                Body );
+
+            //mExclusionRec.Body.Rotation = angle;
+
+            mExclusionRec.IsSensor = true;
+
+            //mExclusionRec.OnCollision += ( a, b, c ) => {
+            //    mEdge.IgnoreCollisionWith( b );
+            //    return true;
+            //};
+            //
+            //mExclusionRec.OnSeparation += ( a, b ) => {
+            //    mEdge.RestoreCollisionWith( b );
+            //};
         }
 
         public override void Draw( GameTime gameTime )
@@ -164,7 +187,7 @@ namespace CyberCube.Physics
             float angle = (float) Math.Atan2( edge.Y, edge.X );
 
             mSpriteBatch.Draw(
-                mTexture,
+                Texture,
                 new Rectangle(
                     (int) mLine.P0.X,
                     (int) mLine.P0.Y,
@@ -178,7 +201,7 @@ namespace CyberCube.Physics
                 0 );
 
             mSpriteBatch.Draw(
-                mTexture,
+                Texture,
                 new Rectangle(
                     (int) mLine.P0.X,
                     (int) mLine.P0.Y,
@@ -192,7 +215,7 @@ namespace CyberCube.Physics
                 0 );
 
             mSpriteBatch.Draw(
-                mTexture,
+                Texture,
                 new Rectangle(
                     (int) mLine.P0.X,
                     (int) mLine.P0.Y,

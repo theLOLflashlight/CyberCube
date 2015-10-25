@@ -35,17 +35,15 @@ namespace CyberCube
             return font.MeasureString( "_" );
         }
 
-        public static void DrawRect( this SpriteBatch batch, Rectangle rect, Color color )
-        {
-            Texture2D texture = new Texture2D( batch.GraphicsDevice, 1, 1 );
-            texture.SetData( new Color[] { Color.White } );
-            batch.Draw( texture, rect, color );
-        }
-
         public static bool Contains( this Rectangle rec, Vector2 vec, float e = 0 )
         {
             return vec.X + e >= rec.Left && vec.X - e <= rec.Right
                  && vec.Y + e >= rec.Top && vec.Y - e <= rec.Bottom;
+        }
+
+        public static float Cross( Vector2 v, Vector2 w )
+        {
+            return v.X * w.Y - v.Y * w.X;
         }
 
         public static Vector2 NearestPointOn( this Vector2 vec, Rectangle rec )

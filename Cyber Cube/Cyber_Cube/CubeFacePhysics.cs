@@ -67,6 +67,13 @@ namespace CyberCube
                 //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 910, 100, 790 ) ) );
             }
 
+            public void AddSolid( Solid solid )
+            {
+                mSolids.Add( solid );
+                if ( Game.Initialized )
+                    solid.Initialize();
+            }
+
             private void LoadPhysics()
             {
                 
@@ -76,13 +83,78 @@ namespace CyberCube
             {
                 base.Update( gameTime );
 
-                mWorld.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
+                //foreach ( Solid solid in mSolids.ToList() )
+                //    foreach ( var dir in ClampSolid( solid ) )
+                //        MoveSolid( solid, dir );
+
+                if ( Cube.Mode == CubeMode.Play )
+                    mWorld.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
             }
 
             private void DrawBodies( GameTime gameTime )
             {
                 foreach ( Solid solid in mSolids )
                     solid.Draw( gameTime );
+            }
+
+            private IEnumerable<CompassDirection> ClampSolid( Solid solid )
+            {
+                Vector2 pos = solid.Body.Position * Physics.Constants.UNIT_TO_PIXEL;
+
+                if ( pos.X > WIDTH )
+                {
+                    solid.Body.Position = new Vector2( WIDTH, pos.Y ) * Physics.Constants.PIXEL_TO_UNIT;
+
+                    var dir = VectorToDirection( Vector3.UnitX );
+                    if ( dir != null )
+                        yield return dir.Value;
+                }
+                else if ( pos.X < 0 )
+                {
+                    solid.Body.Position = new Vector2( 0, pos.Y ) * Physics.Constants.PIXEL_TO_UNIT;
+
+                    var dir = VectorToDirection( -Vector3.UnitX );
+                    if ( dir != null )
+                        yield return dir.Value;
+                }
+
+                if ( pos.Y > HEIGHT )
+                {
+                    solid.Body.Position = new Vector2( pos.X, HEIGHT ) * Physics.Constants.PIXEL_TO_UNIT;
+
+                    var dir = VectorToDirection( Vector3.UnitY );
+                    if ( dir != null )
+                        yield return dir.Value;
+                }
+                else if ( pos.Y < 0 )
+                {
+                    solid.Body.Position = new Vector2( pos.X, 0 ) * Physics.Constants.PIXEL_TO_UNIT;
+
+                    var dir = VectorToDirection( -Vector3.UnitY );
+                    if ( dir != null )
+                        yield return dir.Value;
+                }
+            }
+
+            protected void MoveSolid( Solid solid, CompassDirection dir )
+            {
+                Face nextFace = AdjacentFace( dir );
+                var backDir = nextFace.BackwardsDirectionFrom( this );
+
+                mSolids.Remove( solid );
+                solid.World = nextFace.World;
+                nextFace.mSolids.Add( solid );
+
+                Body body = solid.Body;
+
+                float pastRotation = body.Rotation;
+
+                body.Rotation += nextFace.Rotation;
+                body.AdHocGravity = Vector2.UnitY.Rotate( -body.Rotation ).Rounded();
+                body.Awake = true;
+
+                body.Position = body.Position.Rotate( pastRotation - body.Rotation );
+                body.LinearVelocity = body.LinearVelocity.Rotate( pastRotation - body.Rotation );
             }
 
         }

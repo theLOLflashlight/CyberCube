@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using CyberCube.IO;
+using CyberCube.Graphics;
 
 namespace CyberCube.MenuFiles
 {

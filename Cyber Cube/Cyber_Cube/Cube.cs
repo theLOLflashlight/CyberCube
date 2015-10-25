@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
+using CyberCube.Physics;
+using FarseerPhysics.Dynamics;
 
 namespace CyberCube
 {
@@ -13,6 +15,8 @@ namespace CyberCube
     /// </summary>
     public partial class Cube : DrawableCubeGameComponent
     {
+        public readonly BoundingBox BoundingBox = new BoundingBox( -Vector3.One, Vector3.One );
+
         private Face mFrontFace;
         private Face mBackFace;
         private Face mTopFace;
@@ -56,7 +60,7 @@ namespace CyberCube
             return Utils.RoundVector(
                        CurrentFace.UpVec.Rotate(
                            CurrentFace.Normal,
-                           UpDir.ToRadians() ) );
+                           UpDir.Angle ) );
         }
 
         /*
@@ -79,12 +83,12 @@ namespace CyberCube
         public Cube( CubeGame game )
             : base( game )
         {
-            mFrontFace = new Face( this, "Front", Vector3.UnitZ, Vector3.UnitY, Direction.North );
-            mBackFace = new Face( this, "Back", -Vector3.UnitZ, -Vector3.UnitY, Direction.East );
-            mTopFace = new Face( this, "Top", Vector3.UnitY, -Vector3.UnitZ, Direction.North );
-            mBottomFace = new Face( this, "Bottom", -Vector3.UnitY, Vector3.UnitZ, Direction.North );
-            mLeftFace = new Face( this, "Left", -Vector3.UnitX, Vector3.UnitZ, Direction.East );
-            mRightFace = new Face( this, "Right", Vector3.UnitX, Vector3.UnitZ, Direction.West );
+            mFrontFace = new Face( this, "Front", Vector3.UnitZ, Vector3.UnitY, Direction.Up );
+            mBackFace = new Face( this, "Back", -Vector3.UnitZ, -Vector3.UnitY, Direction.Right );
+            mTopFace = new Face( this, "Top", Vector3.UnitY, -Vector3.UnitZ, Direction.Up );
+            mBottomFace = new Face( this, "Bottom", -Vector3.UnitY, Vector3.UnitZ, Direction.Up );
+            mLeftFace = new Face( this, "Left", -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
+            mRightFace = new Face( this, "Right", Vector3.UnitX, Vector3.UnitZ, Direction.Left );
 
             mFrontFace.BackgroundColor = Color.Red;
             mBackFace.BackgroundColor = Color.Orange;
@@ -151,6 +155,9 @@ namespace CyberCube
 			mRightFace.OppositeFace = mLeftFace;
         }
 
+        public const float NEAR_PLANE = 1f;
+        public const float FAR_PLANE = 10f;
+
         public override void Initialize()
         {
             base.Initialize();
@@ -164,7 +171,7 @@ namespace CyberCube
 
             //COMP7051
             Effect.Projection = Matrix.CreatePerspectiveFieldOfView( MathHelper.Pi / 4.0f,
-                (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, 1f, 10f );
+                (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, NEAR_PLANE, FAR_PLANE );
 
             Game.Camera.Position = CameraDistance * CurrentFace.Normal;
             Game.Camera.Target = mPosition;
@@ -183,7 +190,10 @@ namespace CyberCube
             var input = Game.Input;
 
             if ( Mode == CubeMode.Edit )
+            {
                 Game.Camera.Target = mPosition;
+                EditPass( gameTime );
+            }
 
             Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
             Matrix T = Matrix.CreateTranslation( mPosition );
@@ -194,6 +204,7 @@ namespace CyberCube
 
             base.Update( gameTime );
         }
+
 
         public override void Draw( GameTime gameTime )
         {
