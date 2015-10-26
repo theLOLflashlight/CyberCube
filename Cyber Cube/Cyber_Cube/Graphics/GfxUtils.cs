@@ -56,7 +56,12 @@ namespace CyberCube.Graphics
         }
 
 
-        public static void DrawLine( this SpriteBatch batch, Vector2 p0, Vector2 p1, Texture2D texture, float thickness = 1 )
+        public static void DrawLine( this SpriteBatch batch, Line2 line, Texture2D texture, Color color, float thickness = 1 )
+        {
+            batch.DrawLine( line.P0, line.P1, texture, color, thickness );
+        }
+
+        public static void DrawLine( this SpriteBatch batch, Vector2 p0, Vector2 p1, Texture2D texture, Color color, float thickness = 1 )
         {
             Vector2 edge = p1 - p0;
             float angle = (float) Math.Atan2( edge.Y, edge.X );
@@ -69,7 +74,7 @@ namespace CyberCube.Graphics
                     (int) edge.Length(),
                     (int) thickness ),
                 null,
-                Color.White,
+                color,
                 angle,
                 Vector2.Zero,
                 SpriteEffects.None,

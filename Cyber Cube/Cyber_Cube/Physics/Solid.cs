@@ -136,6 +136,9 @@ namespace CyberCube.Physics
         protected readonly Fixture mEdge;
         protected readonly Fixture mExclusionRec;
 
+        const float SENSOR_RANGE = 100f;
+        const float EDGE_THICKNESS = 1f;
+
         public EdgeSolid( CubeGame game,
                           World world,
                           Line2 line,
@@ -143,49 +146,69 @@ namespace CyberCube.Physics
                           float mass = 1 )
             : base( game, world )
         {
+            if ( line.X0 != line.X1 && line.Y0 != line.Y1 )
+                throw new ArgumentException( "Only vertical and horizontal edges are supported." );
+
             mLine = line;
 
-            Vector2 center;
-            center.X = (mLine.X0 + mLine.X1) / 2;
-            center.Y = (mLine.Y0 + mLine.Y1) / 2;
+            Vector2 center, offset;
+            float edgeWidth, edgeHeight, sensorWidth, sensorHeight;
+
+            #region Variable setup
+            {
+                bool horizontal = mLine.Y0 == mLine.Y1;
+                bool inverted = mLine.X1 < mLine.X0 || mLine.Y1 > mLine.Y0;
+
+                center.X = (mLine.X0 + mLine.X1) / 2;
+                center.Y = (mLine.Y0 + mLine.Y1) / 2;
+
+                edgeWidth    = horizontal
+                               ? mLine.Length
+                               : EDGE_THICKNESS;
+                sensorWidth  = horizontal
+                               ? edgeWidth
+                               : SENSOR_RANGE;
+                edgeHeight   = horizontal
+                               ? EDGE_THICKNESS
+                               : mLine.Length;
+                sensorHeight = horizontal
+                               ? SENSOR_RANGE
+                               : edgeHeight;
+
+                offset = horizontal
+                         ? Vector2.UnitY * ((sensorHeight / 2) + edgeHeight)
+                         : Vector2.UnitX * ((sensorWidth / 2) + edgeWidth);
+                if ( inverted )
+                    offset = -offset;
+            }
+            #endregion
 
             Body = BodyFactory.CreateBody( world );
-
             Body.BodyType = bodyType;
             Body.Mass = mass;
 
-            mEdge = FixtureFactory.AttachEdge(
-                    mLine.P0 * Constants.PIXEL_TO_UNIT,
-                    mLine.P1 * Constants.PIXEL_TO_UNIT,
-                    Body );
 
-            float width = mLine.Length;
-            float height = 100;
-            if ( mLine.Y0 == mLine.Y1 )
-            {
-                width = 100;
-                height = mLine.Length;
-            }
+            mEdge = FixtureFactory.AttachRectangle(
+                edgeWidth * Constants.PIXEL_TO_UNIT,
+                edgeHeight * Constants.PIXEL_TO_UNIT,
+                1,
+                center * Constants.PIXEL_TO_UNIT,
+                Body );
 
-            Vector2 off = mLine.Y0 == mLine.Y1
-                          ? Vector2.UnitY * ((height / 2) + 2)
-                          : Vector2.UnitX * ((width / 2) + 2);
-
-            if ( mLine.X1 < mLine.X0 || mLine.Y1 > mLine.Y0 )
-                off = -off;
 
             mExclusionRec = FixtureFactory.AttachRectangle(
-                width * Constants.PIXEL_TO_UNIT,
-                height * Constants.PIXEL_TO_UNIT,
+                sensorWidth * Constants.PIXEL_TO_UNIT,
+                sensorHeight * Constants.PIXEL_TO_UNIT,
                 1,
-                (center + off) * Constants.PIXEL_TO_UNIT,
+                (center + offset) * Constants.PIXEL_TO_UNIT,
                 Body );
 
             mExclusionRec.IsSensor = true;
 
             mExclusionRec.OnCollision += ( a, b, c ) => {
-                mEdge.IgnoreCollisionWith( b );
-                return true;
+                if ( !b.IsSensor )
+                    mEdge.IgnoreCollisionWith( b );
+                return !b.IsSensor;
             };
             
             mExclusionRec.OnSeparation += ( a, b ) => {
@@ -199,50 +222,9 @@ namespace CyberCube.Physics
 
             mSpriteBatch.Begin();
 
-            Vector2 edge = mLine.P1 - mLine.P0;
-            float angle = (float) Math.Atan2( edge.Y, edge.X );
-
-            mSpriteBatch.Draw(
-                Texture,
-                new Rectangle(
-                    (int) mLine.P0.X,
-                    (int) mLine.P0.Y,
-                    (int) edge.Length(),
-                    30 ),
-                null,
-                new Color( 0, 0, 0, 64 ),
-                angle,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0 );
-
-            mSpriteBatch.Draw(
-                Texture,
-                new Rectangle(
-                    (int) mLine.P0.X,
-                    (int) mLine.P0.Y,
-                    (int) edge.Length(),
-                    20 ),
-                null,
-                new Color( 0, 0, 0, 64 ),
-                angle,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0 );
-
-            mSpriteBatch.Draw(
-                Texture,
-                new Rectangle(
-                    (int) mLine.P0.X,
-                    (int) mLine.P0.Y,
-                    (int) edge.Length(),
-                    10 ),
-                null,
-                Color.Black,
-                angle,
-                Vector2.Zero,
-                SpriteEffects.None,
-                0 );
+            mSpriteBatch.DrawLine( mLine, Texture, new Color( 0, 0, 0, 64 ), 30 );
+            mSpriteBatch.DrawLine( mLine, Texture, new Color( 0, 0, 0, 64 ), 20 );
+            mSpriteBatch.DrawLine( mLine, Texture, Color.Black, 10 );
 
             mSpriteBatch.End();
         }
