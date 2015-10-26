@@ -233,35 +233,39 @@ namespace CyberCube
                 {
                     if ( mCube.Mode == Cube.CubeMode.Edit )
                     {
-                            if ( Input.GetAction( Action.RotateRight ) )
+                        if ( Input.GetAction( Action.RotateRight ) )
                             mCube.RotateRight();
 
-                            if ( Input.GetAction( Action.RotateLeft ) )
+                        if ( Input.GetAction( Action.RotateLeft ) )
                             mCube.RotateLeft();
 
-                            if ( Input.GetAction( Action.RotateUp ) )
-                                mCube.RotateTop();
+                        if ( Input.GetAction( Action.RotateUp ) )
+                            mCube.RotateTop();
 
-                            if ( Input.GetAction( Action.RotateDown ) )
-                                mCube.RotateBottom();
+                        if ( Input.GetAction( Action.RotateDown ) )
+                            mCube.RotateBottom();
                     }
 
                     if ( Input.GetAction( Action.RotateClockwise ) )
-                    {
                         mCube.RotateClockwise();
-                        --Player.UpDir;
-                    }
 
                     if ( Input.GetAction( Action.RotateAntiClockwise ) )
-                    {
                         mCube.RotateAntiClockwise();
-                        ++Player.UpDir;
-                    }
 
                     if ( Input.GetAction( Action.ToggleCubeMode ) )
-                    mCube.Mode = mCube.Mode == Cube.CubeMode.Edit
-                                 ? Cube.CubeMode.Play
-                                 : Cube.CubeMode.Edit;
+                    {
+                        switch ( mCube.Mode )
+                        {
+                        case Cube.CubeMode.Edit:
+
+                            mCube.CenterOnPlayer( Player );
+                            mCube.Mode = Cube.CubeMode.Play;
+                            break;
+                        case Cube.CubeMode.Play:
+                            mCube.Mode = Cube.CubeMode.Edit;
+                            break;
+                        }
+                    }
                 }
 
                 Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
@@ -327,6 +331,9 @@ namespace CyberCube
 
         private bool RunCommand( string command )
         {
+            if ( Console.Closed )
+                Console.Open();
+
             switch ( command )
             {
             default:
@@ -351,9 +358,16 @@ namespace CyberCube
             case "help":
                 Console.AddMessage( @"Valid commands are:
 [help]
+[reset]
 [background <xna color>]
 [exit]
 [clear]" );
+                return true;
+
+            case "reset":
+                mCube.Reset();
+                Player.Reset( Vector3.UnitZ, Direction.Up );
+                mCube.CenterOnPlayer( Player );
                 return true;
 
             case "exit":

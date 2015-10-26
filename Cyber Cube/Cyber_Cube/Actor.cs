@@ -120,6 +120,15 @@ namespace CyberCube
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
         }
 
+        public virtual void Reset( Vector3 worldPos, Direction upDir )
+        {
+            mWorldPosition = worldPos;
+            mUpDir = upDir;
+
+            CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
+            this.Initialize();
+        }
+
         protected virtual Body CreateBody( World world )
         {
             Body body = BodyFactory.CreateCircle(
@@ -163,6 +172,7 @@ namespace CyberCube
             Body.GravityScale = 20f;
             Body.UseAdHocGravity = true;
             Body.AdHocGravity = Vector2.UnitY;
+            Body.CollisionCategories = Category.Cat2;
         }
 
         public override void Update( GameTime gameTime )

@@ -63,6 +63,16 @@ namespace CyberCube
                            UpDir.Angle ) );
         }
 
+        public void CenterOnPlayer( Player player )
+        {
+            CurrentFace = player.CubeFace;
+            UpDir = player.UpDir;
+
+            Game.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            Game.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+            //Game.Camera.SkipAnimation();
+        }
+
         /*
         Picture the unfolded cube:
             T
@@ -180,6 +190,12 @@ namespace CyberCube
             Effect.View = Game.Camera.View;
         }
 
+        public void Reset()
+        {
+            foreach ( var face in Faces )
+                face.ResetWorld();
+        }
+
         protected override void LoadContent()
         {
             base.LoadContent();
@@ -208,10 +224,6 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            //var Faces = from f in this.Faces
-            //            where f.Normal != -CurrentFace.Normal
-            //            select f;
-
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 

@@ -47,7 +47,7 @@ namespace CyberCube
                 get; private set;
             }
 
-            public RenderTarget2D Texture
+            public RenderTarget2D RenderTarget
             {
                 get; private set;
             }
@@ -61,11 +61,6 @@ namespace CyberCube
             {
                 get; private set;
             }
-
-            //public List< Solid2 > Solid2s
-            //{
-            //    get; private set;
-            //}
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube.Game )
@@ -148,25 +143,11 @@ namespace CyberCube
             {
                 base.Initialize();
 
-                Texture = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT );
+                RenderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT );
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
                 this.Visible = false;
-
-                //Solid2s.Clear();
-                //Solid2s.Add( new RecSolid2( new Rectangle( 0, HEIGHT - 10, WIDTH, 10 ) ) );
-                //Solid2s.Add( new RecSolid2( new Rectangle( 10, 70, 30, 10 ) ) );
-                //Solid2s.Add( new RecSolid2( new Rectangle( WIDTH - 15, 15, 10, 30 ) ) );
-                //
-                //Solid2s.Add( new OneWayLine( new Line2( 10, 20, 40, 20 ) ) );
-                //Solid2s.Add( new OneWayLine( new Line2( 10, 40, 40, 40 ) ) );
-                //
-                //Solid2s.Add( new OneWayLine( new Line2( 70, 50, 70, 20 ) ) );
-                //
-                //Solid2s.Add( new OneWayLine( new Line2( 38, 91, 38, 79 ) ) );
-                //Solid2s.Add( new OneWayLine( new Line2( 24, 91, 24, 79 ) ) );
-                //Solid2s.Add( new OneWayLine( new Line2( 10, 91, 10, 79 ) ) );
             }
 
             protected override void LoadContent()
@@ -192,6 +173,17 @@ namespace CyberCube
             public override void Draw( GameTime gameTime )
             {
                 DrawBodies( gameTime );
+
+                switch ( Cube.Mode )
+                {
+                case CubeMode.Edit:
+                    EditDraw( gameTime );
+                    break;
+
+                case CubeMode.Play:
+                    break;
+                }
+                
                 //mSpriteBatch.Begin();
                 //mSpriteBatch.DrawString( mFont,
                 //                        Name,
@@ -202,9 +194,6 @@ namespace CyberCube
                 //                        10,
                 //                        SpriteEffects.None,
                 //                        0 );
-
-                //foreach ( Solid2 solid in Solid2s )
-                //    solid.Draw( mSpriteBatch, pixel );
 
                 //Vector2 vec2d = Game.Player.ComputeFacePosition();
                 //vec2d = vec2d.Rounded();
@@ -217,30 +206,23 @@ namespace CyberCube
 
             public void Render2D( GameTime gameTime )
             {
-                // Huge memory performance improvement gained by disposing of render target.
-                //using ( var renderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT ) )
-                //{
-                    var tmp = GraphicsDevice.GetRenderTargets();
+                var tmp = GraphicsDevice.GetRenderTargets();
 
-                    // Set the current graphics device to the render target and clear it
-                    GraphicsDevice.SetRenderTarget( Texture );
-                    GraphicsDevice.Clear( BackgroundColor );
+                // Set the current graphics device to the render target and clear it
+                GraphicsDevice.SetRenderTarget( RenderTarget );
+                GraphicsDevice.Clear( BackgroundColor );
 
-                    this.Draw( gameTime );
+                // Draw our face on the RenderTarget
+                this.Draw( gameTime );
 
-                    // Now switch back to the default target (i.e., the primary display) and set it up
-                    GraphicsDevice.SetRenderTargets( tmp );
-                    GraphicsDevice.Clear( Game.BackgroundColor );
-
-                    //int[] data = new int[ WIDTH * HEIGHT ];
-                    //renderTarget.GetData( data );
-                    //Texture.SetData( data );
-                //}
+                // Now switch back to the default target (i.e., the primary display) and set it up
+                GraphicsDevice.SetRenderTargets( tmp );
+                GraphicsDevice.Clear( Game.BackgroundColor );
             }
 
             public void Render3D( Effect effect )
             {
-                effect.Parameters[ "Texture" ].SetValue( Texture );
+                effect.Parameters[ "Texture" ].SetValue( RenderTarget );
 
                 foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
                 {

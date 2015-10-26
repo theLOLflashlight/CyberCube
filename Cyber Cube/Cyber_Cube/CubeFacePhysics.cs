@@ -14,57 +14,60 @@ namespace CyberCube
     {
         public partial class Face
         {
-            private World mWorld;
-
             public World World
             {
-                get {
-                    return mWorld;
-                }
+                get; private set;
             }
 
             private readonly List< Solid > mSolids = new List<Solid>();
 
+            public void ResetWorld()
+            {
+                mSolids.Clear();
+                World.Clear();
+                SetUpWorld();
+            }
+
             private void SetUpWorld()
             {
-                mWorld = new World( Vector2.Zero );
+                World = new World( new Vector2( 0, 9.8f ) );
 
                 var box = new RecSolid(
                         Game,
-                        mWorld,
+                        World,
                         new Rectangle( 360, 0, 100, 100 ),
-                        BodyType.Dynamic, 30 );
+                        BodyType.Dynamic, 30, Category.Cat2 );
 
                 box.Body.UseAdHocGravity = true;
                 box.Body.AdHocGravity = new Vector2( 0, 9.8f );
 
-                mSolids.Add( box );
+                AddSolid( box );
 
-                mSolids.Add(
+                AddSolid(
                     new RecSolid(
                         Game,
-                        mWorld,
+                        World,
                         new Rectangle( 0, HEIGHT - 100, WIDTH, 100 ) ) );
 
-                mSolids.Add(
+                AddSolid(
                     new RecSolid(
                         Game,
-                        mWorld,
+                        World,
                         new Rectangle( 100, 700, 300, 100 ) ) );
 
-                mSolids.Add(
+                AddSolid(
                     new RecSolid(
                         Game,
-                        mWorld,
+                        World,
                         new Rectangle( WIDTH - 150, 150, 100, 300 ) ) );
 
-                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 100, 200 ) ) );
-                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 400, 400, 400 ) ) );
-                mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 700, 500, 700, 200 ) ) );
-                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 400, 200, 550, 300 ) ) );
-                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 380, 910, 380, 790 ) ) );
-                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 240, 910, 240, 790 ) ) );
-                //mSolids.Add( new EdgeSolid( Game, mWorld, new Line2( 100, 910, 100, 790 ) ) );
+                AddSolid( new OneWayPlatform( Game, World, new Line2( 400, 200, 100, 200 ) ) );
+                AddSolid( new OneWayPlatform( Game, World, new Line2( 100, 400, 400, 400 ) ) );
+                AddSolid( new OneWayPlatform( Game, World, new Line2( 700, 500, 700, 200 ) ) );
+                //AddSolid( new OneWayPlatform( Game, World, new Line2( 400, 200, 550, 300 ) ) );
+                //AddSolid( new OneWayPlatform( Game, World, new Line2( 380, 910, 380, 790 ) ) );
+                //AddSolid( new OneWayPlatform( Game, World, new Line2( 240, 910, 240, 790 ) ) );
+                //AddSolid( new OneWayPlatform( Game, World, new Line2( 100, 910, 100, 790 ) ) );
             }
 
             public void AddSolid( Solid solid )
@@ -87,8 +90,16 @@ namespace CyberCube
                 //    foreach ( var dir in ClampSolid( solid ) )
                 //        MoveSolid( solid, dir );
 
-                if ( Cube.Mode == CubeMode.Play )
-                    mWorld.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
+                switch ( Cube.Mode )
+                {
+                case CubeMode.Edit:
+                    EditPass( gameTime );
+                    break;
+
+                case CubeMode.Play:
+                    World.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
+                    break;
+                }
             }
 
             private void DrawBodies( GameTime gameTime )

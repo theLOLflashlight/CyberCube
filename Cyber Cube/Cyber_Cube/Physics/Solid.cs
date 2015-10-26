@@ -82,7 +82,8 @@ namespace CyberCube.Physics
                          World world,
                          Rectangle rec,
                          BodyType bodyType = BodyType.Static,
-                         float mass = 1 )
+                         float mass = 1,
+                         Category categories = Category.Cat1 )
             : base( game, world )
         {
             mRec = rec;
@@ -98,6 +99,7 @@ namespace CyberCube.Physics
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
+            Body.CollisionCategories = categories;
         }
 
         public override void Draw( GameTime gameTime )
@@ -115,7 +117,7 @@ namespace CyberCube.Physics
                 Texture,
                 position,
                 null,
-                Color.Black,
+                BodyType == BodyType.Static ? Color.Black : Color.White,
                 Body.Rotation,
                 new Vector2(
                     Texture.Width / 2.0f,
@@ -129,7 +131,7 @@ namespace CyberCube.Physics
 
     }
 
-    public class EdgeSolid : Solid
+    public class OneWayPlatform : Solid
     {
         protected readonly Line2 mLine;
 
@@ -139,38 +141,38 @@ namespace CyberCube.Physics
         const float SENSOR_RANGE = 100f;
         const float EDGE_THICKNESS = 1f;
 
-        public EdgeSolid( CubeGame game,
-                          World world,
-                          Line2 line,
-                          BodyType bodyType = BodyType.Static,
-                          float mass = 1 )
+        private int mExclusionCount = 0;
+
+        public OneWayPlatform( CubeGame game,
+                               World world,
+                               Line2 line,
+                               BodyType bodyType = BodyType.Static,
+                               float mass = 1 )
             : base( game, world )
         {
             if ( line.X0 != line.X1 && line.Y0 != line.Y1 )
                 throw new ArgumentException( "Only vertical and horizontal edges are supported." );
-
-            mLine = line;
 
             Vector2 center, offset;
             float edgeWidth, edgeHeight, sensorWidth, sensorHeight;
 
             #region Variable setup
             {
-                bool horizontal = mLine.Y0 == mLine.Y1;
-                bool inverted = mLine.X1 < mLine.X0 || mLine.Y1 > mLine.Y0;
+                bool horizontal = line.Y0 == line.Y1;
+                bool inverted = line.X1 < line.X0 || line.Y1 > line.Y0;
 
-                center.X = (mLine.X0 + mLine.X1) / 2;
-                center.Y = (mLine.Y0 + mLine.Y1) / 2;
+                center.X = (line.X0 + line.X1) / 2;
+                center.Y = (line.Y0 + line.Y1) / 2;
 
                 edgeWidth    = horizontal
-                               ? mLine.Length
+                               ? line.Length
                                : EDGE_THICKNESS;
                 sensorWidth  = horizontal
                                ? edgeWidth
                                : SENSOR_RANGE;
                 edgeHeight   = horizontal
                                ? EDGE_THICKNESS
-                               : mLine.Length;
+                               : line.Length;
                 sensorHeight = horizontal
                                ? SENSOR_RANGE
                                : edgeHeight;
@@ -183,36 +185,48 @@ namespace CyberCube.Physics
             }
             #endregion
 
-            Body = BodyFactory.CreateBody( world );
+            mLine = line - center;
+
+            Body = BodyFactory.CreateBody( world, center * Constants.PIXEL_TO_UNIT );
             Body.BodyType = bodyType;
             Body.Mass = mass;
 
-
+            // Not really an Edge, just a thin rectangle. This is necessary for accurate 
+            // collision and exclusion detection.
             mEdge = FixtureFactory.AttachRectangle(
                 edgeWidth * Constants.PIXEL_TO_UNIT,
                 edgeHeight * Constants.PIXEL_TO_UNIT,
                 1,
-                center * Constants.PIXEL_TO_UNIT,
+                Vector2.Zero,//(offset / 2) * Constants.PIXEL_TO_UNIT,
                 Body );
 
+            Fixture edge = FixtureFactory.AttachEdge(
+                mLine.P0 * Constants.PIXEL_TO_UNIT,
+                mLine.P1 * Constants.PIXEL_TO_UNIT,
+                Body );
+            edge.CollidesWith = Category.All ^ Category.Cat2;
 
             mExclusionRec = FixtureFactory.AttachRectangle(
                 sensorWidth * Constants.PIXEL_TO_UNIT,
                 sensorHeight * Constants.PIXEL_TO_UNIT,
                 1,
-                (center + offset) * Constants.PIXEL_TO_UNIT,
+                offset * Constants.PIXEL_TO_UNIT,
                 Body );
 
             mExclusionRec.IsSensor = true;
 
-            mExclusionRec.OnCollision += ( a, b, c ) => {
+            mExclusionRec.OnCollision = ( a, b, c ) => {
                 if ( !b.IsSensor )
+                {
                     mEdge.IgnoreCollisionWith( b );
+                    ++mExclusionCount;
+                }
                 return !b.IsSensor;
             };
             
-            mExclusionRec.OnSeparation += ( a, b ) => {
+            mExclusionRec.OnSeparation = ( a, b ) => {
                 mEdge.RestoreCollisionWith( b );
+                --mExclusionCount;
             };
         }
 
@@ -220,11 +234,22 @@ namespace CyberCube.Physics
         {
             //mExclusionRec.Body.DrawBody( GraphicsDevice, Texture, gameTime );
 
-            mSpriteBatch.Begin();
+            mSpriteBatch.Begin( /*SpriteSortMode.Deferred, BlendState.NonPremultiplied*/ );
 
-            mSpriteBatch.DrawLine( mLine, Texture, new Color( 0, 0, 0, 64 ), 30 );
-            mSpriteBatch.DrawLine( mLine, Texture, new Color( 0, 0, 0, 64 ), 20 );
-            mSpriteBatch.DrawLine( mLine, Texture, Color.Black, 10 );
+            Color shadowColor = /*mExclusionCount > 0
+                                ? new Color( 255, 255, 255, 64 )
+                                : */new Color( 0, 0, 0, 64 );
+
+            Line2 line = mLine;
+
+            line.P0 = line.P0.Rotate( Body.Rotation );
+            line.P1 = line.P1.Rotate( Body.Rotation );
+
+            line += Body.Position * Constants.UNIT_TO_PIXEL;
+
+            mSpriteBatch.DrawLine( line, Texture, shadowColor, 30 );
+            mSpriteBatch.DrawLine( line, Texture, shadowColor, 20 );
+            mSpriteBatch.DrawLine( line, Texture, BodyType == BodyType.Static ? Color.Black : Color.White, 10 );
 
             mSpriteBatch.End();
         }

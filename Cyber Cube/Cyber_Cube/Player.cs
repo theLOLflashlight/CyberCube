@@ -23,6 +23,11 @@ namespace CyberCube
             this.DrawOrder = 1;
         }
 
+        public override void Reset( Vector3 worldPos, Direction upDir )
+        {
+            base.Reset( worldPos, upDir );
+        }
+
         protected override void LoadContent()
         {
             base.LoadContent();
@@ -57,6 +62,15 @@ namespace CyberCube
         public override void Update( GameTime gameTime )
         {
             var input = Game.Input;
+
+            if ( !input.HasFocus )
+            {
+                if ( input.GetAction( Action.RotateClockwise ) )
+                    --UpDir;
+
+                if ( input.GetAction( Action.RotateAntiClockwise ) )
+                    ++UpDir;
+            }
 
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 

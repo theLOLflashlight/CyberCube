@@ -106,6 +106,27 @@ namespace CyberCube
             }
         }
 
+        public static Line2 operator +( Line2 line, Vector2 vec )
+        {
+            return new Line2( line.P0 + vec, line.P1 + vec );
+        }
+
+        public static Line2 operator +( Vector2 vec, Line2 line )
+        {
+            return new Line2( vec + line.P0, vec + line.P1 );
+        }
+
+        public static Line2 operator -( Line2 line, Vector2 vec )
+        {
+            return new Line2( line.P0 - vec, line.P1 - vec );
+        }
+
+        public static Line2 operator -( Vector2 vec, Line2 line )
+        {
+            return new Line2( vec - line.P0, vec - line.P1 );
+        }
+
+
         public float X0
         {
             get {
@@ -191,6 +212,26 @@ namespace CyberCube
             get {
                 return P0 + (t * (P1 - P0));
             }
+        }
+
+        public static Line3 operator +( Line3 line, Vector3 vec )
+        {
+            return new Line3( line.P0 + vec, line.P1 + vec );
+        }
+
+        public static Line3 operator +( Vector3 vec, Line3 line )
+        {
+            return new Line3( vec + line.P0, vec + line.P1 );
+        }
+
+        public static Line3 operator -( Line3 line, Vector3 vec )
+        {
+            return new Line3( line.P0 - vec, line.P1 - vec );
+        }
+
+        public static Line3 operator -( Vector3 vec, Line3 line )
+        {
+            return new Line3( vec - line.P0, vec - line.P1 );
         }
 
         public float? Intersects( BoundingBox box )

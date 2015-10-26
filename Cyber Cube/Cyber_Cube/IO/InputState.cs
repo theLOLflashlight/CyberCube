@@ -35,6 +35,21 @@ namespace CyberCube.IO
         public GamePadState OldGamePad { get; private set; }
 
 
+        public Vector2 Mouse_Pos
+        {
+            get {
+                return new Vector2( Mouse.X, Mouse.Y );
+            }
+        }
+
+        public Vector2 OldMouse_Pos
+        {
+            get {
+                return new Vector2( OldMouse.X, OldMouse.Y );
+            }
+        }
+
+
         public InputState()
         {
             Mouse = Microsoft.Xna.Framework.Input.Mouse.GetState();
