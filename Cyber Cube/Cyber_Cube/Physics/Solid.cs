@@ -160,7 +160,9 @@ namespace CyberCube.Physics
             {
                 bool horizontal = line.Y0 == line.Y1;
                 bool inverted = line.X1 < line.X0 || line.Y1 > line.Y0;
-
+#if XBOX
+                center = Vector2.Zero;
+#endif
                 center.X = (line.X0 + line.X1) / 2;
                 center.Y = (line.Y0 + line.Y1) / 2;
 
@@ -183,7 +185,7 @@ namespace CyberCube.Physics
                 if ( inverted )
                     offset = -offset;
             }
-            #endregion
+#endregion
 
             mLine = line - center;
 
