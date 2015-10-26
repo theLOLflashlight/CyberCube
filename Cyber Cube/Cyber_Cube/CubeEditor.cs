@@ -173,7 +173,7 @@ namespace CyberCube
                                          new Color( 0, 0, 0, 128 ),
                                          0, // Rotation is handled via texture orientation.
                                          mFont.MeasureString( Name ) / 2,
-                                         10,
+                                         5,
                                          SpriteEffects.None,
                                          0 );
 

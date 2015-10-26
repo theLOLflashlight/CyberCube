@@ -154,7 +154,7 @@ namespace CyberCube
             {
                 base.LoadContent();
 
-                mFont = Game.Content.Load< SpriteFont >( "MessageFont" );
+                mFont = Game.Content.Load< SpriteFont >( "MessageFontLarge" );
                 LoadPhysics();
             }
 

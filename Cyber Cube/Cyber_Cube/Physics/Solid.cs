@@ -242,11 +242,7 @@ namespace CyberCube.Physics
                                 ? new Color( 255, 255, 255, 64 )
                                 : */new Color( 0, 0, 0, 64 );
 
-            Line2 line = mLine;
-
-            line.P0 = line.P0.Rotate( Body.Rotation );
-            line.P1 = line.P1.Rotate( Body.Rotation );
-
+            Line2 line = mLine.Rotate( Body.Rotation );
             line += Body.Position * Constants.UNIT_TO_PIXEL;
 
             mSpriteBatch.DrawLine( line, Texture, shadowColor, 30 );

@@ -106,6 +106,12 @@ namespace CyberCube
             }
         }
 
+        public Line2 Rotate( float radians )
+        {
+            return new Line2( P0.Rotate( radians ),
+                              P1.Rotate( radians ) );
+        }
+
         public static Line2 operator +( Line2 line, Vector2 vec )
         {
             return new Line2( line.P0 + vec, line.P1 + vec );
