@@ -7,6 +7,10 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using FarseerPhysics.Dynamics;
+using FarseerPhysics.Factories;
+using CyberCube.Screens;
+using CyberCube.Levels;
 
 namespace CyberCube
 {
@@ -16,8 +20,8 @@ namespace CyberCube
         private Model model3D;
 		private float aspectRatio;
 
-        public Player( Cube cube, Vector3 worldPos, Direction upDir )
-            : base( cube.Game, cube, worldPos, upDir )
+        public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, Direction upDir )
+            : base( cube.Game, screen, cube, worldPos, upDir )
         {
             this.Visible = true;
             this.DrawOrder = 1;
@@ -33,6 +37,21 @@ namespace CyberCube
             base.LoadContent();
             model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
         }
+
+        /*protected override Body CreateBody( World world )
+        {
+            Body body = BodyFactory.CreateRectangle(
+                CubeFace.World,
+                10 * Physics.Constants.PIXEL_TO_UNIT,
+                50 * Physics.Constants.PIXEL_TO_UNIT,
+                1,
+                ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
+
+            body.BodyType = BodyType.Dynamic;
+            body.Rotation = UpDir.Angle;
+
+            return body;
+        }*/
 
         public override void Initialize()
         {
@@ -106,7 +125,7 @@ namespace CyberCube
 
             base.Update( gameTime );
 
-            Game.Camera.Target = WorldPosition;
+            Screen.Camera.Target = WorldPosition;
         }
 
         protected override void ApplyRotation( CompassDirection dir )
@@ -117,8 +136,8 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            if ( Cube.Mode == Cube.CubeMode.Play )
-            {
+            //if ( Cube.Mode == Cube.CubeMode.Play )
+            //{
 			    // Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
 			    Matrix[] transforms = (new Matrix[model3D.Bones.Count]);
 			    model3D.CopyAbsoluteBoneTransformsTo( transforms );
@@ -140,8 +159,8 @@ namespace CyberCube
 
                         effect.World *= m;
 
-					    effect.View = Matrix.CreateLookAt( Game.Camera.Position,
-						    Vector3.Zero, Game.Camera.UpVector );
+					    effect.View = Matrix.CreateLookAt( Screen.Camera.Position,
+						    Vector3.Zero, Screen.Camera.UpVector );
 					    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
 						    MathHelper.ToRadians( 45.0f ), aspectRatio,
 						    1.0f, 10000.0f );
@@ -149,7 +168,7 @@ namespace CyberCube
 				    // Draw the mesh, using the effects set above.
 				    mesh.Draw();
 			    }
-            }
+            //}
 
             // Find screen equivalent of 3D location in world
             Vector3 screenLocation = GraphicsDevice.Viewport.Project(

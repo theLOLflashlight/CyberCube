@@ -15,6 +15,27 @@ namespace CyberCube.MenuFiles
 {
     public class Menu
     {
+        private static Texture2D sTitleCard;
+        private static Texture2D sNewGame;
+        private static Texture2D sLoadGame;
+        private static Texture2D sLevelEdit;
+        private static Texture2D sControls;
+        private static Texture2D sExit;
+        private static SpriteFont sString;
+
+        public static void LoadContent( ContentManager content )
+        {
+            sTitleCard = content.Load<Texture2D>("MenuItems\\TitleCard");
+
+            sNewGame = content.Load<Texture2D>("MenuItems\\menuNewGame");
+            sLoadGame = content.Load<Texture2D>("MenuItems\\menuLoadGame");
+            sLevelEdit = content.Load<Texture2D>("MenuItems\\menuLevelEditor");
+            sControls = content.Load<Texture2D>("MenuItems\\menuControls");
+            sExit = content.Load<Texture2D>("MenuItems\\menuExit");
+
+            sString = content.Load<SpriteFont>("ConsoleFont");
+        }
+
         enum Highlight
         {
             NewGame,
@@ -51,15 +72,15 @@ namespace CyberCube.MenuFiles
 
         public Menu(Game game, string s)
         {
-            titleCard = game.Content.Load<Texture2D>("MenuItems\\TitleCard");
+            titleCard = sTitleCard;
 
-            bNewGame = game.Content.Load<Texture2D>("MenuItems\\menuNewGame");
-            bLoadGame = game.Content.Load<Texture2D>("MenuItems\\menuLoadGame");
-            bLevelEdit = game.Content.Load<Texture2D>("MenuItems\\menuLevelEditor");
-            bControls = game.Content.Load<Texture2D>("MenuItems\\menuControls");
-            bExit = game.Content.Load<Texture2D>("MenuItems\\menuExit");
+            bNewGame = sNewGame;
+            bLoadGame = sLoadGame;
+            bLevelEdit = sLevelEdit;
+            bControls = sControls;
+            bExit = sExit;
 
-            vString = game.Content.Load<SpriteFont>("ConsoleFont");
+            vString = sString;
             verString = s;
 
             winWidth = game.GraphicsDevice.Viewport.Width;
@@ -153,7 +174,7 @@ namespace CyberCube.MenuFiles
 
                         break;
                     case Highlight.LevelEditor:
-
+                        CurrentMenuState = GameState.LevelEditor;
                         break;
                     case Highlight.Controls:
 

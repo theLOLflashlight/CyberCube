@@ -1,4 +1,5 @@
 ﻿using CyberCube.Physics;
+using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -12,7 +13,7 @@ namespace CyberCube
 
     public partial class Cube
     {
-        public partial class Face : DrawableCubeGameComponent
+        public abstract partial class Face : DrawableCubeGameComponent
         {
             public const int SIZE = 1000;
             public const int WIDTH = SIZE;
@@ -23,9 +24,7 @@ namespace CyberCube
             /// </summary>
             private VertexPositionNormalTexture[] mVertexData = new VertexPositionNormalTexture[ 6 ];
 
-            private Texture2D pixel;
-
-            private SpriteFont mFont;
+            protected Texture2D pixel;
 
             public Cube Cube
             {
@@ -62,32 +61,19 @@ namespace CyberCube
                 get; private set;
             }
 
-            public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
+            public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction rotation )
                 : base( cube.Game )
             {
                 Cube = cube;
                 Name = name;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
-                Rotation = orientation.Angle;
+                Rotation = rotation.Angle;
                 BackgroundColor = Color.Transparent;
-
-                //Solid2s = new List<Solid2>();
 
                 SetUpVertices();
                 SetUpWorld();
-
-                Game.Components.ComponentAdded += ( s, e ) => {
-                    if ( ReferenceEquals( this, e.GameComponent ) )
-                        foreach ( Solid solid in mSolids )
-                            Game.Components.Add( solid );
-                };
-
-                Game.Components.ComponentRemoved += ( s, e ) => {
-                    if ( ReferenceEquals( this, e.GameComponent ) )
-                        foreach ( Solid solid in mSolids )
-                            Game.Components.Remove( solid );
-                };
+                this.Visible = false;
             }
 
             private void SetUpVertices()
@@ -147,61 +133,22 @@ namespace CyberCube
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
-                this.Visible = false;
+                foreach ( Solid solid in mSolids )
+                    solid.Initialize();
             }
 
-            protected override void LoadContent()
+            public override void Update( GameTime gameTime )
             {
-                base.LoadContent();
+                base.Update( gameTime );
 
-                mFont = Game.Content.Load< SpriteFont >( "MessageFontLarge" );
-                LoadPhysics();
-            }
-
-            public Vector2 Transform3dTo2d( Vector3 vec3d )
-            {
-                vec3d = vec3d.Rotate( Normal, -Rotation )
-                             .Transform( Utils.RotateOntoQ( Normal, Vector3.UnitZ ) );
-                return new Vector2( vec3d.X, -vec3d.Y );
-            }
-
-            public Vector2 ConvertWorldToFace( Vector3 vec3d )
-            {
-                return Transform3dTo2d( vec3d ) * (SIZE / 2f) + new Vector2( SIZE / 2f );
+                foreach ( Solid solid in mSolids )
+                    solid.Update( gameTime );
             }
 
             public override void Draw( GameTime gameTime )
             {
-                DrawBodies( gameTime );
-
-                switch ( Cube.Mode )
-                {
-                case CubeMode.Edit:
-                    EditDraw( gameTime );
-                    break;
-
-                case CubeMode.Play:
-                    break;
-                }
-                
-                //mSpriteBatch.Begin();
-                //mSpriteBatch.DrawString( mFont,
-                //                        Name,
-                //                        new Vector2( WIDTH, HEIGHT ) / 2,
-                //                        Color.Black,
-                //                        0, // Rotation is handled via texture orientation.
-                //                        mFont.MeasureString( Name ) / 2,
-                //                        10,
-                //                        SpriteEffects.None,
-                //                        0 );
-
-                //Vector2 vec2d = Game.Player.ComputeFacePosition();
-                //vec2d = vec2d.Rounded();
-                //vec2d /= 10;
-                //
-                //mSpriteBatch.Draw( pixel, new Rectangle( 10 * (int) vec2d.X, 10 * (int) vec2d.Y, 10, 10 ), new Color( 0, 0, 0, 128 ) );
-
-                //mSpriteBatch.End();
+                foreach ( Solid solid in mSolids )
+                    solid.Draw( gameTime );
             }
 
             public void Render2D( GameTime gameTime )

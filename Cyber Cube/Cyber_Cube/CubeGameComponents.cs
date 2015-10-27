@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CyberCube.Screens;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -23,7 +24,7 @@ namespace CyberCube
 
     }
 
-    public abstract class DrawableCubeGameComponent : DrawableGameComponent
+    public abstract class SimpleDrawableCubeGameComponent : DrawableGameComponent
     {
         public new CubeGame Game
         {
@@ -32,6 +33,16 @@ namespace CyberCube
             }
         }
 
+        public SimpleDrawableCubeGameComponent( CubeGame game )
+            : base( game )
+        {
+        }
+
+        public override abstract void Draw( GameTime gameTime );
+    }
+
+    public abstract class DrawableCubeGameComponent : SimpleDrawableCubeGameComponent
+    {
         protected SpriteBatch mSpriteBatch
         {
             get; private set;
@@ -47,7 +58,35 @@ namespace CyberCube
             base.Initialize();
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
         }
+    }
 
-        public override abstract void Draw( GameTime gameTime );
+    public abstract class DrawableCubeScreenGameComponent : DrawableCubeGameComponent
+    {
+        public CubeScreen Screen
+        {
+            get; set;
+        }
+
+        public DrawableCubeScreenGameComponent( CubeGame game, CubeScreen screen )
+            : base( game )
+        {
+            Screen = screen;
+        }
+
+    }
+
+    public abstract class SimpleDrawableCubeScreenGameComponent : SimpleDrawableCubeGameComponent
+    {
+        public CubeScreen Screen
+        {
+            get; set;
+        }
+
+        public SimpleDrawableCubeScreenGameComponent( CubeGame game, CubeScreen screen )
+            : base( game )
+        {
+            Screen = screen;
+        }
+
     }
 }

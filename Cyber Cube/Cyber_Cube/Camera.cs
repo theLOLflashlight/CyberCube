@@ -6,15 +6,8 @@ using System.Text;
 
 namespace CyberCube
 {
-    public class Camera : GameComponent
+    public class Camera //: CubeGameComponent
     {
-        public new CubeGame Game
-        {
-            get {
-                return base.Game as CubeGame;
-            }
-        }
-
         private Vector3 mPosition0;
         private Vector3 mPosition1;
 
@@ -42,12 +35,10 @@ namespace CyberCube
 
         public Vector3 Target
         {
-            get
-            {
+            get {
                 return mTarget0;
             }
-            set
-            {
+            set {
                 mViewMatrix = Matrix.Identity;
                 mTarget0 = mTarget1 = value;
             }
@@ -55,32 +46,30 @@ namespace CyberCube
 
         public Vector3 UpVector
         {
-            get
-            {
+            get {
                 return mUpVector0;
             }
-            set
-            {
+            set {
                 mViewMatrix = Matrix.Identity;
                 mUpVector0 = mUpVector1 = value;
             }
         }
 
 
-        public Camera( Game game )
-            : base( game )
+        public Camera()// CubeGame game )
+            //: base( game )
         {
         }
 
-        public Camera( Game game, Vector3 position, Vector3 target, Vector3 upVector )
-            : base( game )
+        public Camera( /*CubeGame game,*/ Vector3 position, Vector3 target, Vector3 upVector )
+            //: base( game )
         {
             mPosition0 = mPosition1 = position;
-            mTarget0 = mTarget1 = target;
+            mTarget0   = mTarget1   = target;
             mUpVector0 = mUpVector1 = upVector;
         }
 
-        public override void Update( GameTime gameTime )
+        public void Update( GameTime gameTime )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
 

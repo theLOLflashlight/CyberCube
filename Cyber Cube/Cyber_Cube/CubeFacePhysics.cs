@@ -19,7 +19,17 @@ namespace CyberCube
                 get; private set;
             }
 
-            private readonly List< Solid > mSolids = new List<Solid>();
+            protected readonly List< Solid > mSolids = new List<Solid>();
+
+            public void CopySolids( Face from )
+            {
+                mSolids.Clear();
+                World.Clear();
+                foreach ( Solid solid in from.mSolids )
+                {
+                    mSolids.Add( solid.Clone( World ) );
+                }
+            }
 
             public void ResetWorld()
             {
@@ -30,7 +40,7 @@ namespace CyberCube
 
             private void SetUpWorld()
             {
-                World = new World( new Vector2( 0, 9.8f ) );
+                World = new World( Vector2.Zero );
 
                 var box = new RecSolid(
                         Game,
@@ -75,37 +85,6 @@ namespace CyberCube
                 mSolids.Add( solid );
                 if ( Game.Initialized )
                     solid.Initialize();
-            }
-
-            private void LoadPhysics()
-            {
-                
-            }
-
-            public override void Update( GameTime gameTime )
-            {
-                base.Update( gameTime );
-
-                //foreach ( Solid solid in mSolids.ToList() )
-                //    foreach ( var dir in ClampSolid( solid ) )
-                //        MoveSolid( solid, dir );
-
-                switch ( Cube.Mode )
-                {
-                case CubeMode.Edit:
-                    EditPass( gameTime );
-                    break;
-
-                case CubeMode.Play:
-                    World.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
-                    break;
-                }
-            }
-
-            private void DrawBodies( GameTime gameTime )
-            {
-                foreach ( Solid solid in mSolids )
-                    solid.Draw( gameTime );
             }
 
             private IEnumerable<CompassDirection> ClampSolid( Solid solid )

@@ -1,4 +1,5 @@
 ﻿using CyberCube.IO;
+using CyberCube.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using System;
@@ -17,8 +18,8 @@ namespace CyberCube {
 		private int tickCounter;
         private Vector2 facingDirection;
 
-		public Enemy( Cube cube, Vector3 worldPos, Direction upDir )
-			: base(cube.Game, cube, worldPos, upDir) 
+		public Enemy( CubeScreen screen, Cube cube, Vector3 worldPos, Direction upDir )
+			: base(cube.Game, screen, cube, worldPos, upDir) 
 		{
 			this.Visible = true;
 			this.DrawOrder = 2;
@@ -51,7 +52,7 @@ namespace CyberCube {
 
 			//Utils.FloatApproach( ref mVelocity2d.X, 0, xScale * timeDiff );
 
-			if (SeePlayer( Game.Player ))
+			if (SeePlayer( (Screen as PlayScreen)?.Player ))
 			{
 				xScale *= 1f;
 				visionVertices[0].Color = Color.DarkRed;

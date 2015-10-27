@@ -70,6 +70,15 @@ namespace CyberCube.Physics
             Texture.SetData( new[] { Color.White } );
         }
 
+        public virtual Solid Clone( World world )
+        {
+            Solid clone = (Solid) MemberwiseClone();
+            clone.mWorld = world;
+            clone.Body = clone.Body.DeepClone( world );
+
+            return clone;
+        }
+
         public abstract override void Draw( GameTime gameTime );
 
     }
@@ -201,6 +210,7 @@ namespace CyberCube.Physics
                 1,
                 Vector2.Zero,//(offset / 2) * Constants.PIXEL_TO_UNIT,
                 Body );
+            mEdge.CollidesWith = Category.Cat2;
 
             Fixture edge = FixtureFactory.AttachEdge(
                 mLine.P0 * Constants.PIXEL_TO_UNIT,

@@ -5,10 +5,11 @@ using System.Linq;
 using System.Text;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
+using CyberCube.Screens;
 
 namespace CyberCube
 {
-    public abstract class Actor : DrawableCubeGameComponent
+    public abstract class Actor : DrawableCubeScreenGameComponent
     {
         protected Vector3 mWorldPosition;
 
@@ -105,13 +106,13 @@ namespace CyberCube
             }
         }
 
-        public Actor( CubeGame game )
-            : base( game )
+        public Actor( CubeGame game, CubeScreen screen )
+            : base( game, screen )
         {
         }
 
-        public Actor( CubeGame game, Cube cube, Vector3 worldPos, Direction upDir )
-            : this( game )
+        public Actor( CubeGame game, CubeScreen screen, Cube cube, Vector3 worldPos, Direction upDir )
+            : this( game, screen )
         {
             Cube = cube;
             mWorldPosition = worldPos;

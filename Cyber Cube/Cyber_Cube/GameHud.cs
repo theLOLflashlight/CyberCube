@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
+using CyberCube.Screens;
 
 namespace CyberCube
 {
@@ -12,9 +13,15 @@ namespace CyberCube
 
         private SpriteFont mFont;
 
-        public GameHud( CubeGame game )
-            : base( game )
+        public CubeScreen Screen
         {
+            get; private set;
+        }
+
+        public GameHud( CubeScreen screen )
+            : base( screen.Game )
+        {
+            Screen = screen;
             this.DrawOrder = 2;
         }
 
@@ -52,12 +59,12 @@ namespace CyberCube
             mSpriteBatch.DrawString( mFont, strUpdateRate,
                 new Vector2( GraphicsDevice.Viewport.Width - posUpdateRate.X, posDrawRate.Y ), Color.White );
 
-            mSpriteBatch.DrawString( mFont, Game.Camera.Position.ToString(), Vector2.Zero, Color.White );
-            mSpriteBatch.DrawString( mFont, Game.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
+            mSpriteBatch.DrawString( mFont, Screen.Camera.Position.ToString(), Vector2.Zero, Color.White );
+            mSpriteBatch.DrawString( mFont, Screen.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
 
-            mSpriteBatch.DrawString( mFont, "X: " + Game.Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Y: " + Game.Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
-            mSpriteBatch.DrawString( mFont, "Z: " + Game.Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
+            //mSpriteBatch.DrawString( mFont, "X: " + Screen.Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
+            //mSpriteBatch.DrawString( mFont, "Y: " + Screen.Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
+            //mSpriteBatch.DrawString( mFont, "Z: " + Screen.Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
 
             mSpriteBatch.End();
         }

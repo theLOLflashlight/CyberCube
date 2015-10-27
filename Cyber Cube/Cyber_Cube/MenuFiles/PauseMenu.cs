@@ -14,8 +14,21 @@ using CyberCube.Graphics;
 
 namespace CyberCube.MenuFiles
 {
-    class PauseMenu
+    public class PauseMenu
     {
+        private static Texture2D sResumeGame;
+        private static Texture2D sSaveGame;
+        private static Texture2D sControls;
+        private static Texture2D sQuitMenu;
+
+        public static void LoadContent( ContentManager content )
+        {
+            sResumeGame = content.Load<Texture2D>("PauseItems\\pauseResume");
+            sSaveGame = content.Load<Texture2D>("PauseItems\\pauseSaveGame");
+            sControls = content.Load<Texture2D>("MenuItems\\menuControls");
+            sQuitMenu = content.Load<Texture2D>("PauseItems\\pauseQuitMenu");
+        }
+
         enum Highlight
         {
             ResumeGame,
@@ -46,10 +59,10 @@ namespace CyberCube.MenuFiles
 
         public PauseMenu(Game game)
         {
-            bResumeGame = game.Content.Load<Texture2D>("PauseItems\\pauseResume");
-            bSaveGame = game.Content.Load<Texture2D>("PauseItems\\pauseSaveGame");
-            bControls = game.Content.Load<Texture2D>("MenuItems\\menuControls");
-            bQuitMenu = game.Content.Load<Texture2D>("PauseItems\\pauseQuitMenu");
+            bResumeGame = sResumeGame;
+            bSaveGame = sSaveGame;
+            bControls = sControls;
+            bQuitMenu = sQuitMenu;
 
             currentHighlight = Highlight.ResumeGame;
 

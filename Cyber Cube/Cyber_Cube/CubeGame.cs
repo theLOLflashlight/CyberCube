@@ -11,6 +11,8 @@ using Microsoft.Xna.Framework.Media;
 using CyberCube.IO;
 using CyberCube.MenuFiles;
 using System.Reflection;
+using CyberCube.Levels;
+using CyberCube.Screens;
 
 namespace CyberCube
 {
@@ -37,27 +39,16 @@ namespace CyberCube
             }
         }
 
-        public Camera Camera { get; private set; }
-
-        public Player Player { get; private set; }
-
-		public Enemy Enemy { get; private set; }
-
         public Color BackgroundColor { get; private set; }
 
-        private GraphicsDeviceManager mGraphicsDeviceManager;
+        protected GraphicsDeviceManager mGraphicsDeviceManager;
 
         private SpriteBatch mSpriteBatch;
         private SpriteFont mFont;
 
-        private Cube mCube;
         public readonly GameConsole Console;
-        public readonly GameHud Hud;
 
-        private Menu mMenu;
-        private string version;
-
-        private PauseMenu mPauseMenu;
+        private ScreenManager mScreenManager;
 
         public bool Initialized
         {
@@ -74,26 +65,17 @@ namespace CyberCube
             mGraphicsDeviceManager = new GraphicsDeviceManager( this );
             Content.RootDirectory = "Content";
 
+            mScreenManager = new ScreenManager( this );
+
             Console = new GameConsole( this, this );
-            Hud = new GameHud( this );
-            Camera = new Camera( this );
-            mCube = new Cube( this );
-            Player = new Player( mCube, Vector3.UnitZ, Direction.Up );
-			Enemy = new Enemy( mCube, new Vector3(-0.5f, 0.7f, 1.0f), Direction.Up );
 
             Console.CommandExecuted += RunCommand;
             Console.Close();
 
             Components.Add( Console );
-            Components.Add( Hud );
-            Components.Add( Player );
-            Components.Add( mCube );
-			//Components.Add( Enemy );
-            Components.Add( Camera );
+            Components.Add( mScreenManager );
 
             Components.Add( new GamerServicesComponent( this ) );
-
-            version = "v0.1 alpha";
         }
 
         private void SetUpBinds()
@@ -150,12 +132,14 @@ namespace CyberCube
         protected override void Initialize()
         {
             base.Initialize();
+            Initialized = true;
+
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             StorageManager.Instance.Initialize();
-            Initialized = true;
+            mScreenManager.PushScreen( new MenuScreen( this ) );
         }
 
         /// <summary>
@@ -166,9 +150,12 @@ namespace CyberCube
         {
             mFont = Content.Load<SpriteFont>( "MessageFont" );
 
+            PlayableCube.LoadContent( Content );
+            EditableCube.LoadContent( Content );
+            Menu.LoadContent( Content );
+            PauseMenu.LoadContent( Content );
+
             // TODO: use this.Content to load your game content here
-            mMenu = new Menu(this, version);
-            mPauseMenu = new PauseMenu(this);
         }
 
         /// <summary>
@@ -189,101 +176,23 @@ namespace CyberCube
         {
             Input.Refresh();
 
-            if (mMenu.CurrentMenuState == GameState.MainMenu)
-            {
-                mMenu.Update();
+            // Allows the game to exit
+            if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
+                this.Exit();
 
-                switch(mMenu.CurrentMenuState)
-                {
-                    case GameState.LoadGame:
-                        break;
-                    case GameState.LevelEditor:
-                        break;
-                    case GameState.ExitGame:
-                        this.Exit();
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (mMenu.CurrentMenuState == GameState.PauseGame)
-            {
-                mPauseMenu.Update();
+            base.Update( gameTime );
 
-                switch(mPauseMenu.Status)
-                {
-                    case 1:
-                        mMenu.CurrentMenuState = GameState.PlayingGame;
-                        break;
-                    case 4:
-                        mMenu.CurrentMenuState = GameState.MainMenu;
-                        break;
-                    default:
-                        break;
-                }
-            }
-            else if (mMenu.CurrentMenuState == GameState.PlayingGame)
-            {
+            if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
+                Console.Open();
 
-                // Allows the game to exit
-                if ( GamePad.GetState( PlayerIndex.One ).Buttons.Back == ButtonState.Pressed )
-                    this.Exit();
+            if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
+                Console.Close();
 
-                if ( !Input.HasFocus )
-                {
-                    if ( mCube.Mode == Cube.CubeMode.Edit )
-                    {
-                        if ( Input.GetAction( Action.RotateRight ) )
-                            mCube.RotateRight();
-
-                        if ( Input.GetAction( Action.RotateLeft ) )
-                            mCube.RotateLeft();
-
-                        if ( Input.GetAction( Action.RotateUp ) )
-                            mCube.RotateTop();
-
-                        if ( Input.GetAction( Action.RotateDown ) )
-                            mCube.RotateBottom();
-                    }
-
-                    if ( Input.GetAction( Action.RotateClockwise ) )
-                        mCube.RotateClockwise();
-
-                    if ( Input.GetAction( Action.RotateAntiClockwise ) )
-                        mCube.RotateAntiClockwise();
-
-                    if ( Input.GetAction( Action.ToggleCubeMode ) )
-                    {
-                        switch ( mCube.Mode )
-                        {
-                        case Cube.CubeMode.Edit:
-
-                            mCube.CenterOnPlayer( Player );
-                            mCube.Mode = Cube.CubeMode.Play;
-                            break;
-                        case Cube.CubeMode.Play:
-                            mCube.Mode = Cube.CubeMode.Edit;
-                            break;
-                        }
-                    }
-                }
-
-                Player.Enabled = mCube.Mode == Cube.CubeMode.Play;
-
-                base.Update( gameTime );
-
-                if ( Input.Keyboard_WasKeyPressed( Keys.OemTilde ) )
-                    Console.Open();
-
-                if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
-                    Console.Close();
-
-                if ( Input.GetAction( Action.PauseGame ))
-                {
-                    mPauseMenu.EnterPauseMenu();
-                    mMenu.CurrentMenuState = GameState.PauseGame;
-                }
-            }
+            //if ( Input.GetAction( Action.PauseGame ))
+            //{
+            //    mPauseMenu.EnterPauseMenu();
+            //    mMenu.CurrentMenuState = GameState.PauseGame;
+            //}
         }
 
         /// <summary>
@@ -292,41 +201,9 @@ namespace CyberCube
         /// <param name="gameTime">Provides a snapshot of timing values.</param>
         protected override void Draw( GameTime gameTime )
         {
-            if (mMenu.CurrentMenuState == GameState.MainMenu)
-            {
-                mSpriteBatch.Begin();
-                GraphicsDevice.Clear(Color.White);
-                mMenu.Draw(mSpriteBatch);
-                mSpriteBatch.End();
-            }
-            else if (mMenu.CurrentMenuState == GameState.PauseGame)
-            {
-                mSpriteBatch.Begin();
-                mPauseMenu.Draw(mSpriteBatch);
-                mSpriteBatch.End();
-            }
-            else if (mMenu.CurrentMenuState == GameState.PlayingGame)
-            {
-                GraphicsDevice.Clear( BackgroundColor );
+            GraphicsDevice.Clear( BackgroundColor );
 
-                base.Draw( gameTime );
-
-                /*mSpriteBatch.Begin();
-
-                string output = mCube.CurrentFace.Name;
-                var pos = mFont.MeasureString( output );
-
-                mSpriteBatch.DrawString( mFont,
-                                         output,
-                                         new Vector2( GraphicsDevice.Viewport.Width - pos.X, pos.Y ),
-                                         Color.White,
-                                         mCube.UpDir.Angle,
-                                         mFont.MeasureString( output ) / 2,
-                                         1,
-                                         SpriteEffects.None,
-                                         0 );
-                mSpriteBatch.End();*/
-            }
+            base.Draw( gameTime );
         }
 
         private bool RunCommand( string command )
@@ -356,7 +233,8 @@ namespace CyberCube
                 break;
 
             case "help":
-                Console.AddMessage( @"Valid commands are:
+                Console.AddMessage(
+@"Valid commands are:
 [help]
 [reset]
 [background <xna color>]
@@ -364,11 +242,11 @@ namespace CyberCube
 [clear]" );
                 return true;
 
-            case "reset":
-                mCube.Reset();
-                Player.Reset( Vector3.UnitZ, Direction.Up );
-                mCube.CenterOnPlayer( Player );
-                return true;
+            //case "reset":
+            //    mCube.Reset();
+            //    Player.Reset( Vector3.UnitZ, Direction.Up );
+            //    mCube.CenterOnPlayer( Player );
+            //    return true;
 
             case "exit":
                 this.Exit();
