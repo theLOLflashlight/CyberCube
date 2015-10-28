@@ -69,7 +69,7 @@ namespace CyberCube
             mUpVector0 = mUpVector1 = upVector;
         }
 
-        public void Update( GameTime gameTime )
+        public override void Update( GameTime gameTime )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
 

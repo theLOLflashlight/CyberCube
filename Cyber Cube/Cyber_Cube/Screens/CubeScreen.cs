@@ -47,16 +47,21 @@ namespace CyberCube.Screens
             Hud = new GameHud( this );
             Camera = new Camera( Game );
 
-            //Components.Add( Hud );
-            //Components.Add( Cube );
-            //Components.Add( Camera );
+            Cube.UpdateOrder = 2;
+
+            Hud.UpdateOrder = 2;
+            Hud.DrawOrder = 2;
+
+            Camera.UpdateOrder = 2;
+
+            Components.Add( Hud );
+            Components.Add( Cube );
+            Components.Add( Camera );
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            Cube.Initialize();
-            Hud.Initialize();
         }
 
         public override void Update( GameTime gameTime )
@@ -65,17 +70,11 @@ namespace CyberCube.Screens
 
             if ( Game.Input.Keyboard_WasKeyPressed( Keys.Escape ) )
                 Back();
-
-            Hud.Update( gameTime );
-            Cube.Update( gameTime );
-            Camera.Update( gameTime );
         }
 
         public override void Draw( GameTime gameTime )
         {
             base.Draw( gameTime );
-            Cube.Draw( gameTime );
-            Hud.Draw( gameTime );
         }
     }
 }

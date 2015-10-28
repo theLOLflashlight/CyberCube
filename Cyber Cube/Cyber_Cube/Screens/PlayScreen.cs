@@ -49,26 +49,22 @@ namespace CyberCube.Screens
             : base( game, playCube )
         {
             Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
-            //Components.Add( Player );
+            Components.Add( Player );
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            //Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
-            Player.Initialize();
         }
 
         public override void Update( GameTime gameTime )
         {
-            Player.Update( gameTime );
             base.Update( gameTime );
         }
 
         public override void Draw( GameTime gameTime )
         {
             base.Draw( gameTime );
-            Player.Draw( gameTime );
         }
     }
 }

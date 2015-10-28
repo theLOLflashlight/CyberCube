@@ -22,7 +22,7 @@ namespace CyberCube.Screens
         /// <summary>
         /// Collection of GameComponents owned by the screen.
         /// </summary>
-        //protected readonly GameComponentCollection Components = new GameComponentCollection();
+        protected readonly GameComponentCollection Components = new GameComponentCollection();
             
         /// <summary>
         /// Creates a new instance of the GameScreen class.
@@ -45,32 +45,32 @@ namespace CyberCube.Screens
         {
             base.Initialize();
 
-            //foreach ( IGameComponent gc in Components )
-            //    gc.Initialize();
+            foreach ( IGameComponent gc in Components )
+                gc.Initialize();
         }
 
         public override void Update( GameTime gameTime )
         {
-            //var comps = from c in Components
-            //            where (c as IUpdateable)?.Enabled == true
-            //            let uc = (IUpdateable) c
-            //            orderby uc.UpdateOrder ascending
-            //            select uc;
-            //
-            //foreach ( IUpdateable ugc in comps )
-            //    ugc.Update( gameTime );
+            var comps = from c in Components
+                        where (c as IUpdateable)?.Enabled == true
+                        let uc = (IUpdateable) c
+                        orderby uc.UpdateOrder ascending
+                        select uc;
+            
+            foreach ( IUpdateable ugc in comps )
+                ugc.Update( gameTime );
         }
 
         public override void Draw( GameTime gameTime )
         {
-            //var comps = from c in Components
-            //            where (c as IDrawable)?.Visible == true
-            //            let dc = (IDrawable) c
-            //            orderby dc.DrawOrder ascending
-            //            select dc;
-            //
-            //foreach ( IDrawable dgc in comps )
-            //    dgc.Draw( gameTime );
+            var comps = from c in Components
+                        where (c as IDrawable)?.Visible == true
+                        let dc = (IDrawable) c
+                        orderby dc.DrawOrder ascending
+                        select dc;
+            
+            foreach ( IDrawable dgc in comps )
+                dgc.Draw( gameTime );
         }
 
     }
