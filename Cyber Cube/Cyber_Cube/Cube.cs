@@ -39,13 +39,6 @@ namespace CyberCube
             get; protected set;
         }
 
-        //public enum CubeMode { Play, Edit }
-        //
-        //public CubeMode Mode
-        //{
-        //    get; set;
-        //}
-
         public Face CurrentFace
         {
             get; protected set;
@@ -62,16 +55,6 @@ namespace CyberCube
                        CurrentFace.UpVec.Rotate(
                            CurrentFace.Normal,
                            UpDir.Angle ) );
-        }
-
-        public void CenterOnPlayer( Player player )
-        {
-            CurrentFace = player.CubeFace;
-            UpDir = player.UpDir;
-
-            Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
-            //Game.Camera.SkipAnimation();
         }
 
         /*
@@ -115,39 +98,6 @@ namespace CyberCube
             CameraDistance = 6;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
-
-            //Game.Components.ComponentAdded += ( s, e ) => {
-            //    if ( ReferenceEquals( this, e.GameComponent ) )
-            //        foreach ( Face face in Faces )
-            //            Game.Components.Add( face );
-            //};
-            //Game.Components.ComponentRemoved += ( s, e ) => {
-            //    if ( ReferenceEquals( this, e.GameComponent ) )
-            //        foreach ( Face face in Faces )
-            //            Game.Components.Remove( face );
-            //};
-        }
-
-        public void SetFaces( Face frontFace,
-                              Face backFace,
-                              Face topFace,
-                              Face bottomFace,
-                              Face leftFace,
-                              Face rightFace )
-        {
-            mFrontFace  = frontFace;
-            mBackFace   = backFace;
-            mTopFace    = topFace;
-            mBottomFace = bottomFace;
-            mLeftFace   = leftFace;
-            mRightFace  = rightFace;
-
-            mFrontFace.BackgroundColor = Color.Red;
-            mBackFace.BackgroundColor = Color.Orange;
-            mTopFace.BackgroundColor = Color.Blue;
-            mBottomFace.BackgroundColor = Color.Green;
-            mLeftFace.BackgroundColor = Color.Purple;
-            mRightFace.BackgroundColor = Color.Yellow;
         }
 
         protected abstract Face NewFace( string name, Vector3 normal, Vector3 up, Direction rotation );

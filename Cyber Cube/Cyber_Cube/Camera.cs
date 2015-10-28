@@ -6,7 +6,7 @@ using System.Text;
 
 namespace CyberCube
 {
-    public class Camera //: CubeGameComponent
+    public class Camera : CubeGameComponent
     {
         private Vector3 mPosition0;
         private Vector3 mPosition1;
@@ -56,13 +56,13 @@ namespace CyberCube
         }
 
 
-        public Camera()// CubeGame game )
-            //: base( game )
+        public Camera( CubeGame game )
+            : base( game )
         {
         }
 
-        public Camera( /*CubeGame game,*/ Vector3 position, Vector3 target, Vector3 upVector )
-            //: base( game )
+        public Camera( CubeGame game, Vector3 position, Vector3 target, Vector3 upVector )
+            : base( game )
         {
             mPosition0 = mPosition1 = position;
             mTarget0   = mTarget1   = target;

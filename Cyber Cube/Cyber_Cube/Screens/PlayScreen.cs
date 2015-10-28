@@ -8,8 +8,14 @@ using Microsoft.Xna.Framework.Input;
 
 namespace CyberCube.Screens
 {
+    /// <summary>
+    /// Screen which contains a cube which can be played, but not edited.
+    /// </summary>
     public class PlayScreen : CubeScreen
     {
+        /// <summary>
+        /// Hides the base Cube property, exposing the methods of the PlayableCube class.
+        /// </summary>
         public new PlayableCube Cube
         {
             get {
@@ -25,23 +31,31 @@ namespace CyberCube.Screens
             get; private set;
         }
 
+        /// <summary>
+        /// Creates a new PlayScreen.
+        /// </summary>
+        /// <param name="game">Game the PlayScreen should be associated with.</param>
         public PlayScreen( CubeGame game )
-            : base( game )
+            : this( game, new PlayableCube( game ) )
         {
-            Cube = new PlayableCube( game, this );
         }
 
+        /// <summary>
+        /// Creates a new PlayScreen.
+        /// </summary>
+        /// <param name="game">Game the PlayScreen should be associated with.</param>
+        /// <param name="playCube">PlayableCube the screen should display.</param>
         public PlayScreen( CubeGame game, PlayableCube playCube )
-            : base( game )
+            : base( game, playCube )
         {
-            Cube = playCube;
-            Cube.Screen = this;
+            Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
+            //Components.Add( Player );
         }
 
         public override void Initialize()
         {
             base.Initialize();
-            Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
+            //Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
             Player.Initialize();
         }
 

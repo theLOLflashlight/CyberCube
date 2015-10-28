@@ -8,13 +8,22 @@ using Microsoft.Xna.Framework.Input;
 
 namespace CyberCube.Screens
 {
-    public class CubeScreen : GameScreen
+    /// <summary>
+    /// Abstract base class for all screens which involve a cube on the screen.
+    /// </summary>
+    public abstract class CubeScreen : GameScreen
     {
+        /// <summary>
+        /// The cube present on this screen.
+        /// </summary>
         public Cube Cube
         {
             get; protected set;
         }
 
+        /// <summary>
+        /// The camera used to render the cube.
+        /// </summary>
         public Camera Camera
         {
             get; protected set;
@@ -25,11 +34,22 @@ namespace CyberCube.Screens
             get; protected set;
         }
 
-        public CubeScreen( CubeGame game )
+        /// <summary>
+        /// Creates a new CubeScreen.
+        /// </summary>
+        /// <param name="game">Game the CubeScreen should be associated with.</param>
+        /// <param name="cube">Cube the screen should display.</param>
+        public CubeScreen( CubeGame game, Cube cube )
             : base( game )
         {
+            Cube = cube;
+            Cube.Screen = this;
             Hud = new GameHud( this );
-            Camera = new Camera();
+            Camera = new Camera( Game );
+
+            //Components.Add( Hud );
+            //Components.Add( Cube );
+            //Components.Add( Camera );
         }
 
         public override void Initialize()
@@ -53,6 +73,7 @@ namespace CyberCube.Screens
 
         public override void Draw( GameTime gameTime )
         {
+            base.Draw( gameTime );
             Cube.Draw( gameTime );
             Hud.Draw( gameTime );
         }

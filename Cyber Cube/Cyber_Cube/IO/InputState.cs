@@ -11,11 +11,19 @@ namespace CyberCube.IO
     public class InputState
     {
 
-        public object Focus { private get; set; }
+        public object Focus
+        {
+            private get; set;
+        }
 
         public bool CheckFocus( object obj )
         {
             return ReferenceEquals( Focus, obj );
+        }
+
+        public bool CheckFocusType< T >()
+        {
+            return Focus is T;
         }
 
         public bool HasFocus

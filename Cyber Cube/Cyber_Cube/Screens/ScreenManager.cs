@@ -6,10 +6,19 @@ using Microsoft.Xna.Framework;
 
 namespace CyberCube.Screens
 {
+    /// <summary>
+    /// Manages a set of screens.
+    /// </summary>
     public class ScreenManager : SimpleDrawableCubeGameComponent
     {
+        /// <summary>
+        /// The screens owned by the screen manager.
+        /// </summary>
         private Stack< GameScreen > mScreens;
 
+        /// <summary>
+        /// Gets the screen that is currently being updated/drawn.
+        /// </summary>
         public GameScreen TopScreen
         {
             get {
@@ -17,6 +26,9 @@ namespace CyberCube.Screens
             }
         }
 
+        /// <summary>
+        /// Gets the number of screens in the screen manager.
+        /// </summary>
         public int Count
         {
             get {
@@ -24,6 +36,10 @@ namespace CyberCube.Screens
             }
         }
 
+        /// <summary>
+        /// Creates a new ScreenManager.
+        /// </summary>
+        /// <param name="game">Game the ScreenManager should be associated with.</param>
         public ScreenManager( CubeGame game )
             : base( game )
         {
@@ -38,6 +54,10 @@ namespace CyberCube.Screens
                 screen.Initialize();
         }
 
+        /// <summary>
+        /// Adds a screen to the top of the screen manager and initializes it.
+        /// </summary>
+        /// <param name="screen">Screen to add.</param>
         public void PushScreen( GameScreen screen )
         {
             if ( Game.Initialized )
@@ -46,6 +66,9 @@ namespace CyberCube.Screens
             mScreens.Push( screen );
         }
 
+        /// <summary>
+        /// Removes and returns the top screen in the screen manager.
+        /// </summary>
         public GameScreen PopScreen()
         {
             GameScreen screen = mScreens.Pop();
@@ -53,6 +76,12 @@ namespace CyberCube.Screens
             return screen;
         }
 
+        /// <summary>
+        /// Removes and returns a number of screens from the top of the screen manager. Screens 
+        /// are returned in the order they are removed.
+        /// </summary>
+        /// <param name="n">Number of screens to remove.</param>
+        /// <returns></returns>
         public IEnumerable< GameScreen > PopScreens( int n )
         {
             for ( int i = 0; i < n; ++i )
