@@ -95,8 +95,16 @@ namespace CyberCube
             {
                 Vector2 surfaceNormal = contact.Manifold.LocalNormal;
 
-                Body.Rotation = (float) Math.Atan2( surfaceNormal.Y, surfaceNormal.X ) + MathHelper.PiOver2;
-                Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation );
+                float rotation = (float) Math.Atan2( surfaceNormal.Y, surfaceNormal.X ) + MathHelper.PiOver2;
+
+                if ( Math.Abs(
+                        MathHelper.WrapAngle( Body.Rotation )
+                        - MathHelper.WrapAngle( rotation ) ) < MathHelper.PiOver4 )
+                {
+                    Body.Rotation = rotation;
+                    Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation );
+                }
+
                 return true;
             }
             return contact.IsTouching;
