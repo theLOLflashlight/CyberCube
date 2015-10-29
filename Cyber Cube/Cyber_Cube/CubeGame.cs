@@ -63,6 +63,11 @@ namespace CyberCube
             SetUpBinds();
 
             mGraphicsDeviceManager = new GraphicsDeviceManager( this );
+
+            mGraphicsDeviceManager.IsFullScreen = false;
+            mGraphicsDeviceManager.PreferredBackBufferHeight = 720;
+            mGraphicsDeviceManager.PreferredBackBufferWidth = 1280;
+
             Content.RootDirectory = "Content";
 
             mScreenManager = new ScreenManager( this );

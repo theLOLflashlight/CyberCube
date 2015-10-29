@@ -42,7 +42,7 @@ namespace CyberCube
             {
                 World = new World( Vector2.Zero );
 
-                var box = new RecSolid(
+                var box = new Box(
                         Game,
                         World,
                         new Rectangle( 360, 0, 100, 100 ),
@@ -54,19 +54,33 @@ namespace CyberCube
                 AddSolid( box );
 
                 AddSolid(
-                    new RecSolid(
+                    new Quarterpipe(
+                        Game,
+                        World,
+                        100,
+                        new Vector2( 800, 800 ),
+                        Quarterpipe.Type.SE ) );
+
+                AddSolid(
+                    new Box(
+                        Game,
+                        World,
+                        new Rectangle( 900, 600, 100, 400 ) ) );
+
+                AddSolid(
+                    new Box(
                         Game,
                         World,
                         new Rectangle( 0, HEIGHT - 100, WIDTH, 100 ) ) );
 
                 AddSolid(
-                    new RecSolid(
+                    new Box(
                         Game,
                         World,
                         new Rectangle( 100, 700, 300, 100 ) ) );
 
                 AddSolid(
-                    new RecSolid(
+                    new Box(
                         Game,
                         World,
                         new Rectangle( WIDTH - 150, 150, 100, 300 ) ) );

@@ -100,9 +100,16 @@ namespace CyberCube
             }
             set {
                 mUpDir = value;
-                Body.Rotation = mUpDir.Angle;
-                Body.AdHocGravity = Vector2.UnitY.Rotate( -Body.Rotation ).Rounded();
+                Body.Rotation = -mUpDir.Angle;
+                Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation ).Rounded();
                 Body.Awake = true;
+            }
+        }
+
+        public Vector2 UpVector
+        {
+            get {
+                return Vector2.UnitY.Rotate( Body.Rotation );
             }
         }
 
@@ -168,12 +175,6 @@ namespace CyberCube
         {
             base.Initialize();
             Body = CreateBody( CubeFace.World );
-
-            Body.FixedRotation = true;
-            Body.GravityScale = 20f;
-            Body.UseAdHocGravity = true;
-            Body.AdHocGravity = Vector2.UnitY;
-            Body.CollisionCategories = Category.Cat2;
         }
 
         public override void Update( GameTime gameTime )
@@ -201,7 +202,9 @@ namespace CyberCube
 
             Body.Position = ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT;
 
-            Velocity = Velocity.Rotate( pastRotation - Body.Rotation );
+            Velocity = Velocity.Rotate( Body.Rotation - pastRotation );
+
+            //Body.Rotation = pastRotation - UpDir.Angle;
         }
 
 

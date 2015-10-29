@@ -234,7 +234,7 @@ namespace CyberCube.Levels
 
             private void AddRectangle( Rectangle rec )
             {
-                var box = new RecSolid(
+                var box = new Box(
                     Game,
                     World,
                     rec,

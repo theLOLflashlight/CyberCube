@@ -85,7 +85,10 @@
     <Compile Include="MenuFiles\Menu.cs" />
     <Compile Include="MenuFiles\GameEnum.cs" />
     <Compile Include="MenuFiles\PauseMenu.cs" />
+    <Compile Include="Physics\Box.cs" />
     <Compile Include="Physics\Constants.cs" />
+    <Compile Include="Physics\Quaterpipe.cs" />
+    <Compile Include="Physics\OneWayPlatform.cs" />
     <Compile Include="Physics\Solid.cs" />
     <Compile Include="Levels\PlayableCube.cs" />
     <Compile Include="Player.cs" />
@@ -116,6 +119,10 @@
       <Name>CyberCubeContent</Name>
       <XnaReferenceType>Content</XnaReferenceType>
       <Project>{FB88EB67-FC26-4548-9607-B575B694AE10}</Project>
+    </ProjectReference>
+    <ProjectReference Include="Farseer\Debug View\DebugView XNA.csproj">
+      <Project>{fc7845fa-13fe-4ff8-822a-a577f3f59b00}</Project>
+      <Name>DebugView XNA</Name>
     </ProjectReference>
     <ProjectReference Include="Farseer\Farseer Physics XNA.csproj">
       <Project>{0a850700-1abb-4288-a391-6726b90ebeb9}</Project>

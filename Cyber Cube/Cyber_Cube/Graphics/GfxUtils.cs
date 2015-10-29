@@ -38,11 +38,16 @@ namespace CyberCube.Graphics
                     {
                         VertexPositionTexture[] verts = new VertexPositionTexture[ pgon.Vertices.Count ];
 
+                        //List<short> data = new List<short>();
+
                         int i = 0;
                         foreach ( Vector2 vtex in pgon.Vertices )
+                        {
                             verts[ i++ ] = new VertexPositionTexture(
                                 new Vector3( vtex, 0 ) * Physics.Constants.UNIT_TO_PIXEL,
                                 Vector2.Zero );
+                        }
+
 
                         foreach ( var pass in effect.CurrentTechnique.Passes )
                         {

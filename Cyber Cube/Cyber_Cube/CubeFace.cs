@@ -1,4 +1,5 @@
 ﻿using CyberCube.Physics;
+using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -15,6 +16,10 @@ namespace CyberCube
     {
         public abstract partial class Face : DrawableCubeGameComponent
         {
+#if WINDOWS && DEBUG
+            private FarseerPhysics.DebugView.DebugViewXNA mDebugView;
+#endif
+
             public const int SIZE = 1000;
             public const int WIDTH = SIZE;
             public const int HEIGHT = SIZE;
@@ -74,6 +79,10 @@ namespace CyberCube
                 SetUpVertices();
                 SetUpWorld();
                 this.Visible = false;
+
+#if WINDOWS && DEBUG
+                mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
+#endif
             }
 
             private void SetUpVertices()
@@ -135,6 +144,10 @@ namespace CyberCube
 
                 foreach ( Solid solid in mSolids )
                     solid.Initialize();
+
+#if WINDOWS && DEBUG
+                mDebugView.LoadContent( GraphicsDevice, Game.Content );
+#endif
             }
 
             public override void Update( GameTime gameTime )
@@ -149,6 +162,26 @@ namespace CyberCube
             {
                 foreach ( Solid solid in mSolids )
                     solid.Draw( gameTime );
+
+#if WINDOWS && DEBUG
+                Matrix proj = Matrix.CreateOrthographicOffCenter(
+                0,
+                WIDTH * Constants.PIXEL_TO_UNIT,
+                HEIGHT * Constants.PIXEL_TO_UNIT,
+                0,
+                0,
+                1 );
+                
+                mDebugView.BeginCustomDraw( proj, Matrix.Identity );
+                foreach ( Body b in World.BodyList )
+                {
+                    Transform trans;
+                    b.GetTransform( out trans );
+                    foreach ( Fixture f in b.FixtureList )
+                        mDebugView.DrawShape( f, trans, Color.White );
+                }
+                mDebugView.EndCustomDraw();
+#endif
             }
 
             public void Render2D( GameTime gameTime )

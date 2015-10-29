@@ -11,6 +11,9 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using CyberCube.Screens;
 using CyberCube.Levels;
+using CyberCube.Graphics;
+using FarseerPhysics.Dynamics.Contacts;
+using FarseerPhysics.Collision;
 
 namespace CyberCube
 {
@@ -38,26 +41,43 @@ namespace CyberCube
             model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
         }
 
-        /*protected override Body CreateBody( World world )
+        private Fixture mFeet;
+
+        protected override Body CreateBody( World world )
         {
             Body body = BodyFactory.CreateRectangle(
                 CubeFace.World,
-                10 * Physics.Constants.PIXEL_TO_UNIT,
+                25 * Physics.Constants.PIXEL_TO_UNIT,
                 50 * Physics.Constants.PIXEL_TO_UNIT,
                 1,
                 ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
+
+            mFeet = FixtureFactory.AttachRectangle(
+                20 * Physics.Constants.PIXEL_TO_UNIT,
+                10 * Physics.Constants.PIXEL_TO_UNIT,
+                1,
+                new Vector2( 0, 25 ) * Physics.Constants.PIXEL_TO_UNIT,
+                body );
+            mFeet.IsSensor = true;
 
             body.BodyType = BodyType.Dynamic;
             body.Rotation = UpDir.Angle;
 
             return body;
-        }*/
+        }
 
         public override void Initialize()
         {
             base.Initialize();
 
+            Body.FixedRotation = true;
+            Body.GravityScale = 20f;
+            Body.UseAdHocGravity = true;
+            Body.AdHocGravity = Vector2.UnitY;
+            Body.CollisionCategories = Category.Cat2;
             Body.Mass = 68;
+
+            Body.OnCollision += Feet_OnCollision;
 
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
@@ -65,6 +85,21 @@ namespace CyberCube
                                    Color.White, Color.White, Color.White } );
 
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
+        }
+
+        private bool Feet_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        {
+            if ( contact.IsTouching && !fixtureB.IsSensor
+                 && contact.Manifold.Type == ManifoldType.FaceA
+                 && contact.Manifold.PointCount == 1 )
+            {
+                Vector2 surfaceNormal = contact.Manifold.LocalNormal;
+
+                Body.Rotation = (float) Math.Atan2( surfaceNormal.Y, surfaceNormal.X ) + MathHelper.PiOver2;
+                Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation );
+                return true;
+            }
+            return contact.IsTouching;
         }
 
         public void Jump( ref Vector2 velocity )
@@ -95,7 +130,7 @@ namespace CyberCube
 
             var xScale = (FreeFall ? 20 : 100);
 
-            Vector2 velocity = Velocity.Rotate( Body.Rotation );
+            Vector2 velocity = Velocity.Rotate( -Body.Rotation );
 
             if ( !input.HasFocus )
             {
@@ -121,16 +156,18 @@ namespace CyberCube
 
             velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
 
-            Velocity = velocity.Rotate( -Body.Rotation );
+            Velocity = velocity.Rotate( Body.Rotation );
 
             base.Update( gameTime );
 
             Screen.Camera.Target = WorldPosition;
+            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Body.Rotation ), 1 );
         }
 
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
+            Body.OnCollision += Feet_OnCollision;
             Cube.Rotate( dir );
         }
 
@@ -155,7 +192,7 @@ namespace CyberCube
 						    Matrix.CreateScale( 0.0008f );
 
                         Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
-                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, UpDir.Angle );
+                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, -Body.Rotation );
 
                         effect.World *= m;
 
@@ -171,7 +208,7 @@ namespace CyberCube
             //}
 
             // Find screen equivalent of 3D location in world
-            Vector3 screenLocation = GraphicsDevice.Viewport.Project(
+            /*Vector3 screenLocation = GraphicsDevice.Viewport.Project(
                 this.WorldPosition,
                 Cube.Effect.Projection,
                 Cube.Effect.View,
@@ -185,7 +222,7 @@ namespace CyberCube
                                    screenLocation.Y - 1 ),
                                FreeFall ? Color.Black : Color.White );
 
-            mSpriteBatch.End();
+            mSpriteBatch.End();*/
         }
 
     }
