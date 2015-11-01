@@ -122,7 +122,7 @@ namespace CyberCube
 
         public static Vector2 Rotate( this Vector2 position, float radians )
         {
-            return Vector2.Transform( position, Matrix.CreateRotationZ( radians ) );
+            return Vector2.Transform( position, Quaternion.CreateFromAxisAngle( Vector3.UnitZ, radians ) );
         }
 
         public static Vector3 Rotate( this Vector3 position, Vector3 normal, float radians )

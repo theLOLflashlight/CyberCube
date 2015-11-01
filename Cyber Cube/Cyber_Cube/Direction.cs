@@ -69,6 +69,28 @@ namespace CyberCube
             return src.value;
         }
 
+        public static Direction FromAngle( float angle )
+        {
+            angle = MathHelper.WrapAngle( angle );
+
+            const float _45deg = MathHelper.PiOver4;
+            const float _135deg = MathHelper.PiOver2 + MathHelper.PiOver4;
+
+            if ( -_45deg < angle && angle <= _45deg )
+                return Direction.Up;
+
+            if ( -_135deg < angle && angle <= -_45deg )
+                return Direction.Right;
+
+            //if ( _135deg < angle || angle <= -_135deg )
+            //    return Direction.Down;
+
+            if ( _45deg < angle && angle <= _135deg )
+                return Direction.Left;
+
+            return Direction.Down;
+        }
+
         /// <summary>
         /// Gets the direction expressed as radians, offset from the *north* position.
         /// </summary>

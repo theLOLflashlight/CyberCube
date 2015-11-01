@@ -91,18 +91,31 @@ namespace CyberCube
             }
         }
 
-        private Direction mUpDir;
-
         public Direction UpDir
         {
             get {
-                return mUpDir;
+                return Direction.FromAngle( -Rotation );
             }
             set {
-                mUpDir = value;
-                Body.Rotation = -mUpDir.Angle;
-                Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation ).Rounded();
-                Body.Awake = true;
+                Rotation = -value.Angle;
+            }
+        }
+
+        private float mRotation;
+
+        public float Rotation
+        {
+            get {
+                return Body?.Rotation ?? mRotation;
+            }
+            set {
+                mRotation = value;
+                if ( Body != null )
+                {
+                    Body.Rotation = mRotation;
+                    Body.AdHocGravity = Vector2.UnitY.Rotate( mRotation );
+                    Body.Awake = true;
+                }
             }
         }
 
@@ -123,7 +136,7 @@ namespace CyberCube
         {
             Cube = cube;
             mWorldPosition = worldPos;
-            mUpDir = upDir;
+            UpDir = upDir;
 
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
         }
@@ -131,7 +144,7 @@ namespace CyberCube
         public virtual void Reset( Vector3 worldPos, Direction upDir )
         {
             mWorldPosition = worldPos;
-            mUpDir = upDir;
+            UpDir = upDir;
 
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
             this.Initialize();
@@ -146,7 +159,7 @@ namespace CyberCube
                 ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
 
             body.BodyType = BodyType.Dynamic;
-            body.Rotation = UpDir.Angle;
+            body.Rotation = Rotation;
 
             return body;
         }
@@ -181,6 +194,8 @@ namespace CyberCube
         {
             base.Update( gameTime );
 
+            mRotation = Body.Rotation;
+
             SetFacePosition( Body.Position * Physics.Constants.UNIT_TO_PIXEL );
         }
 
@@ -195,16 +210,16 @@ namespace CyberCube
             Body = body;
             Body.Mass = mass;
 
-            float pastRotation = Body.Rotation;
+            float pastUpDirAngle = UpDir.Angle;
+            float rotDif = -UpDir.Angle - Rotation;
 
-            this.UpDir = Cube.GetNextUpDirection( UpDir, dir, backDir );
-            this.CubeFace = nextFace;
+            UpDir = Cube.GetNextUpDirection( UpDir, dir, backDir );
+            CubeFace = nextFace;
+            Rotation -= rotDif;
 
             Body.Position = ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT;
 
-            Velocity = Velocity.Rotate( Body.Rotation - pastRotation );
-
-            //Body.Rotation = pastRotation - UpDir.Angle;
+            Velocity = Velocity.Rotate( pastUpDirAngle - UpDir.Angle );
         }
 
 

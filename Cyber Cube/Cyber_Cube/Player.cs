@@ -61,7 +61,7 @@ namespace CyberCube
             mFeet.IsSensor = true;
 
             body.BodyType = BodyType.Dynamic;
-            body.Rotation = UpDir.Angle;
+            body.Rotation = Rotation;
 
             return body;
         }
@@ -94,16 +94,13 @@ namespace CyberCube
                  && contact.Manifold.PointCount == 1 )
             {
                 Vector2 surfaceNormal = contact.Manifold.LocalNormal;
-
                 float rotation = (float) Math.Atan2( surfaceNormal.Y, surfaceNormal.X ) + MathHelper.PiOver2;
 
-                if ( Math.Abs(
-                        MathHelper.WrapAngle( Body.Rotation )
-                        - MathHelper.WrapAngle( rotation ) ) < MathHelper.PiOver4 )
-                {
-                    Body.Rotation = rotation;
-                    Body.AdHocGravity = Vector2.UnitY.Rotate( Body.Rotation );
-                }
+                float wrappedRotation = MathHelper.WrapAngle( rotation );
+                float wrappedBodyRotation = MathHelper.WrapAngle( Body.Rotation );
+
+                if ( Math.Abs( wrappedBodyRotation - wrappedRotation ) < MathHelper.PiOver4 )
+                    Rotation = rotation;
 
                 return true;
             }
@@ -128,10 +125,10 @@ namespace CyberCube
             if ( !input.HasFocus )
             {
                 if ( input.GetAction( Action.RotateClockwise ) )
-                    --UpDir;
+                    UpDir = Direction.FromAngle( -Rotation + (MathHelper.PiOver4 + 0.0001f) );
 
                 if ( input.GetAction( Action.RotateAntiClockwise ) )
-                    ++UpDir;
+                    UpDir = Direction.FromAngle( -Rotation - (MathHelper.PiOver4 + 0.0001f) );
             }
 
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
