@@ -18,6 +18,29 @@ namespace CyberCube.Levels
             Face.LoadContent( content );
         }
 
+        public interface IBrush
+        {
+            bool Started { get; }
+            void Start( Face face, Vector2 mousePos, GameTime gameTime );
+            void End( Face face, Vector2? mousePos, GameTime gameTime );
+            void Cancel();
+            void Update( Face face, Vector2 mousePos, GameTime gameTime );
+            void Draw( Face face, SpriteBatch spriteBatch, GameTime gameTime );
+        }
+
+        private IBrush mBrush;
+
+        public IBrush Brush
+        {
+            get {
+                return mBrush;
+            }
+            set {
+                mBrush?.Cancel();
+                mBrush = value;
+            }
+        }
+
         public new EditScreen Screen
         {
             get {
@@ -39,7 +62,7 @@ namespace CyberCube.Levels
         }
 
         /// <summary>
-        /// Not yet implemented.
+        /// Generates a PlayableCube object from the current EditableCube's state.
         /// </summary>
         /// <returns>A playable copy of the cube.</returns>
         internal PlayableCube GeneratePlayableCube()
@@ -95,19 +118,19 @@ namespace CyberCube.Levels
                 sFont = content.Load< SpriteFont >( "MessageFontLarge" );
             }
 
+            public IBrush Brush
+            {
+                get {
+                    return Cube.Brush;
+                }
+            }
+
             public new EditableCube Cube
             {
                 get {
                     return (EditableCube) base.Cube;
                 }
             }
-
-            private Solid mFocusSolid;
-            private Vector2 mFocusLocalPoint;
-            private Vector2 mFocusClickPosition;
-
-            private Vector2? mMouseDragStart;
-            private Rectangle? mTentativeRec;
 
             public Face( EditableCube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
                 : base( cube, name, normal, up, orientation )
@@ -120,8 +143,7 @@ namespace CyberCube.Levels
 
                 mSpriteBatch.Begin();
 
-                if ( mTentativeRec != null )
-                    mSpriteBatch.Draw( pixel, mTentativeRec.Value, new Color( 0, 0, 0, 128 ) );
+                Brush?.Draw( this, mSpriteBatch, gameTime );
 
                 mSpriteBatch.DrawString( sFont,
                                          Name,
@@ -142,77 +164,23 @@ namespace CyberCube.Levels
 
                 var input = Game.Input;
 
-                if ( mMouseDragStart == null )
-                    mTentativeRec = null;
-
-
                 Vector2? mouseFacePos = MouseFacePosition();
                 if ( mouseFacePos != null )
                     UpdateMouse( gameTime, mouseFacePos.Value );
 
-
-                if ( mMouseDragStart != null && input.Mouse_WasRightReleased() )
-                {
-                    if ( mTentativeRec != null )
-                        AddRectangle( mTentativeRec.Value );
-                    mMouseDragStart = null;
-                }
-
-                if ( mFocusSolid != null && input.Mouse_WasLeftReleased() )
-                {
-                    mFocusSolid.Body.Enabled = true;
-                    mFocusSolid = null;
-                }
+                if ( input.Mouse_WasLeftReleased() )
+                    Brush?.End( this, mouseFacePos, gameTime );
             }
 
             private void UpdateMouse( GameTime gameTime, Vector2 mouseFacePos )
             {
                 var input = Game.Input;
 
-                if ( mMouseDragStart != null )
-                {
-                    Vector2 pos = mMouseDragStart.Value;
-
-                    int x = (int) Math.Min( pos.X, mouseFacePos.X );
-                    int y = (int) Math.Min( pos.Y, mouseFacePos.Y );
-
-                    int w = (int) Math.Abs( mouseFacePos.X - pos.X );
-                    int h = (int) Math.Abs( mouseFacePos.Y - pos.Y );
-
-                    if ( w > 0.5 * Physics.Constants.UNIT_TO_PIXEL
-                         && h > 0.5 * Physics.Constants.UNIT_TO_PIXEL )
-                        mTentativeRec = new Rectangle( x, y, w, h );
-                    else
-                        mTentativeRec = null;
-                }
-
-                if ( input.Mouse_WasRightPressed() )
-                {
-                    mMouseDragStart = mouseFacePos;
-                }
-
-
-                if ( mFocusSolid != null )
-                {
-                    Vector2 worldPos = mouseFacePos * Physics.Constants.PIXEL_TO_UNIT;
-                    Vector2 delta = worldPos - mFocusClickPosition;
-
-                    mFocusSolid.Body.Position += delta;
-                    mFocusClickPosition = worldPos;
-                }
+                if ( Brush?.Started == true )
+                    Brush.Update( this, mouseFacePos, gameTime );
 
                 if ( input.Mouse_WasLeftPressed() )
-                {
-                    Vector2 clickPos = mouseFacePos * Physics.Constants.PIXEL_TO_UNIT;
-
-                    mFocusSolid = FindSolidAt( ref clickPos );
-                    if ( mFocusSolid != null )
-                    {
-                        mFocusLocalPoint = mFocusSolid.Body.GetLocalPoint( ref clickPos );
-                        mFocusClickPosition = clickPos;
-                        mFocusSolid.Body.Enabled = false;
-                    }
-                }
+                    Brush?.Start( this, mouseFacePos, gameTime );
 
                 if ( input.Mouse_WasMiddlePressed() )
                 {

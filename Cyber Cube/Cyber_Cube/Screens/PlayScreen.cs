@@ -13,6 +13,12 @@ namespace CyberCube.Screens
     /// </summary>
     public class PlayScreen : CubeScreen
     {
+        public Player Player
+        {
+            get; private set;
+        }
+
+        #region Boilerplate
         /// <summary>
         /// Hides the base Cube property, exposing the methods of the PlayableCube class.
         /// </summary>
@@ -21,14 +27,9 @@ namespace CyberCube.Screens
             get {
                 return (PlayableCube) base.Cube;
             }
-            set {
+            protected set {
                 base.Cube = value;
             }
-        }
-
-        public Player Player
-        {
-            get; private set;
         }
 
         /// <summary>
@@ -51,6 +52,7 @@ namespace CyberCube.Screens
             Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
             Components.Add( Player );
         }
+        #endregion
 
         public override void Initialize()
         {

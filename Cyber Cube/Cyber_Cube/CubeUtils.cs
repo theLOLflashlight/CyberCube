@@ -28,12 +28,12 @@ namespace CyberCube
 
         public partial class Face
         {
-            protected Solid FindSolidAt( Vector2 point )
+            internal Solid FindSolidAt( Vector2 point )
             {
                 return FindSolidAt( ref point );
             }
 
-            protected Solid FindSolidAt( ref Vector2 point )
+            internal Solid FindSolidAt( ref Vector2 point )
             {
                 foreach ( Solid solid in mSolids )
                     foreach ( Fixture f in solid.Body.FixtureList )
