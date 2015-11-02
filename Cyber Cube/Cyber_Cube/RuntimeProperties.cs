@@ -7,13 +7,18 @@ using System.Text;
 
 namespace CyberCube
 {
-    public abstract class GameProperties
+    public abstract class RuntimeProperties
     {
 
         public struct EvaluateResult
         {
             public readonly bool Success;
             public readonly object Result;
+
+            public EvaluateResult( object result )
+                : this( true, result )
+            {
+            }
 
             public EvaluateResult( bool success, object result )
             {
@@ -28,17 +33,15 @@ namespace CyberCube
             string[] tokens = expression.Trim().Split( ' ' );
 
             if ( tokens.Length == 0 )
-                return new EvaluateResult( true, null );
+                return new EvaluateResult( null );
 
-            var properties = this.GetType().GetProperties();
-
-            foreach ( var property in properties )
+            foreach ( var property in GetType().GetProperties() )
             {
                 if ( tokens[ 0 ].ToLower() == property.Name.ToLower() )
                 {
                     if ( tokens.Length == 1 )
                     {
-                        return new EvaluateResult( true, property.GetValue( this, null ) );
+                        return new EvaluateResult( property.GetValue( this, null ) );
                     }
                     else if ( tokens.Length == 3 && tokens[ 1 ] == "=" )
                     {
@@ -48,7 +51,7 @@ namespace CyberCube
                                 Parse( tokens[ 2 ], property.PropertyType ),
                                 null );
 
-                            return new EvaluateResult( true, null );
+                            return new EvaluateResult( null );
                         }
                         catch ( TargetException )
                         {
@@ -56,43 +59,60 @@ namespace CyberCube
                                 $"{property.Name} must be of type {property.PropertyType.Name}." );
                         }
                     }
-                    throw new ArgumentException( "Expression malformed." );
+                    throw new ArgumentException( "Malformed expression." );
                 }
             }
-            return new EvaluateResult( false, null );
+            return new EvaluateResult();
         }
 
 
-        public static object Parse( string value, Type type )
+        protected virtual object Parse( string value, Type type )
         {
+            if ( value == null )
+                throw new ArgumentNullException( nameof( value ), "String cannot be null." );
+
+            if ( type == null )
+                throw new ArgumentNullException( nameof( type ), "Type cannot be null." );
+
+
             if ( type == typeof( string ) )
                 return value;
+
+            if ( type == typeof( char ) )
+                return char.Parse( value );
+
+            if ( type == typeof( DateTime ) )
+                return DateTime.Parse( value );
+
 
             if ( type == typeof( bool ) )
                 return bool.Parse( value );
 
+
+            if ( type == typeof( byte ) )
+                return byte.Parse( value );
+
+            if ( type == typeof( short ) )
+                return short.Parse( value );
+
             if ( type == typeof( int ) )
                 return int.Parse( value );
+
+            if ( type == typeof( long ) )
+                return long.Parse( value );
+
 
             if ( type == typeof( float ) )
                 return float.Parse( value );
 
-            if ( type == typeof( Color ) )
-                return Color_Parse( value );
+            if ( type == typeof( double ) )
+                return double.Parse( value );
+
+            if ( type == typeof( decimal ) )
+                return decimal.Parse( value );
+
 
             return null;
-        }
-
-        private static Color Color_Parse( string value )
-        {
-            var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
-
-            foreach ( var property in properties )
-                if ( property.Name.ToLower() == value.ToLower()
-                     && property.PropertyType == typeof( Color ) )
-                    return (Color) property.GetValue( null, null );
-
-            throw new FormatException( $"'{value}' is not a color." );
         }
     }
 }

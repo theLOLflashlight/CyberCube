@@ -19,6 +19,8 @@ namespace CyberCube.Screens
     {
 
         private IEditBrush mLeftBrush;
+        private IEditBrush mRightBrush;
+        private IEditBrush mMiddleBrush;
 
         public IEditBrush LeftBrush
         {
@@ -31,8 +33,6 @@ namespace CyberCube.Screens
             }
         }
 
-        private IEditBrush mRightBrush;
-
         public IEditBrush RightBrush
         {
             get {
@@ -43,8 +43,6 @@ namespace CyberCube.Screens
                 mRightBrush = value;
             }
         }
-
-        private IEditBrush mMiddleBrush;
 
         public IEditBrush MiddleBrush
         {

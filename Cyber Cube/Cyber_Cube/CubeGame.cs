@@ -40,7 +40,7 @@ namespace CyberCube
             }
         }
 
-        public class CubeGameProperties : GameProperties
+        public class CubeGameProperties : RuntimeProperties
         {
 #if WINDOWS
             public bool DebugView
@@ -49,18 +49,44 @@ namespace CyberCube
 
             public Color Background
             { get; set; } = Color.CornflowerBlue;
+
+
+            protected override object Parse( string value, Type type )
+            {
+                object obj = base.Parse( value, type );
+
+                if ( obj == null )
+                {
+                    if ( type == typeof( Color ) )
+                        obj = Color_Parse( value );
+                }
+
+                return obj;
+            }
+
+            private static Color Color_Parse( string value )
+            {
+                var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
+
+                foreach ( var property in properties )
+                    if ( property.Name.ToLower() == value.ToLower()
+                         && property.PropertyType == typeof( Color ) )
+                        return (Color) property.GetValue( null, null );
+
+                throw new FormatException( $"'{value}' is not the name of a color." );
+            }
         }
 
-        public readonly CubeGameProperties RuntimeProperties = new CubeGameProperties();
+        public readonly CubeGameProperties GameProperties = new CubeGameProperties();
 
 
         public Color BackgroundColor
         {
             get {
-                return RuntimeProperties.Background;
+                return GameProperties.Background;
             }
             private set {
-                RuntimeProperties.Background = value;
+                GameProperties.Background = value;
             }
         }
 
@@ -243,7 +269,7 @@ namespace CyberCube
             {
             default:
                 try {
-                    var ret = RuntimeProperties.Evaluate( command );
+                    var ret = GameProperties.Evaluate( command );
 
                     if ( ret.Success )
                     {

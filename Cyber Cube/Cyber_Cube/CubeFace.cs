@@ -172,7 +172,7 @@ namespace CyberCube
                     solid.Draw( gameTime );
 
 #if WINDOWS
-                if ( Game.RuntimeProperties.DebugView )
+                if ( Game.GameProperties.DebugView )
                 {
                     Matrix proj = Matrix.CreateOrthographicOffCenter(
                         0,
