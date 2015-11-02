@@ -68,31 +68,31 @@ namespace CyberCube.Physics
 
             mLine = line - center;
 
-            Body = BodyFactory.CreateBody( world, center * Constants.PIXEL_TO_UNIT );
+            Body = BodyFactory.CreateBody( world, center.ToUnits() );
             Body.BodyType = bodyType;
             Body.Mass = mass;
 
             mEdge = FixtureFactory.AttachEdge(
-                mLine.P0 * Constants.PIXEL_TO_UNIT,
-                mLine.P1 * Constants.PIXEL_TO_UNIT,
+                mLine.P0.ToUnits(),
+                mLine.P1.ToUnits(),
                 Body );
             mEdge.CollidesWith = Category.All ^ Category.Cat2;
 
             // Not really an Edge, just a thin rectangle. This is necessary for accurate 
             // collision and exclusion detection.
             mPlatform = FixtureFactory.AttachRectangle(
-                edgeWidth * Constants.PIXEL_TO_UNIT,
-                edgeHeight * Constants.PIXEL_TO_UNIT,
+                edgeWidth.ToUnits(),
+                edgeHeight.ToUnits(),
                 1,
-                Vector2.Zero,//(offset / 2) * Constants.PIXEL_TO_UNIT,
+                Vector2.Zero.ToUnits(),
                 Body );
             mPlatform.CollidesWith = Category.Cat2;
 
             mExclusionRec = FixtureFactory.AttachRectangle(
-                sensorWidth * Constants.PIXEL_TO_UNIT,
-                sensorHeight * Constants.PIXEL_TO_UNIT,
+                sensorWidth.ToUnits(),
+                sensorHeight.ToUnits(),
                 1,
-                offset * Constants.PIXEL_TO_UNIT,
+                offset.ToUnits(),
                 Body );
 
             mExclusionRec.IsSensor = true;
@@ -128,8 +128,6 @@ namespace CyberCube.Physics
 
         public override void Draw( GameTime gameTime )
         {
-            //mExclusionRec.Body.DrawBody( GraphicsDevice, Texture, gameTime );
-
             mSpriteBatch.Begin( /*SpriteSortMode.Deferred, BlendState.NonPremultiplied*/ );
 
             Color shadowColor = /*mExclusionCount > 0
@@ -137,7 +135,7 @@ namespace CyberCube.Physics
                                 : */new Color( 0, 0, 0, 64 );
 
             Line2 line = mLine.Rotate( Body.Rotation );
-            line += Body.Position * Constants.UNIT_TO_PIXEL;
+            line += Body.Position.ToPixels();
 
             mSpriteBatch.DrawLine( line, Texture, shadowColor, 30 );
             mSpriteBatch.DrawLine( line, Texture, shadowColor, 20 );

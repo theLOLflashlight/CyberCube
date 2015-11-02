@@ -17,7 +17,7 @@ namespace CyberCube
         private Vector3 mUpVector0;
         private Vector3 mUpVector1;
 
-        private Matrix mViewMatrix = Matrix.Identity;
+        private Matrix mViewMatrix = default( Matrix );
         private float mPositionSpeed = 1;
         private float mTargetSpeed = 1;
         private float mUpVectorSpeed = 1;
@@ -28,7 +28,7 @@ namespace CyberCube
                 return mPosition0;
             }
             set {
-                mViewMatrix = Matrix.Identity;
+                mViewMatrix = default( Matrix );
                 mPosition0 = mPosition1 = value;
             }
         }
@@ -39,7 +39,7 @@ namespace CyberCube
                 return mTarget0;
             }
             set {
-                mViewMatrix = Matrix.Identity;
+                mViewMatrix = default( Matrix );
                 mTarget0 = mTarget1 = value;
             }
         }
@@ -50,7 +50,7 @@ namespace CyberCube
                 return mUpVector0;
             }
             set {
-                mViewMatrix = Matrix.Identity;
+                mViewMatrix = default( Matrix );
                 mUpVector0 = mUpVector1 = value;
             }
         }
@@ -127,7 +127,7 @@ namespace CyberCube
         public Matrix View
         {
             get {
-                if ( IsAnimating() || mViewMatrix == Matrix.Identity )
+                if ( IsAnimating() || mViewMatrix == default( Matrix ) )
                     Matrix.CreateLookAt( ref mPosition0,
                                          ref mTarget0,
                                          ref mUpVector0,

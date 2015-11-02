@@ -27,12 +27,12 @@ namespace CyberCube.Physics
 
             Body = BodyFactory.CreateRectangle(
                     world,
-                    mWidth * Constants.PIXEL_TO_UNIT,
-                    mHeight * Constants.PIXEL_TO_UNIT,
+                    mWidth.ToUnits(),
+                    mHeight.ToUnits(),
                     1,
-                    Constants.PIXEL_TO_UNIT * new Vector2(
+                    new Vector2(
                         rec.X + mWidth / 2,
-                        rec.Y + mHeight / 2 ) );
+                        rec.Y + mHeight / 2 ).ToUnits() );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
@@ -50,7 +50,7 @@ namespace CyberCube.Physics
 
             mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.Opaque );
 
-            Vector2 position = Body.Position * Constants.UNIT_TO_PIXEL;
+            Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
                 mWidth / Texture.Width,
                 mHeight / Texture.Height );

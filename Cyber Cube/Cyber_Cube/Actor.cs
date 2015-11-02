@@ -6,6 +6,7 @@ using System.Text;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using CyberCube.Screens;
+using CyberCube.Physics;
 
 namespace CyberCube
 {
@@ -28,10 +29,10 @@ namespace CyberCube
         public Vector2 Position
         {
             get {
-                return Body.Position * Physics.Constants.UNIT_TO_PIXEL;
+                return Body.Position.ToPixels();
             }
             set {
-                Body.Position = value * Physics.Constants.PIXEL_TO_UNIT;
+                Body.Position = value.ToUnits();
                 SetFacePosition( value );
             }
         }
@@ -154,9 +155,9 @@ namespace CyberCube
         {
             Body body = BodyFactory.CreateCircle(
                 CubeFace.World,
-                3 * Physics.Constants.PIXEL_TO_UNIT,
+                3.ToUnits(),
                 1,
-                ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
+                ComputeFacePosition().ToUnits() );
 
             body.BodyType = BodyType.Dynamic;
             body.Rotation = Rotation;
@@ -196,7 +197,7 @@ namespace CyberCube
 
             mRotation = Body.Rotation;
 
-            SetFacePosition( Body.Position * Physics.Constants.UNIT_TO_PIXEL );
+            SetFacePosition( Body.Position.ToPixels() );
         }
 
         protected virtual void ApplyRotation( CompassDirection dir )
@@ -217,7 +218,7 @@ namespace CyberCube
             CubeFace = nextFace;
             Rotation -= rotDif;
 
-            Body.Position = ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT;
+            Body.Position = ComputeFacePosition().ToUnits();
 
             Velocity = Velocity.Rotate( pastUpDirAngle - UpDir.Angle );
         }

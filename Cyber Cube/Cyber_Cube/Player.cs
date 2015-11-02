@@ -14,6 +14,7 @@ using CyberCube.Levels;
 using CyberCube.Graphics;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
+using CyberCube.Physics;
 
 namespace CyberCube
 {
@@ -47,16 +48,16 @@ namespace CyberCube
         {
             Body body = BodyFactory.CreateRectangle(
                 CubeFace.World,
-                25 * Physics.Constants.PIXEL_TO_UNIT,
-                50 * Physics.Constants.PIXEL_TO_UNIT,
+                25.ToUnits(),
+                50.ToUnits(),
                 1,
-                ComputeFacePosition() * Physics.Constants.PIXEL_TO_UNIT );
+                ComputeFacePosition().ToUnits() );
 
             mFeet = FixtureFactory.AttachRectangle(
-                20 * Physics.Constants.PIXEL_TO_UNIT,
-                10 * Physics.Constants.PIXEL_TO_UNIT,
+                20.ToUnits(),
+                10.ToUnits(),
                 1,
-                new Vector2( 0, 25 ) * Physics.Constants.PIXEL_TO_UNIT,
+                new Vector2( 0, 25 ).ToUnits(),
                 body );
             mFeet.IsSensor = true;
 
@@ -99,7 +100,7 @@ namespace CyberCube
                 float wrappedRotation = MathHelper.WrapAngle( rotation );
                 float wrappedBodyRotation = MathHelper.WrapAngle( Body.Rotation );
 
-                if ( Math.Abs( wrappedBodyRotation - wrappedRotation ) < MathHelper.PiOver4 )
+                if ( Math.Abs( wrappedBodyRotation - wrappedRotation ) <= MathHelper.PiOver4 )
                     Rotation = rotation;
 
                 return true;

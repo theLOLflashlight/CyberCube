@@ -69,12 +69,11 @@ namespace CyberCube.Levels
         {
             PlayableCube cube = new PlayableCube( Game );
 
-            var e = cube.Faces.GetEnumerator();
-            foreach ( Face editFace in Faces )
-            {
-                e.MoveNext();
-                e.Current.CopySolids( editFace );
-            }
+            var editFaces = Faces.GetEnumerator();
+            var playFaces = cube.Faces.GetEnumerator();
+
+            while ( editFaces.MoveNext() && playFaces.MoveNext() )
+                playFaces.Current.CopySolids( editFaces.Current );
 
             return cube;
         }
@@ -118,7 +117,7 @@ namespace CyberCube.Levels
                 sFont = content.Load< SpriteFont >( "MessageFontLarge" );
             }
 
-            public IBrush Brush
+            private IBrush Brush
             {
                 get {
                     return Cube.Brush;
@@ -164,7 +163,7 @@ namespace CyberCube.Levels
 
                 var input = Game.Input;
 
-                Vector2? mouseFacePos = MouseFacePosition();
+                Vector2? mouseFacePos = GetMouseFacePosition();
                 if ( mouseFacePos != null )
                     UpdateMouse( gameTime, mouseFacePos.Value );
 
@@ -184,7 +183,7 @@ namespace CyberCube.Levels
 
                 if ( input.Mouse_WasMiddlePressed() )
                 {
-                    Solid solid = FindSolidAt( mouseFacePos * Physics.Constants.PIXEL_TO_UNIT );
+                    Solid solid = FindSolidAt( mouseFacePos.ToUnits() );
                     if ( solid != null )
                     {
                         switch ( solid.BodyType )

@@ -103,11 +103,11 @@ namespace CyberCube
 
             private IEnumerable<CompassDirection> ClampSolid( Solid solid )
             {
-                Vector2 pos = solid.Body.Position * Physics.Constants.UNIT_TO_PIXEL;
+                Vector2 pos = solid.Body.Position.ToPixels();
 
                 if ( pos.X > WIDTH )
                 {
-                    solid.Body.Position = new Vector2( WIDTH, pos.Y ) * Physics.Constants.PIXEL_TO_UNIT;
+                    solid.Body.Position = new Vector2( WIDTH, pos.Y ).ToUnits();
 
                     var dir = VectorToDirection( Vector3.UnitX );
                     if ( dir != null )
@@ -115,7 +115,7 @@ namespace CyberCube
                 }
                 else if ( pos.X < 0 )
                 {
-                    solid.Body.Position = new Vector2( 0, pos.Y ) * Physics.Constants.PIXEL_TO_UNIT;
+                    solid.Body.Position = new Vector2( 0, pos.Y ).ToUnits();
 
                     var dir = VectorToDirection( -Vector3.UnitX );
                     if ( dir != null )
@@ -124,7 +124,7 @@ namespace CyberCube
 
                 if ( pos.Y > HEIGHT )
                 {
-                    solid.Body.Position = new Vector2( pos.X, HEIGHT ) * Physics.Constants.PIXEL_TO_UNIT;
+                    solid.Body.Position = new Vector2( pos.X, HEIGHT ).ToUnits();
 
                     var dir = VectorToDirection( Vector3.UnitY );
                     if ( dir != null )
@@ -132,7 +132,7 @@ namespace CyberCube
                 }
                 else if ( pos.Y < 0 )
                 {
-                    solid.Body.Position = new Vector2( pos.X, 0 ) * Physics.Constants.PIXEL_TO_UNIT;
+                    solid.Body.Position = new Vector2( pos.X, 0 ).ToUnits();
 
                     var dir = VectorToDirection( -Vector3.UnitY );
                     if ( dir != null )

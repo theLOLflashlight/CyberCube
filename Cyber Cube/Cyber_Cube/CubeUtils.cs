@@ -43,7 +43,7 @@ namespace CyberCube
                 return null;
             }
 
-            protected Vector2? MouseFacePosition()
+            protected Vector2? GetMouseFacePosition()
             {
                 Vector3? mouseWorldPos = Cube.GetMouseWorldPosition();
                 if ( mouseWorldPos != null
@@ -86,15 +86,15 @@ namespace CyberCube
             y = MathHelper.Clamp( y, e, t );
             z = MathHelper.Clamp( z, b, f );
 
-            var dl = Math.Abs( x - l );
-            var dr = Math.Abs( x - r );
-            var dt = Math.Abs( y - t );
-            var de = Math.Abs( y - e );
-            var df = Math.Abs( z - f );
-            var db = Math.Abs( z - b );
+            float dl = Math.Abs( x - l );
+            float dr = Math.Abs( x - r );
+            float dt = Math.Abs( y - t );
+            float de = Math.Abs( y - e );
+            float df = Math.Abs( z - f );
+            float db = Math.Abs( z - b );
 
-            var m = Math.Min( Math.Min( df, Math.Min( dl, dr ) ),
-                              Math.Min( db, Math.Min( dt, de ) ) );
+            float m = Tools.Utils.Min( dl, dr, dt, de, df, db );
+            //Math.Min( Math.Min( df, Math.Min( dl, dr ) ), Math.Min( db, Math.Min( dt, de ) ) );
 
             if ( m == df )
                 return mFrontFace;
@@ -119,7 +119,7 @@ namespace CyberCube
 
 		public Vector2 ComputeFacePosition( Vector3 worldPosition, Face cubeFace )
 		{
-			float adjustingFactor = Cube.Face.SIZE / 2;
+			float adjustingFactor = Cube.Face.SIZE / 2f;
 			return Transform3dTo2d( worldPosition, cubeFace )
 				   * adjustingFactor
 				   + new Vector2( adjustingFactor );
@@ -134,21 +134,20 @@ namespace CyberCube
 
         public Vector3? GetMouseWorldPosition()
         {
-            var input = Game.Input;
-
             Line3 line;
             line.P0 = GraphicsDevice.Viewport.Unproject(
-                new Vector3( input.Mouse.X, input.Mouse.Y, 0 ),
+                new Vector3( Game.Input.Mouse_Pos, 0 ),
                 Effect.Projection, Effect.View, Effect.World );
+
             line.P1 = GraphicsDevice.Viewport.Unproject(
-                new Vector3( input.Mouse.X, input.Mouse.Y, 1 ),
+                new Vector3( Game.Input.Mouse_Pos, 1 ),
                 Effect.Projection, Effect.View, Effect.World );
 
             float? dist = line.Intersects( BoundingBox );
             if ( dist != null )
             {
                 float t = dist.Value / line.Length;
-                if ( t < 0 || 1 < t )
+                if ( t < 0 || t > 1 )
                     return null;
 
                 Vector3 worldMouse = line[ t ];
@@ -156,21 +155,20 @@ namespace CyberCube
                 // Due to imprecision, sometimes the resulting coordinate doesn't 
                 // lie exactly on the cube.
 
-                Vector3 delta = new Vector3(
-                    worldMouse.X < 0 ? 1 + worldMouse.X : 1 - worldMouse.X,
-                    worldMouse.Y < 0 ? 1 + worldMouse.Y : 1 - worldMouse.Y,
-                    worldMouse.Z < 0 ? 1 + worldMouse.Z : 1 - worldMouse.Z );
+                float magX = Math.Abs( worldMouse.X );
+                float magY = Math.Abs( worldMouse.Y );
+                float magZ = Math.Abs( worldMouse.Z );
 
-                float min = Math.Min( delta.X, Math.Min( delta.Y, delta.Z ) );
+                float max = Tools.Utils.Max( magX, magY, magZ );
 
-                if ( delta.X == min )
-                    worldMouse.X = worldMouse.X < 0 ? -1 : 1;
+                if ( magX == max )
+                    worldMouse.X = Math.Sign( worldMouse.X );
 
-                if ( delta.Y == min )
-                    worldMouse.Y = worldMouse.Y < 0 ? -1 : 1;
+                if ( magY == max )
+                    worldMouse.Y = Math.Sign( worldMouse.Y );
 
-                if ( delta.Z == min )
-                    worldMouse.Z = worldMouse.Z < 0 ? -1 : 1;
+                if ( magZ == max )
+                    worldMouse.Z = Math.Sign( worldMouse.Z );
 
                 return worldMouse;
             }

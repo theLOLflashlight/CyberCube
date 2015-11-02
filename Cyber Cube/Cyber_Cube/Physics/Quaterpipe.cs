@@ -18,11 +18,38 @@ namespace CyberCube.Physics
             SE, SW, NW, NE
         }
 
-        protected float mRadius;
+        private static float AngleFromType( Type type )
+        {
+            switch ( type )
+            {
+            default:
+            case Type.SE:
+                return 0;
 
-        private Type mType;
+            case Type.SW:
+                return MathHelper.PiOver2;
 
-        private Texture2D mOcclusionCir;
+            case Type.NW:
+                return MathHelper.Pi;
+
+            case Type.NE:
+                return -MathHelper.PiOver2;
+            }
+        }
+
+        private static Vertices MakeArc( int sides, float radius, float angle )
+        {
+            Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, sides, radius );
+            arc.Add( new Vector2( arc.Last().X, arc.First().Y ) );
+            arc.Add( arc.First() );
+            arc.Rotate( angle );
+
+            return arc;
+        }
+
+        private float     mRadius;
+        private Type      mType;
+        private Texture2D mInvCircleTex;
 
         public Quarterpipe( CubeGame game,
                             World world,
@@ -35,54 +62,27 @@ namespace CyberCube.Physics
             : base( game, world )
         {
             mRadius = radius;
-
             mType = type;
+            float angle = AngleFromType( mType );
 
-            float angle = 0;
-            switch ( mType )
-            {
-            case Type.SE:
-                angle = 0;
-                break;
-            case Type.SW:
-                angle = MathHelper.PiOver2;
-                break;
-            case Type.NW:
-                angle = MathHelper.Pi;
-                break;
-            case Type.NE:
-                angle = -MathHelper.PiOver2;
-                break;
-            }
+            Body = BodyFactory.CreateChainShape(
+                world,
+                MakeArc( 100, radius.ToUnits(), angle ),
+                position.ToUnits() );
 
-            Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, 100, radius * Constants.PIXEL_TO_UNIT );
-            arc.Add( new Vector2( arc.Last().X, arc.First().Y ) );
-            arc.Add( arc.First() );
-            arc.Rotate( angle );
+            Body.BodyType = bodyType;
+            Body.Mass = mass;
+            Body.CollisionCategories = categories;
 
-            Body = BodyFactory.CreateChainShape( world, arc, position * Constants.PIXEL_TO_UNIT );
-
-            List<Vertices> triangles = Triangulate.ConvexPartition( arc, TriangulationAlgorithm.Earclip );
             var fs = FixtureFactory.AttachCompoundPolygon(
-                triangles,
+                Triangulate.ConvexPartition(
+                    MakeArc( 10, radius.ToUnits(), angle ),
+                    TriangulationAlgorithm.Earclip ),
                 1,
                 Body );
 
             foreach ( var f in fs )
                 f.CollidesWith = Category.None;
-
-            //Body = BodyFactory.CreateLineArc(
-            //    world,
-            //    MathHelper.PiOver2,
-            //    100,
-            //    radius * Constants.PIXEL_TO_UNIT,
-            //    position * Constants.PIXEL_TO_UNIT,
-            //    angle - MathHelper.PiOver4,
-            //    false );
-
-            Body.BodyType = bodyType;
-            Body.Mass = mass;
-            Body.CollisionCategories = categories;
         }
 
         public override Solid Clone( World world )
@@ -119,38 +119,18 @@ namespace CyberCube.Physics
         {
             base.Initialize();
 
-            mOcclusionCir = CreateCircleTexture( (int) mRadius );
+            mInvCircleTex = CreateCircleTexture( (int) mRadius );
         }
 
         public override void Draw( GameTime gameTime )
         {
-            mSpriteBatch.Begin();
-            
-            Vector2 position = Body.Position * Constants.UNIT_TO_PIXEL;
+            Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
-                mRadius / Texture.Width,
-                mRadius / Texture.Height );
-            
-            //mSpriteBatch.Draw(
-            //    Texture,
-            //    position + new Vector2( mRadius / 2 ),
-            //    null,
-            //    BodyType == BodyType.Static ? Color.Black : Color.White,
-            //    Body.Rotation,
-            //    new Vector2(
-            //        Texture.Width / 2.0f,
-            //        Texture.Height / 2.0f ),
-            //    scale,
-            //    SpriteEffects.None,
-            //    0 );
+                mRadius / mInvCircleTex.Width,
+                mRadius / mInvCircleTex.Height );
 
-            scale = new Vector2(
-                mRadius / mOcclusionCir.Width,
-                mRadius / mOcclusionCir.Height );
-
-
-            int x = mOcclusionCir.Width;
-            int y = mOcclusionCir.Height;
+            int x = mInvCircleTex.Width;
+            int y = mInvCircleTex.Height;
             switch ( mType )
             {
             case Type.SE:
@@ -167,9 +147,10 @@ namespace CyberCube.Physics
                 break;
             }
 
+            mSpriteBatch.Begin();
 
             mSpriteBatch.Draw(
-                mOcclusionCir,
+                mInvCircleTex,
                 new Rectangle(
                     (int) position.X + x,
                     (int) position.Y + y,
@@ -178,14 +159,13 @@ namespace CyberCube.Physics
                 new Rectangle(
                     x / 2,
                     y / 2,
-                    mOcclusionCir.Width / 2,
-                    mOcclusionCir.Height / 2 ),
+                    mInvCircleTex.Width / 2,
+                    mInvCircleTex.Height / 2 ),
                 BodyType == BodyType.Static ? Color.Black : Color.White,
                 Body.Rotation,
-                //Vector2.Zero,
                 new Vector2(
-                    mOcclusionCir.Width / 2.0f,
-                    mOcclusionCir.Height / 2.0f ),
+                    mInvCircleTex.Width / 2.0f,
+                    mInvCircleTex.Height / 2.0f ),
                 SpriteEffects.None,
                 0 );
             

@@ -29,7 +29,7 @@ namespace CyberCube.Screens
 
             public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
             {
-                Vector2 clickPos = mousePos * Physics.Constants.PIXEL_TO_UNIT;
+                Vector2 clickPos = mousePos.ToUnits();
 
                 mFocusSolid = face.FindSolidAt( ref clickPos );
                 if ( mFocusSolid != null )
@@ -46,7 +46,7 @@ namespace CyberCube.Screens
                 if ( face != mFace )
                     return;
 
-                Vector2 worldPos = mousePos * Physics.Constants.PIXEL_TO_UNIT;
+                Vector2 worldPos = mousePos.ToUnits();
                 Vector2 delta = worldPos - mMouseUnitPos;
 
                 mFocusSolid.Body.Position += delta;
@@ -118,8 +118,8 @@ namespace CyberCube.Screens
                 int w = (int) Math.Abs( mousePos.X - pos.X );
                 int h = (int) Math.Abs( mousePos.Y - pos.Y );
 
-                if ( w > 0.5 * Physics.Constants.UNIT_TO_PIXEL
-                     && h > 0.5 * Physics.Constants.UNIT_TO_PIXEL )
+                if ( w > 0.5.ToPixels()
+                     && h > 0.5.ToPixels() )
                     mTentativeRec = new Rectangle( x, y, w, h );
                 else
                     mTentativeRec = null;
