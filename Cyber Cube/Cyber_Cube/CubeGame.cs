@@ -13,6 +13,7 @@ using CyberCube.MenuFiles;
 using System.Reflection;
 using CyberCube.Levels;
 using CyberCube.Screens;
+using System.ComponentModel;
 
 namespace CyberCube
 {
@@ -39,7 +40,60 @@ namespace CyberCube
             }
         }
 
-        public Color BackgroundColor { get; private set; }
+        public class GameProperties
+        {
+#if WINDOWS
+            public bool DebugView { get; set; } = false;
+#endif
+
+            public Color Background { get; set; } = Color.CornflowerBlue;
+
+
+            public static object Parse( string value, Type type )
+            {
+                if ( type == typeof( string ) )
+                    return value;
+
+                if ( type == typeof( bool ) )
+                    return bool.Parse( value );
+
+                if ( type == typeof( int ) )
+                    return int.Parse( value );
+
+                if ( type == typeof( float ) )
+                    return float.Parse( value );
+
+                if ( type == typeof( Color ) )
+                    return Color_Parse( value );
+
+                return null;
+            }
+            
+            private static Color Color_Parse( string value )
+            {
+                var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
+
+                foreach ( var property in properties )
+                    if ( property.Name.ToLower() == value.ToLower()
+                         && property.PropertyType == typeof( Color ) )
+                        return (Color) property.GetValue( null, null );
+
+                throw new FormatException( $"{value} is not a color." );
+            }
+        }
+
+        public readonly GameProperties RuntimeProperties = new GameProperties();
+
+
+        public Color BackgroundColor
+        {
+            get {
+                return RuntimeProperties.Background;
+            }
+            private set {
+                RuntimeProperties.Background = value;
+            }
+        }
 
         protected GraphicsDeviceManager mGraphicsDeviceManager;
 
@@ -219,20 +273,39 @@ namespace CyberCube
             switch ( command )
             {
             default:
-                if ( command.StartsWith( "background " ) )
+                command = command.Trim();
+                string[] tokens = command.Split( ' ' );
+
+                if ( tokens.Length == 0 )
+                    break;
+
+                var properties = typeof( GameProperties ).GetProperties();
+
+                foreach ( var property in properties )
                 {
-                    string colorName = command.Substring( "background ".Length ).Trim();
-
-                    var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
-
-                    foreach ( var property in properties )
+                    if ( tokens[ 0 ].ToLower() == property.Name.ToLower() )
                     {
-                        if ( property.Name.ToLower() == colorName.ToLower()
-                             && property.PropertyType == typeof( Color ) )
+                        if ( tokens.Length == 1 )
                         {
-                            BackgroundColor = (Color) property.GetValue( null, null );
+                            Console.AddMessage( property.GetValue( RuntimeProperties, null ).ToString() );
                             return true;
                         }
+                        else if ( tokens.Length == 3 && tokens[ 1 ] == "=" )
+                        {
+                            try {
+                                property.SetValue(
+                                    RuntimeProperties,
+                                    GameProperties.Parse( tokens[ 2 ], property.PropertyType ),
+                                    null );
+                            }
+                            catch
+                            {
+                                Console.AddMessage( new ConsoleErrorMessage(
+                                    $"{property.Name} must be of type {property.PropertyType.Name}." ) );
+                            }
+                            return true;
+                        }
+                        break;
                     }
                 }
                 break;
@@ -247,12 +320,6 @@ namespace CyberCube
 [clear]" );
                 return true;
 
-            //case "reset":
-            //    mCube.Reset();
-            //    Player.Reset( Vector3.UnitZ, Direction.Up );
-            //    mCube.CenterOnPlayer( Player );
-            //    return true;
-
             case "exit":
                 this.Exit();
                 return true;
@@ -263,5 +330,6 @@ namespace CyberCube
             }
             return false;
         }
+
     }
 }

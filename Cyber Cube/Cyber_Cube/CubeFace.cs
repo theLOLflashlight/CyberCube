@@ -16,7 +16,7 @@ namespace CyberCube
     {
         public abstract partial class Face : DrawableCubeGameComponent
         {
-#if WINDOWS && DEBUG
+#if WINDOWS
             private FarseerPhysics.DebugView.DebugViewXNA mDebugView;
 #endif
 
@@ -80,7 +80,7 @@ namespace CyberCube
                 SetUpWorld();
                 this.Visible = false;
 
-#if WINDOWS && DEBUG
+#if WINDOWS
                 mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
 #endif
             }
@@ -145,9 +145,10 @@ namespace CyberCube
                 foreach ( Solid solid in mSolids )
                     solid.Initialize();
 
-#if WINDOWS && DEBUG
+#if WINDOWS
                 mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
+                World.Step( 0 );
             }
 
             public override void Update( GameTime gameTime )
@@ -163,24 +164,27 @@ namespace CyberCube
                 foreach ( Solid solid in mSolids )
                     solid.Draw( gameTime );
 
-#if WINDOWS && DEBUG
-                Matrix proj = Matrix.CreateOrthographicOffCenter(
-                0,
-                WIDTH * Constants.PIXEL_TO_UNIT,
-                HEIGHT * Constants.PIXEL_TO_UNIT,
-                0,
-                0,
-                1 );
-                
-                mDebugView.BeginCustomDraw( proj, Matrix.Identity );
-                foreach ( Body b in World.BodyList )
+#if WINDOWS
+                if ( Game.RuntimeProperties.DebugView )
                 {
-                    Transform trans;
-                    b.GetTransform( out trans );
-                    foreach ( Fixture f in b.FixtureList )
-                        mDebugView.DrawShape( f, trans, Color.White );
+                    Matrix proj = Matrix.CreateOrthographicOffCenter(
+                    0,
+                    WIDTH.ToUnits(),
+                    HEIGHT.ToUnits(),
+                    0,
+                    0,
+                    1 );
+                
+                    mDebugView.BeginCustomDraw( proj, Matrix.Identity );
+                    foreach ( Body b in World.BodyList )
+                    {
+                        Transform trans;
+                        b.GetTransform( out trans );
+                        foreach ( Fixture f in b.FixtureList )
+                            mDebugView.DrawShape( f, trans, Color.White );
+                    }
+                    mDebugView.EndCustomDraw();
                 }
-                mDebugView.EndCustomDraw();
 #endif
             }
 

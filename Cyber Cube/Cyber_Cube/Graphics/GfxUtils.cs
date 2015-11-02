@@ -13,54 +13,6 @@ namespace CyberCube.Graphics
     public static class Utils
     {
 
-
-        public static void DrawBody( this Body body, GraphicsDevice device, Texture2D texture, GameTime gameTime )
-        {
-            using ( BasicEffect effect = new BasicEffect( device ) )
-            {
-                effect.Texture = texture;
-                effect.TextureEnabled = true;
-                effect.Projection = Matrix.CreateOrthographicOffCenter(
-                0, Cube.Face.WIDTH, Cube.Face.HEIGHT, 0, 0, 1 );
-
-                Transform transform;
-                body.GetTransform( out transform );
-
-                Matrix t = Matrix.CreateTranslation( new Vector3( body.Position, 0 ) );
-                Matrix r = Matrix.CreateRotationZ( transform.q.GetAngle() );
-
-                effect.View = r * t;
-
-                foreach ( Fixture f in body.FixtureList )
-                {
-                    PolygonShape pgon = f.Shape as PolygonShape;
-                    if ( pgon != null )
-                    {
-                        VertexPositionTexture[] verts = new VertexPositionTexture[ pgon.Vertices.Count ];
-
-                        //List<short> data = new List<short>();
-
-                        int i = 0;
-                        foreach ( Vector2 vtex in pgon.Vertices )
-                        {
-                            verts[ i++ ] = new VertexPositionTexture(
-                                new Vector3( vtex, 0 ) * Physics.Constants.UNIT_TO_PIXEL,
-                                Vector2.Zero );
-                        }
-
-
-                        foreach ( var pass in effect.CurrentTechnique.Passes )
-                        {
-                            pass.Apply();
-                            device.DrawUserIndexedPrimitives( PrimitiveType.TriangleStrip, verts, 0, verts.Length,
-                                new short[] { 0, 1, 2, 3, 0 }, 0, 3 );
-                        }
-                    }
-                }
-            }
-        }
-
-
         public static void DrawLine( this SpriteBatch batch, Line2 line, Texture2D texture, Color color, float thickness = 1 )
         {
             batch.DrawLine( line.P0, line.P1, texture, color, thickness );
