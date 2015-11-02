@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CyberCube.IO;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -39,6 +40,11 @@ namespace CyberCube.Screens
         public void Back()
         {
             ScreenManager.PopScreen();
+        }
+
+        public virtual ConsoleMessage RunCommand( string command )
+        {
+            return GameConsole.MakeDefaultErrorMessage( command );
         }
 
         public override void Initialize()

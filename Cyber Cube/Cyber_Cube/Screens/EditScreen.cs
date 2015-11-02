@@ -7,6 +7,8 @@ using CyberCube.Levels;
 using Microsoft.Xna.Framework.Graphics;
 using CyberCube.Physics;
 using FarseerPhysics.Dynamics;
+using CyberCube.Screens.Brushes;
+using CyberCube.IO;
 
 namespace CyberCube.Screens
 {
@@ -16,157 +18,42 @@ namespace CyberCube.Screens
     public class EditScreen : CubeScreen
     {
 
-        public class HandBrush : EditableCube.IBrush
+        private IEditBrush mLeftBrush;
+
+        public IEditBrush LeftBrush
         {
-            private EditableCube.Face mFace;
-            private Solid mFocusSolid;
-            private Vector2 mMouseUnitPos;
-
-            public bool Started
-            {
-                get; private set;
+            get {
+                return mLeftBrush;
             }
-
-            public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
-            {
-                Vector2 clickPos = mousePos.ToUnits();
-
-                mFocusSolid = face.FindSolidAt( ref clickPos );
-                if ( mFocusSolid != null )
-                {
-                    mFace = face;
-                    Started = true;
-                    mMouseUnitPos = clickPos;
-                    mFocusSolid.Body.Enabled = false;
-                }
-            }
-
-            public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                Vector2 worldPos = mousePos.ToUnits();
-                Vector2 delta = worldPos - mMouseUnitPos;
-
-                mFocusSolid.Body.Position += delta;
-                mMouseUnitPos = worldPos;
-            }
-
-            public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                Cancel();
-            }
-
-            public void Cancel()
-            {
-                Started = false;
-
-                if ( mFocusSolid != null )
-                    mFocusSolid.Body.Enabled = true;
-                mFocusSolid = null;
-            }
-
-            public void Draw( EditableCube.Face face, SpriteBatch spriteBatch, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                return;
+            set {
+                mLeftBrush?.Cancel();
+                mLeftBrush = value;
             }
         }
 
-        public class RectangleBrush : EditableCube.IBrush
+        private IEditBrush mRightBrush;
+
+        public IEditBrush RightBrush
         {
-            private EditableCube.Face mFace;
-
-            private Rectangle? mTentativeRec;
-            private Vector2 mMousePos;
-
-            private Texture2D mTexture;
-
-            public RectangleBrush( Texture2D texture )
-            {
-                mTexture = texture;
+            get {
+                return mRightBrush;
             }
-
-            public bool Started
-            {
-                get; private set;
+            set {
+                mRightBrush?.Cancel();
+                mRightBrush = value;
             }
+        }
 
-            public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
-            {
-                mFace = face;
-                Started = true;
-                mMousePos = mousePos;
+        private IEditBrush mMiddleBrush;
+
+        public IEditBrush MiddleBrush
+        {
+            get {
+                return mMiddleBrush;
             }
-
-            public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                Vector2 pos = mMousePos;
-
-                int x = (int) Math.Min( pos.X, mousePos.X );
-                int y = (int) Math.Min( pos.Y, mousePos.Y );
-
-                int w = (int) Math.Abs( mousePos.X - pos.X );
-                int h = (int) Math.Abs( mousePos.Y - pos.Y );
-
-                if ( w > 0.5.ToPixels()
-                     && h > 0.5.ToPixels() )
-                    mTentativeRec = new Rectangle( x, y, w, h );
-                else
-                    mTentativeRec = null;
-            }
-
-            public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                if ( mTentativeRec != null )
-                {
-                    var rec = mTentativeRec.Value;
-
-                    Box box = new Box(
-                        face.Game,
-                        face.World,
-                        rec,
-                        BodyType.Static,
-                        rec.Width * rec.Height * 0.003f,
-                        Category.Cat2 );
-
-                    box.Body.UseAdHocGravity = true;
-                    box.Body.AdHocGravity =
-                        Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
-                        * 9.8f;
-
-                    face.AddSolid( box );
-                }
-
-                Started = false;
-                mTentativeRec = null;
-            }
-
-            public void Cancel()
-            {
-                Started = false;
-                mTentativeRec = null;
-            }
-
-            public void Draw( EditableCube.Face face, SpriteBatch spriteBatch, GameTime gameTime )
-            {
-                if ( face != mFace )
-                    return;
-
-                if ( mTentativeRec != null )
-                    spriteBatch.Draw( mTexture, mTentativeRec.Value, new Color( 0, 0, 0, 128 ) );
+            set {
+                mMiddleBrush?.Cancel();
+                mMiddleBrush = value;
             }
         }
 
@@ -204,14 +91,38 @@ namespace CyberCube.Screens
         }
         #endregion
 
+
+        public override ConsoleMessage RunCommand( string command )
+        {
+            switch ( command.ToLower() )
+            {
+            case "set brush hand":
+                LeftBrush = new HandBrush( Game );
+                return null;
+
+            case "set brush rectangle":
+                Texture2D pixel = new Texture2D( GraphicsDevice, 1, 1 );
+                pixel.SetData( new[] { Color.White } );
+
+                LeftBrush = new RectangleBrush( pixel );
+                return null;
+
+            case "set brush bodytype":
+                LeftBrush = new BodyTypeBrush();
+                return null;
+            }
+
+            return base.RunCommand( command );
+        }
+
+
         public override void Initialize()
         {
             base.Initialize();
             Texture2D pixel = new Texture2D( GraphicsDevice, 1, 1 );
             pixel.SetData( new[] { Color.White } );
 
-            Cube.Brush = new HandBrush();
-            //Cube.Brush = new RectangleBrush( pixel );
+            LeftBrush = new HandBrush( Game );
         }
 
         public override void Update( GameTime gameTime )

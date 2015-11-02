@@ -53,6 +53,16 @@ namespace CyberCube.Physics
             }
         }
 
+        public Vector2 Position
+        {
+            get {
+                return Body.Position;
+            }
+            set {
+                Body.Position = value;
+            }
+        }
+
         public Texture2D Texture;
 
         public Solid( CubeGame game, World world )

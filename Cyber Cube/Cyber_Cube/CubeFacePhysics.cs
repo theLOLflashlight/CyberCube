@@ -101,6 +101,12 @@ namespace CyberCube
                     solid.Initialize();
             }
 
+            public void RemoveSolid( Solid solid )
+            {
+                mSolids.Remove( solid );
+                World.RemoveBody( solid.Body );
+            }
+
             private IEnumerable<CompassDirection> ClampSolid( Solid solid )
             {
                 Vector2 pos = solid.Body.Position.ToPixels();

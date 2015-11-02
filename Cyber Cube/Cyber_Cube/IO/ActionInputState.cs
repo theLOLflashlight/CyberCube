@@ -8,23 +8,23 @@ using System.Text;
 namespace CyberCube.IO
 {
 
-    public class InputState< Action > : InputState
-        where Action : struct, IComparable, IFormattable, IConvertible
+    public class InputState< BindTarget > : InputState
+        where BindTarget : struct, IComparable, IFormattable, IConvertible
     {
-        public delegate float DynamicInput( InputState< Action > input );
+        public delegate float DynamicInput( InputState< BindTarget > input );
 
         public struct ActionState
         {
-            public readonly Action Action;
+            public readonly BindTarget Action;
             public float Value;
 
-            public ActionState( Action action, float value )
+            public ActionState( BindTarget action, float value )
             {
                 Action = action;
                 Value = value;
             }
 
-            public ActionState( Action action, bool value )
+            public ActionState( BindTarget action, bool value )
                 : this( action, value ? 1f : 0f )
             {
             }
@@ -35,15 +35,15 @@ namespace CyberCube.IO
             }
         }
 
-        private Dictionary<Action, Keys> mKeyBinds = new Dictionary<Action, Keys>();
-        private Dictionary<Action, Keys> mKeyPressedBinds = new Dictionary<Action, Keys>();
-        private Dictionary<Action, Keys> mKeyReleasedBinds = new Dictionary<Action, Keys>();
+        private Dictionary<BindTarget, Keys> mKeyBinds = new Dictionary<BindTarget, Keys>();
+        private Dictionary<BindTarget, Keys> mKeyPressedBinds = new Dictionary<BindTarget, Keys>();
+        private Dictionary<BindTarget, Keys> mKeyReleasedBinds = new Dictionary<BindTarget, Keys>();
 
-        private Dictionary<Action, Buttons> mButtonBinds = new Dictionary<Action, Buttons>();
-        private Dictionary<Action, Buttons> mButtonPressedBinds = new Dictionary<Action, Buttons>();
-        private Dictionary<Action, Buttons> mButtonReleasedBinds = new Dictionary<Action, Buttons>();
+        private Dictionary<BindTarget, Buttons> mButtonBinds = new Dictionary<BindTarget, Buttons>();
+        private Dictionary<BindTarget, Buttons> mButtonPressedBinds = new Dictionary<BindTarget, Buttons>();
+        private Dictionary<BindTarget, Buttons> mButtonReleasedBinds = new Dictionary<BindTarget, Buttons>();
 
-        private Dictionary<Action, DynamicInput> mDynamicBinds = new Dictionary<Action, DynamicInput>();
+        private Dictionary<BindTarget, DynamicInput> mDynamicBinds = new Dictionary<BindTarget, DynamicInput>();
 
         public InputState()
             : base()
@@ -51,7 +51,7 @@ namespace CyberCube.IO
             
         }
 
-        public ActionState GetAction( Action action )
+        public ActionState GetAction( BindTarget action )
         {
             if ( mKeyPressedBinds.ContainsKey( action )
                  && Keyboard_WasKeyPressed( mKeyPressedBinds[ action ] ) )
@@ -92,17 +92,17 @@ namespace CyberCube.IO
 
         // Key
 
-        public void AddBinding( Action action, Keys key )
+        public void AddBinding( BindTarget action, Keys key )
         {
-            AddBindings( new KeyValuePair<Action, Keys>( action, key ) );
+            AddBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
         }
 
-        public void AddBindings( params KeyValuePair<Action, Keys>[] bindings )
+        public void AddBindings( params KeyValuePair<BindTarget, Keys>[] bindings )
         {
             AddBindings( bindings.AsEnumerable() );
         }
 
-        public void AddBindings( IEnumerable<KeyValuePair<Action, Keys>> bindings )
+        public void AddBindings( IEnumerable<KeyValuePair<BindTarget, Keys>> bindings )
         {
             foreach ( var binding in bindings )
                 mKeyBinds.Add( binding.Key, binding.Value );
@@ -110,17 +110,17 @@ namespace CyberCube.IO
 
         // Key Pressed
 
-        public void AddPressedBinding( Action action, Keys key )
+        public void AddPressedBinding( BindTarget action, Keys key )
         {
-            AddPressedBindings( new KeyValuePair<Action, Keys>( action, key ) );
+            AddPressedBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
         }
 
-        public void AddPressedBindings( params KeyValuePair<Action, Keys>[] bindings )
+        public void AddPressedBindings( params KeyValuePair<BindTarget, Keys>[] bindings )
         {
             AddPressedBindings( bindings.AsEnumerable() );
         }
 
-        public void AddPressedBindings( IEnumerable<KeyValuePair<Action, Keys>> bindings )
+        public void AddPressedBindings( IEnumerable<KeyValuePair<BindTarget, Keys>> bindings )
         {
             foreach ( var binding in bindings )
                 mKeyPressedBinds.Add( binding.Key, binding.Value );
@@ -128,17 +128,17 @@ namespace CyberCube.IO
 
         // Key Released
 
-        public void AddReleasedBinding( Action action, Keys key )
+        public void AddReleasedBinding( BindTarget action, Keys key )
         {
-            AddReleasedBindings( new KeyValuePair<Action, Keys>( action, key ) );
+            AddReleasedBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
         }
 
-        public void AddReleasedBindings( params KeyValuePair<Action, Keys>[] bindings )
+        public void AddReleasedBindings( params KeyValuePair<BindTarget, Keys>[] bindings )
         {
             AddReleasedBindings( bindings.AsEnumerable() );
         }
 
-        public void AddReleasedBindings( IEnumerable<KeyValuePair<Action, Keys>> bindings )
+        public void AddReleasedBindings( IEnumerable<KeyValuePair<BindTarget, Keys>> bindings )
         {
             foreach ( var binding in bindings )
                 mKeyReleasedBinds.Add( binding.Key, binding.Value );
@@ -147,17 +147,17 @@ namespace CyberCube.IO
 
         // Button
 
-        public void AddBinding( Action action, Buttons button )
+        public void AddBinding( BindTarget action, Buttons button )
         {
-            AddBindings( new KeyValuePair<Action, Buttons>( action, button ) );
+            AddBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
         }
 
-        public void AddBindings( params KeyValuePair<Action, Buttons>[] bindings )
+        public void AddBindings( params KeyValuePair<BindTarget, Buttons>[] bindings )
         {
             AddBindings( bindings.AsEnumerable() );
         }
 
-        public void AddBindings( IEnumerable<KeyValuePair<Action, Buttons>> bindings )
+        public void AddBindings( IEnumerable<KeyValuePair<BindTarget, Buttons>> bindings )
         {
             foreach ( var binding in bindings )
                 mButtonBinds.Add( binding.Key, binding.Value );
@@ -165,17 +165,17 @@ namespace CyberCube.IO
 
         // Button Pressed
 
-        public void AddPressedBinding( Action action, Buttons button )
+        public void AddPressedBinding( BindTarget action, Buttons button )
         {
-            AddPressedBindings( new KeyValuePair<Action, Buttons>( action, button ) );
+            AddPressedBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
         }
 
-        public void AddPressedBindings( params KeyValuePair<Action, Buttons>[] bindings )
+        public void AddPressedBindings( params KeyValuePair<BindTarget, Buttons>[] bindings )
         {
             AddPressedBindings( bindings.AsEnumerable() );
         }
 
-        public void AddPressedBindings( IEnumerable<KeyValuePair<Action, Buttons>> bindings )
+        public void AddPressedBindings( IEnumerable<KeyValuePair<BindTarget, Buttons>> bindings )
         {
             foreach ( var binding in bindings )
                 mButtonPressedBinds.Add( binding.Key, binding.Value );
@@ -183,17 +183,17 @@ namespace CyberCube.IO
 
         // Button Released
 
-        public void AddReleasedBinding( Action action, Buttons button )
+        public void AddReleasedBinding( BindTarget action, Buttons button )
         {
-            AddReleasedBindings( new KeyValuePair<Action, Buttons>( action, button ) );
+            AddReleasedBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
         }
 
-        public void AddReleasedBindings( params KeyValuePair<Action, Buttons>[] bindings )
+        public void AddReleasedBindings( params KeyValuePair<BindTarget, Buttons>[] bindings )
         {
             AddReleasedBindings( bindings.AsEnumerable() );
         }
 
-        public void AddReleasedBindings( IEnumerable<KeyValuePair<Action, Buttons>> bindings )
+        public void AddReleasedBindings( IEnumerable<KeyValuePair<BindTarget, Buttons>> bindings )
         {
             foreach ( var binding in bindings )
                 mButtonReleasedBinds.Add( binding.Key, binding.Value );
@@ -202,17 +202,17 @@ namespace CyberCube.IO
 
         // Dynamic Input
 
-        public void AddBinding( Action action, DynamicInput dynamicInput )
+        public void AddBinding( BindTarget action, DynamicInput dynamicInput )
         {
-            AddBindings( new KeyValuePair<Action, DynamicInput>( action, dynamicInput ) );
+            AddBindings( new KeyValuePair<BindTarget, DynamicInput>( action, dynamicInput ) );
         }
 
-        public void AddBindings( params KeyValuePair<Action, DynamicInput>[] bindings )
+        public void AddBindings( params KeyValuePair<BindTarget, DynamicInput>[] bindings )
         {
             AddBindings( bindings.AsEnumerable() );
         }
 
-        public void AddBindings( IEnumerable<KeyValuePair<Action, DynamicInput>> bindings )
+        public void AddBindings( IEnumerable<KeyValuePair<BindTarget, DynamicInput>> bindings )
         {
             foreach ( var binding in bindings )
                 mDynamicBinds.Add( binding.Key, binding.Value );

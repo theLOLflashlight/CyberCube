@@ -1,4 +1,5 @@
-﻿using FarseerPhysics.Dynamics;
+﻿using CyberCube.Tools;
+using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -16,7 +17,7 @@ namespace CyberCube.Physics
 
         public Box( CubeGame game,
                     World world,
-                    Rectangle rec,
+                    RectangleF rec,
                     BodyType bodyType = BodyType.Static,
                     float mass = 1,
                     Category categories = Category.Cat1 )
@@ -30,9 +31,7 @@ namespace CyberCube.Physics
                     mWidth.ToUnits(),
                     mHeight.ToUnits(),
                     1,
-                    new Vector2(
-                        rec.X + mWidth / 2,
-                        rec.Y + mHeight / 2 ).ToUnits() );
+                    rec.Center.ToUnits() );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
@@ -46,8 +45,6 @@ namespace CyberCube.Physics
 
         public override void Draw( GameTime gameTime )
         {
-            //Body.DrawBody( GraphicsDevice, mTexture, gameTime );
-
             mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.Opaque );
 
             Vector2 position = Body.Position.ToPixels();

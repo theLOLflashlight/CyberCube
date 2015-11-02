@@ -68,8 +68,7 @@ namespace CyberCube.Screens
         {
             base.Update( gameTime );
 
-            if ( !Game.Input.HasFocus
-                 && Game.Input.Keyboard_WasKeyPressed( Keys.Escape ) )
+            if ( !Game.Input.HasFocus && Game.Input.Keyboard_WasKeyPressed( Keys.Escape ) )
                 Back();
         }
 

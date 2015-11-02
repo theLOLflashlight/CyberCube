@@ -70,6 +70,7 @@
     <Compile Include="CubeRotation.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
+    <Compile Include="GameProperties.cs" />
     <Compile Include="Graphics\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
@@ -93,6 +94,10 @@
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CubeGame.cs" />
+    <Compile Include="Screens\Brushes\BodyTypeBrush.cs" />
+    <Compile Include="Screens\Brushes\HandBrush.cs" />
+    <Compile Include="Screens\Brushes\IEditBrush.cs" />
+    <Compile Include="Screens\Brushes\RectangleBrush.cs" />
     <Compile Include="Screens\GameScreen.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\PauseScreen.cs" />
@@ -104,6 +109,7 @@
     <Compile Include="StorageManager.cs" />
     <Compile Include="Tools\Exceptions.cs" />
     <Compile Include="Tools\MathUtils.cs" />
+    <Compile Include="Tools\Rectanglef.cs" />
     <Compile Include="Utils.cs" />
   </ItemGroup>
   <ItemGroup>

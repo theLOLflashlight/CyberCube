@@ -92,10 +92,10 @@ namespace CyberCube
         {
             if ( contact.IsTouching && !fixtureB.IsSensor
                  && contact.Manifold.Type == ManifoldType.FaceA
-                 && contact.Manifold.PointCount == 1 )
+                 && contact.Manifold.PointCount >= 1 )
             {
-                Vector2 surfaceNormal = contact.Manifold.LocalNormal;
-                float rotation = (float) Math.Atan2( surfaceNormal.Y, surfaceNormal.X ) + MathHelper.PiOver2;
+                Vector2 groundNormal = contact.Manifold.LocalNormal;
+                float rotation = (float) Math.Atan2( groundNormal.Y, groundNormal.X ) + MathHelper.PiOver2;
 
                 float wrappedRotation = MathHelper.WrapAngle( rotation );
                 float wrappedBodyRotation = MathHelper.WrapAngle( Body.Rotation );

@@ -8,9 +8,13 @@ using System.Text;
 namespace CyberCube.IO
 {
 
+    public enum MouseButtons
+    {
+        Left, Right, Middle
+    }
+
     public class InputState
     {
-
         public object Focus
         {
             private get; set;
@@ -91,6 +95,40 @@ namespace CyberCube.IO
         //    return Mouse.MiddleButton == ButtonState.Released && OldMouse.MiddleButton == ButtonState.Pressed;
         //}
 
+        public bool Mouse_WasButtonPressed( MouseButtons buttons )
+        {
+            switch ( buttons )
+            {
+            case MouseButtons.Left:
+                return Mouse.LeftButton == ButtonState.Pressed && OldMouse.LeftButton != ButtonState.Pressed;
+
+            case MouseButtons.Right:
+                return Mouse.RightButton == ButtonState.Pressed && OldMouse.RightButton != ButtonState.Pressed;
+
+            case MouseButtons.Middle:
+                return Mouse.MiddleButton == ButtonState.Pressed && OldMouse.MiddleButton != ButtonState.Pressed;
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
+        public bool Mouse_WasButtonReleased( MouseButtons buttons )
+        {
+            switch ( buttons )
+            {
+            case MouseButtons.Left:
+                return Mouse.LeftButton == ButtonState.Released && OldMouse.LeftButton != ButtonState.Released;
+
+            case MouseButtons.Right:
+                return Mouse.RightButton == ButtonState.Released && OldMouse.RightButton != ButtonState.Released;
+
+            case MouseButtons.Middle:
+                return Mouse.MiddleButton == ButtonState.Released && OldMouse.MiddleButton != ButtonState.Released;
+            }
+
+            throw new ArgumentOutOfRangeException();
+        }
+
         // Mouse Was Pressed
 
         public bool Mouse_WasLeftPressed()
@@ -155,12 +193,12 @@ namespace CyberCube.IO
 
         // Was *Any* Key
 
-        public bool Keyboard_WasAnyKeyPressed( IEnumerable<Keys> keys )
+        public bool Keyboard_WasAnyKeyPressed( params Keys[] keys )
         {
             return keys.Any( k => { return Keyboard_WasKeyPressed( k ); } );
         }
 
-        public bool Keyboard_WasAnyKeyReleased( IEnumerable<Keys> keys )
+        public bool Keyboard_WasAnyKeyReleased( params Keys[] keys )
         {
             return keys.Any( k => { return Keyboard_WasKeyReleased( k ); } );
         }
@@ -179,12 +217,12 @@ namespace CyberCube.IO
 
         // Was *Any* Button
 
-        public bool GamePad_WasAnyButtonPressed( IEnumerable<Buttons> buttons )
+        public bool GamePad_WasAnyButtonPressed( params Buttons[] buttons )
         {
             return buttons.Any( b => { return GamePad_WasButtonPressed( b ); } );
         }
 
-        public bool GamePad_WasAnyButtonReleased( IEnumerable<Buttons> buttons )
+        public bool GamePad_WasAnyButtonReleased( params Buttons[] buttons )
         {
             return buttons.Any( b => { return GamePad_WasButtonReleased( b ); } );
         }

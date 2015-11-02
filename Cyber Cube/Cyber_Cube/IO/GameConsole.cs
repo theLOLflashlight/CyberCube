@@ -14,9 +14,14 @@ namespace CyberCube.IO
     {
         public const string DEFAULT_INPUT_PROMPT = "> ";
 
-        public delegate bool ExecuteCommand( string command );
+        public delegate ConsoleMessage ExecuteCommand( string command );
 
         public event ExecuteCommand CommandExecuted;
+
+        public static ConsoleErrorMessage MakeDefaultErrorMessage( string command )
+        {
+            return new ConsoleErrorMessage( $"unrecognized command '{command}'" );
+        }
 
         public ReadOnlyCollection< ConsoleMessage > History
         {
@@ -112,8 +117,10 @@ namespace CyberCube.IO
             mHistory.Add( new ConsoleInputMessage( command, InputPrompt ) );
             mHistoryIndex = 0;
 
-            if ( CommandExecuted != null && !this.CommandExecuted( command ) )
-                mHistory.Add( new ConsoleErrorMessage( "unrecognized command '" + command + "'" ) );
+            ConsoleMessage returnMsg = CommandExecuted?.Invoke( command );
+
+            if ( returnMsg != null )
+                mHistory.Add( returnMsg );
         }
 
         public override void Update( GameTime gameTime )

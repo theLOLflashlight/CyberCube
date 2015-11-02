@@ -1,5 +1,6 @@
 ﻿using CyberCube.Physics;
 using CyberCube.Screens;
+using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
@@ -16,29 +17,6 @@ namespace CyberCube.Levels
         public static void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
-        }
-
-        public interface IBrush
-        {
-            bool Started { get; }
-            void Start( Face face, Vector2 mousePos, GameTime gameTime );
-            void End( Face face, Vector2? mousePos, GameTime gameTime );
-            void Cancel();
-            void Update( Face face, Vector2 mousePos, GameTime gameTime );
-            void Draw( Face face, SpriteBatch spriteBatch, GameTime gameTime );
-        }
-
-        private IBrush mBrush;
-
-        public IBrush Brush
-        {
-            get {
-                return mBrush;
-            }
-            set {
-                mBrush?.Cancel();
-                mBrush = value;
-            }
         }
 
         public new EditScreen Screen
@@ -117,10 +95,33 @@ namespace CyberCube.Levels
                 sFont = content.Load< SpriteFont >( "MessageFontLarge" );
             }
 
-            private IBrush Brush
+#if WINDOWS
+            public FarseerPhysics.DebugView.DebugViewXNA DebugView
             {
                 get {
-                    return Cube.Brush;
+                    return mDebugView;
+                }
+            }
+#endif
+
+            private IEditBrush LeftBrush
+            {
+                get {
+                    return Cube.Screen.LeftBrush;
+                }
+            }
+
+            private IEditBrush RightBrush
+            {
+                get {
+                    return Cube.Screen.RightBrush;
+                }
+            }
+
+            private IEditBrush MiddleBrush
+            {
+                get {
+                    return Cube.Screen.MiddleBrush;
                 }
             }
 
@@ -142,7 +143,9 @@ namespace CyberCube.Levels
 
                 mSpriteBatch.Begin();
 
-                Brush?.Draw( this, mSpriteBatch, gameTime );
+                LeftBrush?.Draw( this, mSpriteBatch, gameTime );
+                RightBrush?.Draw( this, mSpriteBatch, gameTime );
+                MiddleBrush?.Draw( this, mSpriteBatch, gameTime );
 
                 mSpriteBatch.DrawString( sFont,
                                          Name,
@@ -165,58 +168,35 @@ namespace CyberCube.Levels
 
                 Vector2? mouseFacePos = GetMouseFacePosition();
                 if ( mouseFacePos != null )
-                    UpdateMouse( gameTime, mouseFacePos.Value );
-
-                if ( input.Mouse_WasLeftReleased() )
-                    Brush?.End( this, mouseFacePos, gameTime );
-            }
-
-            private void UpdateMouse( GameTime gameTime, Vector2 mouseFacePos )
-            {
-                var input = Game.Input;
-
-                if ( Brush?.Started == true )
-                    Brush.Update( this, mouseFacePos, gameTime );
-
-                if ( input.Mouse_WasLeftPressed() )
-                    Brush?.Start( this, mouseFacePos, gameTime );
-
-                if ( input.Mouse_WasMiddlePressed() )
                 {
-                    Solid solid = FindSolidAt( mouseFacePos.ToUnits() );
-                    if ( solid != null )
-                    {
-                        switch ( solid.BodyType )
-                        {
-                        case BodyType.Static:
-                            solid.BodyType = BodyType.Dynamic;
-                            break;
-                        case BodyType.Dynamic:
-                            solid.BodyType = BodyType.Static;
-                            break;
-                        }
-                    }
+                    if ( input.Mouse_WasButtonPressed( IO.MouseButtons.Left ) )
+                        LeftBrush?.Start( this, mouseFacePos.Value, gameTime );
+
+                    if ( input.Mouse_WasButtonPressed( IO.MouseButtons.Right ) )
+                        RightBrush?.Start( this, mouseFacePos.Value, gameTime );
+
+                    if ( input.Mouse_WasButtonPressed( IO.MouseButtons.Middle ) )
+                        MiddleBrush?.Start( this, mouseFacePos.Value, gameTime );
                 }
+
+                Vector2? mousePlanePos = mouseFacePos ?? GetMousePlanePosition();
+                if ( mousePlanePos != null )
+                {
+                    LeftBrush?.Update( this, mousePlanePos.Value, gameTime );
+                    RightBrush?.Update( this, mousePlanePos.Value, gameTime );
+                    MiddleBrush?.Update( this, mousePlanePos.Value, gameTime );
+                }
+
+                if ( input.Mouse_WasButtonReleased( IO.MouseButtons.Left ) )
+                    LeftBrush?.End( this, mousePlanePos, gameTime );
+
+                if ( input.Mouse_WasButtonReleased( IO.MouseButtons.Right ) )
+                    RightBrush?.End( this, mousePlanePos, gameTime );
+
+                if ( input.Mouse_WasButtonReleased( IO.MouseButtons.Middle ) )
+                    MiddleBrush?.End( this, mousePlanePos, gameTime );
             }
 
-            private void AddRectangle( Rectangle rec )
-            {
-                var box = new Box(
-                    Game,
-                    World,
-                    rec,
-                    BodyType.Static,
-                    rec.Width * rec.Height * 0.003f,
-                    Category.Cat2 );
-
-                box.Body.UseAdHocGravity = true;
-                box.Body.AdHocGravity =
-                    Vector2.UnitY.Rotate( Cube.UpDir.Angle ).Rounded()
-                    * 9.8f;
-
-                AddSolid( box );
-            }
-            
         }
     }
 }

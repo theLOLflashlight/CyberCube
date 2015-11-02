@@ -17,7 +17,7 @@ namespace CyberCube
         public abstract partial class Face : DrawableCubeGameComponent
         {
 #if WINDOWS
-            private FarseerPhysics.DebugView.DebugViewXNA mDebugView;
+            protected readonly FarseerPhysics.DebugView.DebugViewXNA mDebugView;
 #endif
 
             public const int SIZE = 1000;
@@ -64,6 +64,13 @@ namespace CyberCube
             public float Rotation
             {
                 get; private set;
+            }
+
+            public Plane Plane
+            {
+                get {
+                    return new Plane( Normal, -1 );
+                }
             }
 
             public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction rotation )
@@ -168,12 +175,12 @@ namespace CyberCube
                 if ( Game.RuntimeProperties.DebugView )
                 {
                     Matrix proj = Matrix.CreateOrthographicOffCenter(
-                    0,
-                    WIDTH.ToUnits(),
-                    HEIGHT.ToUnits(),
-                    0,
-                    0,
-                    1 );
+                        0,
+                        WIDTH.ToUnits(),
+                        HEIGHT.ToUnits(),
+                        0,
+                        0,
+                        1 );
                 
                     mDebugView.BeginCustomDraw( proj, Matrix.Identity );
                     foreach ( Body b in World.BodyList )

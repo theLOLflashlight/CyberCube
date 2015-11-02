@@ -53,6 +53,23 @@ namespace CyberCube
                 return null;
             }
 
+            public Vector2? GetMousePlanePosition()
+            {
+                Line3 line = Cube.GetMouseProjectionLine();
+
+                float? dist = line.Intersects( this.Plane );
+                if ( dist != null )
+                {
+                    float t = dist.Value / line.Length;
+                    if ( t < 0 || t > 1 )
+                        return null;
+
+                    return ConvertWorldToFace( line[ t ] );
+                }
+
+                return null;
+            } 
+
             public Vector2 Transform3dTo2d( Vector3 vec3d )
             {
                 vec3d = vec3d.Rotate( Normal, -Rotation )
@@ -132,7 +149,7 @@ namespace CyberCube
 			return new Vector2( vec3d.X, -vec3d.Y );
 		}
 
-        public Vector3? GetMouseWorldPosition()
+        public Line3 GetMouseProjectionLine()
         {
             Line3 line;
             line.P0 = GraphicsDevice.Viewport.Unproject(
@@ -143,7 +160,14 @@ namespace CyberCube
                 new Vector3( Game.Input.Mouse_Pos, 1 ),
                 Effect.Projection, Effect.View, Effect.World );
 
-            float? dist = line.Intersects( BoundingBox );
+            return line;
+        }
+
+        public Vector3? GetMouseWorldPosition()
+        {
+            Line3 line = GetMouseProjectionLine();
+
+            float? dist = line.Intersects( this.BoundingBox );
             if ( dist != null )
             {
                 float t = dist.Value / line.Length;

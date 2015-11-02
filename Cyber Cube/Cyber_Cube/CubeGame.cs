@@ -40,49 +40,18 @@ namespace CyberCube
             }
         }
 
-        public class GameProperties
+        public class CubeGameProperties : GameProperties
         {
 #if WINDOWS
-            public bool DebugView { get; set; } = false;
+            public bool DebugView
+            { get; set; } = false;
 #endif
 
-            public Color Background { get; set; } = Color.CornflowerBlue;
-
-
-            public static object Parse( string value, Type type )
-            {
-                if ( type == typeof( string ) )
-                    return value;
-
-                if ( type == typeof( bool ) )
-                    return bool.Parse( value );
-
-                if ( type == typeof( int ) )
-                    return int.Parse( value );
-
-                if ( type == typeof( float ) )
-                    return float.Parse( value );
-
-                if ( type == typeof( Color ) )
-                    return Color_Parse( value );
-
-                return null;
-            }
-            
-            private static Color Color_Parse( string value )
-            {
-                var properties = typeof( Color ).GetProperties( BindingFlags.Public | BindingFlags.Static );
-
-                foreach ( var property in properties )
-                    if ( property.Name.ToLower() == value.ToLower()
-                         && property.PropertyType == typeof( Color ) )
-                        return (Color) property.GetValue( null, null );
-
-                throw new FormatException( $"{value} is not a color." );
-            }
+            public Color Background
+            { get; set; } = Color.CornflowerBlue;
         }
 
-        public readonly GameProperties RuntimeProperties = new GameProperties();
+        public readonly CubeGameProperties RuntimeProperties = new CubeGameProperties();
 
 
         public Color BackgroundColor
@@ -265,7 +234,7 @@ namespace CyberCube
             base.Draw( gameTime );
         }
 
-        private bool RunCommand( string command )
+        private ConsoleMessage RunCommand( string command )
         {
             if ( Console.Closed )
                 Console.Open();
@@ -273,40 +242,20 @@ namespace CyberCube
             switch ( command )
             {
             default:
-                command = command.Trim();
-                string[] tokens = command.Split( ' ' );
+                try {
+                    var ret = RuntimeProperties.Evaluate( command );
 
-                if ( tokens.Length == 0 )
-                    break;
-
-                var properties = typeof( GameProperties ).GetProperties();
-
-                foreach ( var property in properties )
-                {
-                    if ( tokens[ 0 ].ToLower() == property.Name.ToLower() )
+                    if ( ret.Success )
                     {
-                        if ( tokens.Length == 1 )
-                        {
-                            Console.AddMessage( property.GetValue( RuntimeProperties, null ).ToString() );
-                            return true;
-                        }
-                        else if ( tokens.Length == 3 && tokens[ 1 ] == "=" )
-                        {
-                            try {
-                                property.SetValue(
-                                    RuntimeProperties,
-                                    GameProperties.Parse( tokens[ 2 ], property.PropertyType ),
-                                    null );
-                            }
-                            catch
-                            {
-                                Console.AddMessage( new ConsoleErrorMessage(
-                                    $"{property.Name} must be of type {property.PropertyType.Name}." ) );
-                            }
-                            return true;
-                        }
-                        break;
+                        if ( ret.Result != null )
+                            return ret.Result.ToString();
+
+                        return null;
                     }
+                }
+                catch ( Exception ex )
+                {
+                    return new ConsoleErrorMessage( ex.Message );
                 }
                 break;
 
@@ -318,17 +267,18 @@ namespace CyberCube
 [background <xna color>]
 [exit]
 [clear]" );
-                return true;
+                return null;
 
             case "exit":
                 this.Exit();
-                return true;
+                return null;
 
             case "clear":
                 Console.ClearHistory();
-                return true;
+                return null;
             }
-            return false;
+
+            return mScreenManager.TopScreen?.RunCommand( command );
         }
 
     }
