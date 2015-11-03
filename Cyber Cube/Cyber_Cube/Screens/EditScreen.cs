@@ -18,6 +18,14 @@ namespace CyberCube.Screens
     public class EditScreen : CubeScreen
     {
 
+        public static Vector2 SnapVector( Vector2 vec, float snapSize )
+        {
+            vec /= snapSize;
+            vec = vec.Rounded();
+            vec *= snapSize;
+            return vec;
+        }
+
         private IEditBrush mLeftBrush;
         private IEditBrush mRightBrush;
         private IEditBrush mMiddleBrush;
@@ -55,6 +63,8 @@ namespace CyberCube.Screens
             }
         }
 
+        private readonly EditScreenProperties ScreenProperties;
+
         #region Boilerplate
         /// <summary>
         /// Hides the base Cube property, exposing the methods of the EditableCube class.
@@ -86,28 +96,87 @@ namespace CyberCube.Screens
         public EditScreen( CubeGame game, EditableCube editCube )
             : base( game, editCube )
         {
+            ScreenProperties = new EditScreenProperties( this );
         }
         #endregion
 
+        public class EditScreenProperties : RuntimeProperties
+        {
+            public IEditBrush Brush
+            {
+                get {
+                    return mScreen.LeftBrush;
+                }
+                set {
+                    mScreen.LeftBrush = value;
+                }
+            }
+
+            private EditScreen mScreen;
+
+            public EditScreenProperties( EditScreen screen )
+            {
+                mScreen = screen;
+            }
+
+            protected override object Parse( string value, Type type )
+            {
+                object obj = base.Parse( value, type );
+
+                if ( obj == null )
+                {
+                    if ( type == typeof( IEditBrush ) )
+                        obj = EditBrush_Parse( value );
+                }
+
+                return obj;
+            }
+
+            private IEditBrush EditBrush_Parse( string value )
+            {
+                switch ( value.ToLower() )
+                {
+                case "hand":
+                    return new HandBrush( mScreen.Game );
+
+                case "box":
+                    return new BoxBrush( mScreen.Game );
+
+                case "type":
+                    return new BodyTypeBrush();
+
+                case "corner":
+                    return new CornerBrush( mScreen.Game );
+
+                case "qpipe":
+                case "quarterpipe":
+                    return new QuarterpipeBrush( mScreen.Game );
+                }
+                throw new FormatException();
+            }
+        }
 
         public override ConsoleMessage RunCommand( string command )
         {
             switch ( command.ToLower() )
             {
-            case "set brush hand":
-                LeftBrush = new HandBrush( Game );
-                return null;
+            default:
+                try {
+                    var ret = ScreenProperties.Evaluate( command );
 
-            case "set brush rectangle":
-                Texture2D pixel = new Texture2D( GraphicsDevice, 1, 1 );
-                pixel.SetData( new[] { Color.White } );
+                    if ( ret.Success )
+                    {
+                        if ( ret.Result != null )
+                            return ret.Result.ToString();
 
-                LeftBrush = new RectangleBrush( pixel );
-                return null;
-
-            case "set brush bodytype":
-                LeftBrush = new BodyTypeBrush();
-                return null;
+                        return null;
+                    }
+                }
+                catch ( Exception ex )
+                {
+                    return new ConsoleErrorMessage( ex.Message );
+                }
+                break;
             }
 
             return base.RunCommand( command );
@@ -117,10 +186,13 @@ namespace CyberCube.Screens
         public override void Initialize()
         {
             base.Initialize();
-            Texture2D pixel = new Texture2D( GraphicsDevice, 1, 1 );
-            pixel.SetData( new[] { Color.White } );
-
             LeftBrush = new HandBrush( Game );
+        }
+
+        private void TestLevel()
+        {
+            PlayableCube playCube = Cube.GeneratePlayableCube();
+            ScreenManager.PushScreen( new PlayScreen( Game, playCube ) );
         }
 
         public override void Update( GameTime gameTime )
@@ -131,12 +203,6 @@ namespace CyberCube.Screens
                 TestLevel();
 
             base.Update( gameTime );
-        }
-
-        private void TestLevel()
-        {
-            PlayableCube playCube = Cube.GeneratePlayableCube();
-            ScreenManager.PushScreen( new PlayScreen( Game, playCube ) );
         }
 
         public override void Draw( GameTime gameTime )

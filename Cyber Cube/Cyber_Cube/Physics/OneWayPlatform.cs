@@ -85,7 +85,8 @@ namespace CyberCube.Physics
                 edgeHeight.ToUnits(),
                 1,
                 Vector2.Zero.ToUnits(),
-                Body );
+                Body,
+                new Flat() );
             mPlatform.CollidesWith = Category.Cat2;
 
             mExclusionRec = FixtureFactory.AttachRectangle(

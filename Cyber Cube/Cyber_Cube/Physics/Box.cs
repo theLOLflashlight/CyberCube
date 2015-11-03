@@ -31,7 +31,8 @@ namespace CyberCube.Physics
                     mWidth.ToUnits(),
                     mHeight.ToUnits(),
                     1,
-                    rec.Center.ToUnits() );
+                    rec.Center.ToUnits(),
+                    new Flat() );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;

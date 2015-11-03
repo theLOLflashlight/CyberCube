@@ -63,6 +63,16 @@ namespace CyberCube.Physics
             }
         }
 
+        public float Rotation
+        {
+            get {
+                return Body.Rotation;
+            }
+            set {
+                Body.Rotation = value;
+            }
+        }
+
         public Texture2D Texture;
 
         public Solid( CubeGame game, World world )

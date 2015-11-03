@@ -16,7 +16,7 @@ namespace CyberCube.Screens.Brushes
     {
         private EditableCube.Face mFace;
 
-        private Solid mFocusSolid;
+        private Solid mSelectedSolid;
         private Vector2 mStartPos;
         private Vector2 mOriginalPos;
 
@@ -37,19 +37,19 @@ namespace CyberCube.Screens.Brushes
 
         public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
         {
-            Solid focusSolid = face.FindSolidAt( mousePos.ToUnits() );
+            Solid selectedSolid = face.FindSolidAt( mousePos.ToUnits() );
 
-            if ( focusSolid != mFocusSolid )
+            if ( selectedSolid != mSelectedSolid )
                 Cancel();
 
-            if ( focusSolid != null )
+            if ( selectedSolid != null )
             {
                 mFace = face;
                 Started = true;
                 mStartPos = mousePos;
-                mFocusSolid = focusSolid;
-                mOriginalPos = mFocusSolid.Position;
-                Game.Input.Focus = mFocusSolid;
+                mSelectedSolid = selectedSolid;
+                mOriginalPos = mSelectedSolid.Position;
+                Game.Input.Focus = mSelectedSolid;
             }
         }
 
@@ -60,7 +60,7 @@ namespace CyberCube.Screens.Brushes
 
             var input = Game.Input;
 
-            if ( mFocusSolid != null )
+            if ( input.CheckFocus( mSelectedSolid ) )
             {
                 Vector2 delta = Vector2.Zero;
 
@@ -76,11 +76,19 @@ namespace CyberCube.Screens.Brushes
                 if ( input.Keyboard.IsKeyDown( Keys.Left ) )
                     delta.X += -1.ToUnits();
 
-                mFocusSolid.Position += delta.Rotate( -face.Cube.UpDir.Angle );
+
+                if ( input.GetAction( Action.RotateClockwise ) )
+                    mSelectedSolid.Rotation += MathHelper.PiOver2;
+
+                if ( input.GetAction( Action.RotateAntiClockwise ) )
+                    mSelectedSolid.Rotation -= MathHelper.PiOver2;
+
+
+                mSelectedSolid.Position += delta.Rotate( -face.Cube.UpDir.Angle );
 
                 if ( input.Keyboard_WasAnyKeyPressed( Keys.Delete, Keys.Back ) )
                 {
-                    face.RemoveSolid( mFocusSolid );
+                    face.RemoveSolid( mSelectedSolid );
                     Cancel();
                 }
             }
@@ -88,20 +96,19 @@ namespace CyberCube.Screens.Brushes
             if ( !Started )
                 return;
 
-            mFocusSolid.Position = mOriginalPos + (mousePos.ToUnits() - mStartPos.ToUnits());
+            mSelectedSolid.Position = mOriginalPos + (mousePos.ToUnits() - mStartPos.ToUnits());
 
-            if ( input.IsShiftDown() )
+            if ( !input.IsShiftDown() )
             {
-                Vector2 snappedPos = mFocusSolid.Position.ToPixels();
-                snappedPos /= 25;
-                snappedPos = snappedPos.Rounded();
-                snappedPos *= 25;
-
-                mFocusSolid.Position = snappedPos.ToUnits();
+                mSelectedSolid.Position = EditScreen.SnapVector(
+                    mSelectedSolid.Position.ToPixels(), 25 ).ToUnits();
             }
             else
             {
-                mFocusSolid.Position = mFocusSolid.Position.ToPixels().Rounded().ToUnits();
+                mSelectedSolid.Position = mSelectedSolid.Position
+                                                        .ToPixels()
+                                                        .Rounded()
+                                                        .ToUnits();
             }
         }
 
@@ -111,10 +118,14 @@ namespace CyberCube.Screens.Brushes
                 return;
 
             if ( !Started )
+            {
                 Cancel();
-
-            Started = false;
-            mStartPos = Vector2.Zero;
+            }
+            else
+            {
+                Started = false;
+                mStartPos = Vector2.Zero;
+            }
         }
 
         public void Cancel()
@@ -122,10 +133,10 @@ namespace CyberCube.Screens.Brushes
             mFace = null;
             Started = false;
 
-            if ( Game.Input.CheckFocus( mFocusSolid ) )
+            if ( Game.Input.CheckFocus( mSelectedSolid ) )
                 Game.Input.Focus = null;
 
-            mFocusSolid = null;
+            mSelectedSolid = null;
             mStartPos = Vector2.Zero;
         }
 
@@ -135,23 +146,15 @@ namespace CyberCube.Screens.Brushes
                 return;
 
 #if WINDOWS
-            if ( mFocusSolid != null )
+            if ( mSelectedSolid != null )
             {
-                Matrix proj = Matrix.CreateOrthographicOffCenter(
-                        0,
-                        Cube.Face.WIDTH.ToUnits(),
-                        Cube.Face.HEIGHT.ToUnits(),
-                        0,
-                        0,
-                        1 );
-
-                face.DebugView.BeginCustomDraw( proj, Matrix.Identity );
+                face.DebugView.BeginCustomDraw( face.DebugProjection, Matrix.Identity );
 
                 double t = (gameTime.TotalGameTime.TotalSeconds % 4 / 2) - 1;
                 byte val = (byte) (150 + Math.Abs( t * 105 ));
                 Color color = new Color( val, val, val, 255 );
 
-                Body b = mFocusSolid.Body;
+                Body b = mSelectedSolid.Body;
                 Transform trans;
                 b.GetTransform( out trans );
                 foreach ( Fixture f in b.FixtureList )

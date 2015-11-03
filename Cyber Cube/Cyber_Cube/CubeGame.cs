@@ -113,6 +113,7 @@ namespace CyberCube
 
             mGraphicsDeviceManager = new GraphicsDeviceManager( this );
 
+            //mGraphicsDeviceManager.PreferMultiSampling = true;
             mGraphicsDeviceManager.IsFullScreen = false;
             mGraphicsDeviceManager.PreferredBackBufferHeight = 720;
             mGraphicsDeviceManager.PreferredBackBufferWidth = 1280;

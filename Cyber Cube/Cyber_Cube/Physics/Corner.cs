@@ -11,7 +11,7 @@ using FarseerPhysics.Common.Decomposition;
 
 namespace CyberCube.Physics
 {
-    public class Quarterpipe : Solid
+    public class Corner : Solid
     {
         public enum Type
         {
@@ -40,7 +40,7 @@ namespace CyberCube.Physics
         private static Vertices MakeArc( int sides, float radius, float angle )
         {
             Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, sides, radius );
-            arc.Add( new Vector2( arc.Last().X, arc.First().Y ) );
+            arc.Add( new Vector2( arc.First().X, arc.Last().Y ) );
             arc.Add( arc.First() );
             arc.Rotate( angle );
             arc.Translate( new Vector2( -radius / 2 ) );
@@ -49,16 +49,16 @@ namespace CyberCube.Physics
         }
 
         private float     mRadius;
-        private Texture2D mQuarterpipeTex;
+        private Texture2D mCornerTex;
 
-        public Quarterpipe( CubeGame game,
-                            World world,
-                            float radius,
-                            Vector2 position,
-                            Type type,
-                            BodyType bodyType = BodyType.Static,
-                            float mass = 1,
-                            Category categories = Category.Cat1 )
+        public Corner( CubeGame game,
+                       World world,
+                       float radius,
+                       Vector2 position,
+                       Type type,
+                       BodyType bodyType = BodyType.Static,
+                       float mass = 1,
+                       Category categories = Category.Cat1 )
             : base( game, world )
         {
             mRadius = radius;
@@ -67,7 +67,7 @@ namespace CyberCube.Physics
                 world,
                 MakeArc( 100, radius.ToUnits(), 0 ),
                 position.ToUnits(),
-                new Concave() );
+                new Convex() );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
@@ -76,7 +76,7 @@ namespace CyberCube.Physics
 
             var fixtureList = FixtureFactory.AttachCompoundPolygon(
                 Triangulate.ConvexPartition(
-                    MakeArc( 10, radius.ToUnits(), 0 ),
+                    MakeArc( 100, radius.ToUnits(), 0 ),
                     TriangulationAlgorithm.Earclip ),
                 1,
                 Body );
@@ -92,10 +92,10 @@ namespace CyberCube.Physics
 
         private Texture2D CreateCircleTexture( float radius )
         {
-            return CreateQuarterpipeTexture( GraphicsDevice, radius, Color.White );
+            return CreateCornerTexture( GraphicsDevice, radius, Color.White );
         }
 
-        public static Texture2D CreateQuarterpipeTexture( GraphicsDevice graphicsDevice, float radiusf, Color color )
+        public static Texture2D CreateCornerTexture( GraphicsDevice graphicsDevice, float radiusf, Color color )
         {
             int radius = (int) radiusf;
             int diam = radius * 2;
@@ -112,8 +112,8 @@ namespace CyberCube.Physics
                     Vector2 pos = new Vector2( x - radius, y - radius );
 
                     colorData[ index ] = pos.LengthSquared() <= radiussq
-                                         ? Color.Transparent
-                                         : color;
+                                         ? color
+                                         : Color.Transparent;
                 }
             }
 
@@ -125,20 +125,20 @@ namespace CyberCube.Physics
         {
             base.Initialize();
 
-            mQuarterpipeTex = CreateCircleTexture( (int) mRadius );
+            mCornerTex = CreateCircleTexture( (int) mRadius );
         }
 
         public override void Draw( GameTime gameTime )
         {
             Vector2 position = Body.Position.ToPixels();
             Vector2 origin = new Vector2(
-                mQuarterpipeTex.Width,
-                mQuarterpipeTex.Height ) / 2;
+                mCornerTex.Width,
+                mCornerTex.Height ) / 2;
 
             mSpriteBatch.Begin();
 
             mSpriteBatch.Draw(
-                mQuarterpipeTex,
+                mCornerTex,
                 position,
                 null,
                 BodyType == BodyType.Static ? Color.Black : Color.White,

@@ -102,6 +102,13 @@ namespace CyberCube.Levels
                     return mDebugView;
                 }
             }
+
+            public Matrix DebugProjection
+            {
+                get {
+                    return mDebugProjection;
+                }
+            }
 #endif
 
             private IEditBrush LeftBrush
@@ -163,6 +170,8 @@ namespace CyberCube.Levels
             public override void Update( GameTime gameTime )
             {
                 base.Update( gameTime );
+
+                World.Step( 0 );
 
                 var input = Game.Input;
 

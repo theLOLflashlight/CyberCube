@@ -58,8 +58,16 @@ namespace CyberCube
                         Game,
                         World,
                         100,
-                        new Vector2( 800, 800 ),
+                        new Vector2( 850, 850 ),
                         Quarterpipe.Type.SE ) );
+
+                AddSolid(
+                    new Corner(
+                        Game,
+                        World,
+                        100,
+                        new Vector2( 450, 750 ),
+                        Corner.Type.NE ) );
 
                 AddSolid(
                     new Box(

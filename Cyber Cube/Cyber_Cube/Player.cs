@@ -61,6 +61,8 @@ namespace CyberCube
                 body );
             mFeet.IsSensor = true;
 
+            //mFeet.OnCollision += ( a, b, c ) => IsJumping = false;
+
             body.BodyType = BodyType.Dynamic;
             body.Rotation = Rotation;
 
@@ -78,7 +80,8 @@ namespace CyberCube
             Body.CollisionCategories = Category.Cat2;
             Body.Mass = 68;
 
-            Body.OnCollision += Feet_OnCollision;
+            Body.OnCollision += Body_OnCollision;
+            Body.OnSeparation += Body_OnSeparation;
 
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
@@ -88,33 +91,45 @@ namespace CyberCube
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
-        private bool Feet_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        private bool Body_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
         {
             if ( contact.IsTouching && !fixtureB.IsSensor
                  && contact.Manifold.Type == ManifoldType.FaceA
                  && contact.Manifold.PointCount >= 1 )
             {
-                Vector2 groundNormal = contact.Manifold.LocalNormal;
-                float rotation = (float) Math.Atan2( groundNormal.Y, groundNormal.X ) + MathHelper.PiOver2;
+                Vector2 groundNormal = contact.Manifold.LocalNormal.Rotate( fixtureB.Body.Rotation );
+                float groundNormalAngle = (float) Math.Atan2( groundNormal.Y, groundNormal.X ) + MathHelper.PiOver2;
 
-                float wrappedRotation = MathHelper.WrapAngle( rotation );
-                float wrappedBodyRotation = MathHelper.WrapAngle( Body.Rotation );
-
-                if ( Math.Abs( wrappedBodyRotation - wrappedRotation ) <= MathHelper.PiOver4 )
-                    Rotation = rotation;
+                if ( Math.Abs( MathHelper.WrapAngle( groundNormalAngle - Rotation ) ) <= MathHelper.PiOver4 )
+                    Rotation = groundNormalAngle;
 
                 return true;
             }
             return contact.IsTouching;
         }
 
+        private void Body_OnSeparation( Fixture fixtureA, Fixture fixtureB )
+        {
+            if ( fixtureB.UserData is Curved && !IsJumping )
+            {
+                Body.ApplyLinearImpulse( Vector2.UnitY.Rotate( Rotation ) * Velocity.Length() * 2 );
+            }
+        }
+
+        public bool IsJumping
+        {
+            get; private set;
+        }
+
         public void Jump( ref Vector2 velocity )
         {
+            IsJumping = true;
             velocity.Y = FreeFall ? -10f : -20f;
         }
 
         public void JumpEnd( ref Vector2 velocity )
         {
+            IsJumping = false;
             if ( FreeFall && velocity.Y < 0 )
                 velocity.Y *= 0.6f;
         }
@@ -136,7 +151,7 @@ namespace CyberCube
 
             var xScale = (FreeFall ? 20 : 100);
 
-            Vector2 velocity = Velocity.Rotate( -Body.Rotation );
+            Vector2 velocity = Velocity.Rotate( -Rotation );
 
             if ( !input.HasFocus )
             {
@@ -162,18 +177,19 @@ namespace CyberCube
 
             velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
 
-            Velocity = velocity.Rotate( Body.Rotation );
+            Velocity = velocity.Rotate( Rotation );
 
             base.Update( gameTime );
 
             Screen.Camera.Target = WorldPosition;
-            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Body.Rotation ), 1 );
+            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ), 1 );
         }
 
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
-            Body.OnCollision += Feet_OnCollision;
+            Body.OnCollision += Body_OnCollision;
+            Body.OnSeparation += Body_OnSeparation;
             Cube.Rotate( dir );
         }
 
@@ -198,7 +214,7 @@ namespace CyberCube
 						    Matrix.CreateScale( 0.0008f );
 
                         Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
-                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, -Body.Rotation );
+                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, -Rotation );
 
                         effect.World *= m;
 

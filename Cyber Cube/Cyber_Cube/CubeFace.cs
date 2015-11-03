@@ -18,6 +18,7 @@ namespace CyberCube
         {
 #if WINDOWS
             protected readonly FarseerPhysics.DebugView.DebugViewXNA mDebugView;
+            protected readonly Matrix mDebugProjection;
 #endif
 
             public const int SIZE = 1000;
@@ -89,6 +90,13 @@ namespace CyberCube
 
 #if WINDOWS
                 mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
+                mDebugProjection = Matrix.CreateOrthographicOffCenter(
+                        0,
+                        WIDTH.ToUnits(),
+                        HEIGHT.ToUnits(),
+                        0,
+                        0,
+                        1 );
 #endif
             }
 
@@ -174,15 +182,7 @@ namespace CyberCube
 #if WINDOWS
                 if ( Game.GameProperties.DebugView )
                 {
-                    Matrix proj = Matrix.CreateOrthographicOffCenter(
-                        0,
-                        WIDTH.ToUnits(),
-                        HEIGHT.ToUnits(),
-                        0,
-                        0,
-                        1 );
-                
-                    mDebugView.BeginCustomDraw( proj, Matrix.Identity );
+                    mDebugView.BeginCustomDraw( mDebugProjection, Matrix.Identity );
                     foreach ( Body b in World.BodyList )
                     {
                         Transform trans;

@@ -72,6 +72,8 @@
     <Compile Include="CubeRotation.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
+    <Compile Include="Physics\Corner.cs" />
+    <Compile Include="Physics\SolidTypes.cs" />
     <Compile Include="RuntimeProperties.cs" />
     <Compile Include="Graphics\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
@@ -98,7 +100,9 @@
     <Compile Include="CubeGame.cs" />
     <Compile Include="Screens\Brushes\BodyTypeBrush.cs" />
     <Compile Include="Screens\Brushes\HandBrush.cs" />
-    <Compile Include="Screens\Brushes\RectangleBrush.cs" />
+    <Compile Include="Screens\Brushes\CornerBrush.cs" />
+    <Compile Include="Screens\Brushes\QuarterpipeBrush.cs" />
+    <Compile Include="Screens\Brushes\BoxBrush.cs" />
     <Compile Include="Screens\CubeScreen.cs" />
     <Compile Include="Screens\EditScreen.cs" />
     <Compile Include="Screens\GameScreen.cs" />

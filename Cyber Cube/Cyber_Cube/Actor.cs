@@ -123,7 +123,7 @@ namespace CyberCube
         public Vector2 UpVector
         {
             get {
-                return Vector2.UnitY.Rotate( Body.Rotation );
+                return Vector2.UnitY.Rotate( Rotation );
             }
         }
 

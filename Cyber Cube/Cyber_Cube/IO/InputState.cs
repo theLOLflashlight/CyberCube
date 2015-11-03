@@ -22,7 +22,7 @@ namespace CyberCube.IO
 
         public bool CheckFocus( object obj )
         {
-            return ReferenceEquals( Focus, obj );
+            return obj != null && ReferenceEquals( Focus, obj );
         }
 
         public bool CheckFocusType< T >()
