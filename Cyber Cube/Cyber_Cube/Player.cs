@@ -129,7 +129,6 @@ namespace CyberCube
 
         public void JumpEnd( ref Vector2 velocity )
         {
-            IsJumping = false;
             if ( FreeFall && velocity.Y < 0 )
                 velocity.Y *= 0.6f;
         }
@@ -174,6 +173,9 @@ namespace CyberCube
             {
                 Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
             }
+
+            if ( velocity.Y >= 0 )
+                IsJumping = false;
 
             velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
 

@@ -8,8 +8,10 @@ namespace CyberCube
 {
     public class Camera : CubeGameComponent
     {
-        private Vector3 mPosition0;
-        private Vector3 mPosition1;
+        private Tools.AnimatedVariable< Vector3, float > mPosition;
+
+        //private Vector3 mPosition0;
+        //private Vector3 mPosition1;
 
         private Vector3 mTarget0;
         private Vector3 mTarget1;
@@ -18,18 +20,19 @@ namespace CyberCube
         private Vector3 mUpVector1;
 
         private Matrix mViewMatrix = default( Matrix );
-        private float mPositionSpeed = 1;
+        //private float mPositionSpeed = 1;
         private float mTargetSpeed = 1;
         private float mUpVectorSpeed = 1;
 
         public Vector3 Position
         {
             get {
-                return mPosition0;
+                return mPosition.Value;//mPosition0;
             }
             set {
-                mViewMatrix = default( Matrix );
-                mPosition0 = mPosition1 = value;
+                mPosition.Value = value;
+                //mViewMatrix = default( Matrix );
+                //mPosition0 = mPosition1 = value;
             }
         }
 
@@ -57,14 +60,21 @@ namespace CyberCube
 
 
         public Camera( CubeGame game )
-            : base( game )
+            : this( game, Vector3.Zero, Vector3.Zero, Vector3.Zero )
         {
         }
 
         public Camera( CubeGame game, Vector3 position, Vector3 target, Vector3 upVector )
             : base( game )
         {
-            mPosition0 = mPosition1 = position;
+            mPosition = new Tools.AnimatedVariable<Vector3, float>(
+                position,
+                Utils.Slerp,
+                Vector3.Distance );
+
+            mPosition.OnValueChanged += ( s, v ) => mViewMatrix = default( Matrix );
+
+            //mPosition0 = mPosition1 = position;
             mTarget0   = mTarget1   = target;
             mUpVector0 = mUpVector1 = upVector;
         }
@@ -73,11 +83,13 @@ namespace CyberCube
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
 
-            if ( mPosition0 != mPosition1 )
-                if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
-                    mPosition0 = mPosition1;
-                else
-                    mPosition0 = mPosition0.Slerp( mPosition1, seconds * mPositionSpeed );
+            mPosition.Update( mPosition.AnimSpeed * seconds );
+
+            //if ( mPosition0 != mPosition1 )
+            //    if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
+            //        mPosition0 = mPosition1;
+            //    else
+            //        mPosition0 = mPosition0.Slerp( mPosition1, seconds * mPositionSpeed );
 
 
             if ( mTarget0 != mTarget1 )
@@ -96,8 +108,10 @@ namespace CyberCube
 
         public void AnimatePosition( Vector3 position, float speed )
         {
-            mPosition1 = position;
-            mPositionSpeed = speed;
+            mPosition.AnimSpeed = speed;
+            mPosition.AnimateValue( position );
+            //mPosition1 = position;
+            //mPositionSpeed = speed;
         }
 
         public void AnimateTarget( Vector3 target, float speed )
@@ -114,21 +128,24 @@ namespace CyberCube
 
         public void SkipAnimation()
         {
-            mPosition0 = mPosition1;
+            mPosition.SkipAnimation();
+            //mPosition0 = mPosition1;
             mTarget0 = mTarget1;
             mUpVector0 = mUpVector1;
         }
 
         public bool IsAnimating()
         {
-            return mPosition0 != mPosition1 || mTarget0 != mTarget1 || mUpVector0 != mUpVector1;
+            //mPosition0 != mPosition1
+            return mPosition.IsAnimating || mTarget0 != mTarget1 || mUpVector0 != mUpVector1;
         }
 
         public Matrix View
         {
             get {
+                var position0 = mPosition.Value;
                 if ( IsAnimating() || mViewMatrix == default( Matrix ) )
-                    Matrix.CreateLookAt( ref mPosition0,
+                    Matrix.CreateLookAt( ref position0,
                                          ref mTarget0,
                                          ref mUpVector0,
                                          out mViewMatrix );
