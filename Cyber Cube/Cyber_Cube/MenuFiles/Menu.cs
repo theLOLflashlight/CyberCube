@@ -171,7 +171,7 @@ namespace CyberCube.MenuFiles
                         CurrentMenuState = GameState.PlayingGame;
                         break;
                     case Highlight.LoadGame:
-
+                        CurrentMenuState = GameState.LoadGame;
                         break;
                     case Highlight.LevelEditor:
                         CurrentMenuState = GameState.LevelEditor;
