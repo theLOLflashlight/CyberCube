@@ -193,7 +193,6 @@ namespace CyberCube
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
-            StorageManager.Instance.Initialize();
             mScreenManager.PushScreen( new MenuScreen( this ) );
         }
 

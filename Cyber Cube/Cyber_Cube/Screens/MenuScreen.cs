@@ -4,6 +4,7 @@ using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
 using CyberCube.MenuFiles;
+using System.IO;
 
 namespace CyberCube.Screens
 {
@@ -30,8 +31,15 @@ namespace CyberCube.Screens
                 ScreenManager.PushScreen( new PlayScreen( Game ) );
                 break;
             case GameState.LoadGame:
-                StorageManager.Instance.Save();
-                StorageManager.Instance.Load();
+
+                Stream saveStream = StorageManager.Instance.OpenWriteFile( "CyberCube.sav" );
+                // Saving functionality here.
+
+                Stream loadStream = StorageManager.Instance.OpenReadFile( "CyberCube.sav" );
+                // Loading functionality here.
+
+                StorageManager.Instance.Finish();
+
                 break;
             case GameState.LevelEditor:
                 ScreenManager.PushScreen( new EditScreen( Game ) );
