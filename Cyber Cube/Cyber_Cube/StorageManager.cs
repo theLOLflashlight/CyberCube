@@ -14,39 +14,19 @@ using Microsoft.Xna.Framework.Media;
 using Microsoft.Xna.Framework.Storage;
 using System.Xml.Serialization;
 using System.Xml;
+using System.Xml.Schema;
 
 namespace CyberCube
 {
-    /// <summary>
-    /// Holds an array of saves.
-    /// 
-    /// Developed by Morgan Wynne.
-    /// </summary>
-    public struct GameDataStorage
-    {
-        /// <summary>
-        /// Array of individual player data.
-        /// </summary>
-        public PlayerDataSave[] PlayerDataSaves;
-
-        /// <summary>
-        /// Public constructor, used purely to set how many players the struct has to keep track of. 
-        /// </summary>
-        /// <param name="count">The maximum number of players that the save file will keep track of at any point in time.</param>
-        public GameDataStorage( int count )
-        {
-            this.PlayerDataSaves = new PlayerDataSave[ count ];
-        }
-    }
 
     /// <summary>
     /// Holds the data of an individual save.
     /// 
     /// Developed by Morgan Wynne.
     /// </summary>
-    public struct PlayerDataSave
+    public struct GameDataStorage
     {
-        public Vector3 PlayerWorldPosition;
+        //TODO: Data goes here
     }
 
     /// <summary>
@@ -114,7 +94,7 @@ namespace CyberCube
         public void Initialize()
         {
             // TODO: Define how many saves there will be.
-            this.data = new GameDataStorage( 1 );
+            this.data = new GameDataStorage();
             serializer = new XmlSerializer( typeof( GameDataStorage ) );
         }
 
@@ -132,36 +112,28 @@ namespace CyberCube
         /// <summary>
         /// Begins the saving of data from the 'data' variable into the save file.
         /// </summary>
-        public void Save( Player player )
+        public void Save()
         {
-            data.PlayerDataSaves[ 0 ].PlayerWorldPosition = player.WorldPosition;
-
             if( !Guide.IsVisible )
             {
                 storageDevice = null;
-                StorageDevice.BeginShowSelector( PlayerIndex.One, this.SaveGameDataStorage, null );
+                var result = StorageDevice.BeginShowSelector( PlayerIndex.One, null, null );
+
+                StorageContainer container = this.InitializeStorageContainer( result );
+
+                // If the file exists, delete it and re-create it.
+                if( container.FileExists( fileName ) )
+                    container.DeleteFile( fileName );
+
+                // Open the file, stream the data, and close the file.
+                using( Stream stream = container.CreateFile( fileName ) )
+                {
+                    serializer.Serialize( stream, data );
+                }
+
+                result.AsyncWaitHandle.Close();
+                container.Dispose();
             }
-        }
-
-        /// <summary>
-        /// AsyncCallback for StorageDevice.BeginShowSelector. Holds actual saving functionality.
-        /// </summary>
-        private void SaveGameDataStorage( IAsyncResult result )
-        {
-            StorageContainer container = this.InitializeStorageContainer( result );
-
-            // If the file exists, delete it and re-create it.
-            if( container.FileExists( fileName ) )
-                container.DeleteFile( fileName );
-
-            // Open the file, stream the data, and close the file.
-            using( Stream stream = container.CreateFile( fileName ) )
-            {
-                serializer.Serialize( stream, data );
-            }
-
-            // Ends the saving operation.
-            this.EndOperation( result, container );
         }
 
         /// <summary>
@@ -172,39 +144,21 @@ namespace CyberCube
             if( !Guide.IsVisible )
             {
                 storageDevice = null;
-                StorageDevice.BeginShowSelector( PlayerIndex.One, this.LoadGameDataStorage, null );
-            }
-        }
+                var result = StorageDevice.BeginShowSelector( PlayerIndex.One, null, null );
 
-        /// <summary>
-        /// AsyncCallback for StorageDevice.BeginShowSelector. Holds actual loading functionality.
-        /// </summary>
-        private void LoadGameDataStorage( IAsyncResult result )
-        {
-            StorageContainer container = this.InitializeStorageContainer( result );
+                StorageContainer container = this.InitializeStorageContainer( result );
 
-            if( container.FileExists( fileName ) )
-            {
-                using( Stream stream = container.OpenFile( fileName, FileMode.Open ) )
+                if( container.FileExists( fileName ) )
                 {
-                    data = (GameDataStorage)serializer.Deserialize( stream );
+                    using( Stream stream = container.OpenFile( fileName, FileMode.Open ) )
+                    {
+                        data = (GameDataStorage)serializer.Deserialize( stream );
+                    }
                 }
+
+                result.AsyncWaitHandle.Close();
+                container.Dispose();
             }
-
-            // Ends the loading operation.
-            this.EndOperation( result, container );
         }
-
-        /// <summary>
-        /// Disposes and closes all objects required for accessing saved data.
-        /// </summary>
-        private void EndOperation( IAsyncResult result, StorageContainer container )
-        {
-            // Disposes of the storage container to finalize changes to save file.
-            container.Dispose();
-            // Releases the Async Handle.
-            result.AsyncWaitHandle.Close();
-        }
-
     }
 }

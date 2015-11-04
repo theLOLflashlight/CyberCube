@@ -30,6 +30,8 @@ namespace CyberCube.Screens
                 ScreenManager.PushScreen( new PlayScreen( Game ) );
                 break;
             case GameState.LoadGame:
+                StorageManager.Instance.Save();
+                StorageManager.Instance.Load();
                 break;
             case GameState.LevelEditor:
                 ScreenManager.PushScreen( new EditScreen( Game ) );
