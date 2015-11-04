@@ -144,6 +144,8 @@ namespace FarseerPhysics.Common
             _writer.WriteElementString("LinearDamping", body.LinearDamping.ToString());
             WriteElement("LinearVelocity", body.LinearVelocity);
             WriteElement("Position", body.Position);
+            WriteElement("AdHocGravity", body.AdHocGravity);
+            _writer.WriteElementString("UseAdHocGravity", body.UseAdHocGravity.ToString());
 
             if (body.UserData != null)
             {
@@ -759,6 +761,12 @@ namespace FarseerPhysics.Common
                                         Vector2 position = ReadVector(sn);
                                         body.SetTransformIgnoreContacts(ref position, rotation);
                                     }
+                                    break;
+                                case "adhocgravity":
+                                    body.AdHocGravity = ReadVector( sn );
+                                    break;
+                                case "useadhocgravity":
+                                    body.UseAdHocGravity = bool.Parse( sn.Value );
                                     break;
                                 case "userdata":
                                     body.UserData = ReadSimpleType(sn, null, false);

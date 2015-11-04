@@ -8,6 +8,7 @@ using Microsoft.Xna.Framework.Graphics;
 using CyberCube.Physics;
 using FarseerPhysics.Dynamics;
 using CyberCube.Screens;
+using FarseerPhysics.Common;
 
 namespace CyberCube
 {
@@ -139,6 +140,18 @@ namespace CyberCube
             mRightFace.SouthFace = mBackFace;
             mRightFace.WestFace = mBottomFace;
 			mRightFace.OppositeFace = mLeftFace;
+        }
+
+        internal void Save( string name )
+        {
+            foreach ( Face face in Faces )
+                WorldSerializer.Serialize( face.World, $"{name}_{face.Name}" );
+        }
+
+        internal void Load( string name )
+        {
+            foreach ( Face face in Faces )
+                face.World = WorldSerializer.Deserialize( $"{name}_{face.Name}" );
         }
 
         public const float NEAR_PLANE = 1f;

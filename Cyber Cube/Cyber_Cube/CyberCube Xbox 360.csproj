@@ -111,6 +111,7 @@
     <Compile Include="Screens\ScreenManager.cs" />
     <Compile Include="Solid2.cs" />
     <Compile Include="StorageManager.cs" />
+    <Compile Include="Tools\AnimatedProperty.cs" />
     <Compile Include="Tools\AnimatedVariable.cs" />
     <Compile Include="Tools\Exceptions.cs" />
     <Compile Include="Tools\MathUtils.cs" />
