@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using FarseerPhysics.Dynamics;
+using Microsoft.Xna.Framework;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -11,6 +12,20 @@ namespace CyberCube.Physics
 
         public const float UNIT_TO_PIXEL = 100;
         public const float PIXEL_TO_UNIT = 1 / UNIT_TO_PIXEL;
+
+
+        public static Fixture FindFixture( this Body body, object userData )
+        {
+            if ( userData == null )
+                throw new ArgumentNullException( nameof( userData ) );
+
+            foreach ( Fixture f in body.FixtureList )
+                if ( userData.Equals( f.UserData ) )
+                    return f;
+
+            return null;
+        }
+
 
         /// <summary>
         /// Converts an int to world unit scale (meters).

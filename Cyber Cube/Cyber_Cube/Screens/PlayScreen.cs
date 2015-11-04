@@ -5,6 +5,8 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using CyberCube.Levels;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CyberCube.Screens
 {
@@ -13,6 +15,13 @@ namespace CyberCube.Screens
     /// </summary>
     public class PlayScreen : CubeScreen
     {
+        private static SpriteFont sFont;
+
+        public static void LoadContent( ContentManager content )
+        {
+            sFont = content.Load<SpriteFont>( "MessageFont" );
+        }
+
         public Player Player
         {
             get; private set;
@@ -67,6 +76,10 @@ namespace CyberCube.Screens
         public override void Draw( GameTime gameTime )
         {
             base.Draw( gameTime );
+
+            mSpriteBatch.Begin();
+            mSpriteBatch.DrawString( sFont, "collisions: " + Player.mNumFootContacts, new Vector2( 0, 60 ), Color.White );
+            mSpriteBatch.End();
         }
     }
 }

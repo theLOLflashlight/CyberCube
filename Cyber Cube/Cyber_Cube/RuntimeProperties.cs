@@ -79,7 +79,11 @@ namespace CyberCube
                 return value;
 
             if ( type == typeof( char ) )
-                return char.Parse( value );
+            {
+                char c;
+                if ( char.TryParse( value, out c ) )
+                    return c;
+            }
 
             if ( type == typeof( DateTime ) )
                 return DateTime.Parse( value );

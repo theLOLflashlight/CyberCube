@@ -68,7 +68,7 @@ namespace CyberCube
         }
 
 
-        public bool FreeFall
+        public virtual bool FreeFall
         {
             get {
                 return true;
@@ -153,16 +153,18 @@ namespace CyberCube
 
         protected virtual Body CreateBody( World world )
         {
-            Body body = BodyFactory.CreateCircle(
+            Body body = BodyFactory.CreateBody(
                 CubeFace.World,
-                3.ToUnits(),
-                1,
-                ComputeFacePosition().ToUnits() );
+                ComputeFacePosition().ToUnits(),
+                Rotation );
 
             body.BodyType = BodyType.Dynamic;
-            body.Rotation = Rotation;
 
             return body;
+        }
+
+        protected virtual void ReconstructBody()
+        {
         }
 
         public Vector2 Gravity
@@ -189,6 +191,7 @@ namespace CyberCube
         {
             base.Initialize();
             Body = CreateBody( CubeFace.World );
+            ReconstructBody();
         }
 
         public override void Update( GameTime gameTime )
@@ -221,6 +224,8 @@ namespace CyberCube
             Body.Position = ComputeFacePosition().ToUnits();
 
             Velocity = Velocity.Rotate( pastUpDirAngle - UpDir.Angle );
+
+            ReconstructBody();
         }
 
 

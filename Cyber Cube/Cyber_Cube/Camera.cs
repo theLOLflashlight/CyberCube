@@ -9,55 +9,14 @@ namespace CyberCube
     public class Camera : CubeGameComponent
     {
         private Tools.AnimatedVariable< Vector3, float > mPosition;
-
-        //private Vector3 mPosition0;
-        //private Vector3 mPosition1;
-
-        private Vector3 mTarget0;
-        private Vector3 mTarget1;
-
-        private Vector3 mUpVector0;
-        private Vector3 mUpVector1;
+        private Tools.AnimatedVariable< Vector3, float > mTarget;
+        private Tools.AnimatedVariable< Vector3, float > mUpVector;
 
         private Matrix mViewMatrix = default( Matrix );
-        //private float mPositionSpeed = 1;
+
+        private float mPositionSpeed = 1;
         private float mTargetSpeed = 1;
         private float mUpVectorSpeed = 1;
-
-        public Vector3 Position
-        {
-            get {
-                return mPosition.Value;//mPosition0;
-            }
-            set {
-                mPosition.Value = value;
-                //mViewMatrix = default( Matrix );
-                //mPosition0 = mPosition1 = value;
-            }
-        }
-
-        public Vector3 Target
-        {
-            get {
-                return mTarget0;
-            }
-            set {
-                mViewMatrix = default( Matrix );
-                mTarget0 = mTarget1 = value;
-            }
-        }
-
-        public Vector3 UpVector
-        {
-            get {
-                return mUpVector0;
-            }
-            set {
-                mViewMatrix = default( Matrix );
-                mUpVector0 = mUpVector1 = value;
-            }
-        }
-
 
         public Camera( CubeGame game )
             : this( game, Vector3.Zero, Vector3.Zero, Vector3.Zero )
@@ -67,88 +26,109 @@ namespace CyberCube
         public Camera( CubeGame game, Vector3 position, Vector3 target, Vector3 upVector )
             : base( game )
         {
-            mPosition = new Tools.AnimatedVariable<Vector3, float>(
-                position,
-                Utils.Slerp,
-                Vector3.Distance );
+            mPosition = new Tools.AnimatedVariable<Vector3, float>( position,
+                ( v0, v1, amount ) => Vector3.Distance( v0, v1 ) > amount
+                                      ? v0.Slerp( v1, amount )
+                                      : v1 );
 
-            mPosition.OnValueChanged += ( s, v ) => mViewMatrix = default( Matrix );
+            mTarget = new Tools.AnimatedVariable<Vector3, float>( target,
+                ( v0, v1, amount ) => Vector3.Distance( v0, v1 ) > amount
+                                      ? v0.Slerp( v1, amount )
+                                      : v1 );
 
-            //mPosition0 = mPosition1 = position;
-            mTarget0   = mTarget1   = target;
-            mUpVector0 = mUpVector1 = upVector;
+            mUpVector = new Tools.AnimatedVariable<Vector3, float>( upVector,
+                ( v0, v1, amount ) => Vector3.Distance( v0, v1 ) > amount
+                                      ? v0.Slerp( v1, amount * 10 )
+                                      : v1 );
+
+            mPosition.OnValueChanged += OnViewValueChanged;
+            mTarget.OnValueChanged += OnViewValueChanged;
+            mUpVector.OnValueChanged += OnViewValueChanged;
+        }
+
+        private void OnViewValueChanged( Tools.AnimatedVariable<Vector3, float> sender, Vector3 value )
+        {
+            if ( !sender.IsAnimating )
+                mViewMatrix = default( Matrix );
+        }
+
+        public Vector3 Position
+        {
+            get {
+                return mPosition.Value;
+            }
+            set {
+                mPosition.Value = value;
+            }
+        }
+
+        public Vector3 Target
+        {
+            get {
+                return mTarget.Value;
+            }
+            set {
+                mTarget.Value = value;
+            }
+        }
+
+        public Vector3 UpVector
+        {
+            get {
+                return mUpVector.Value;
+            }
+            set {
+                mUpVector.Value = value;
+            }
         }
 
         public override void Update( GameTime gameTime )
         {
-            float seconds = (float) gameTime.ElapsedGameTime.TotalMilliseconds / 1000f;
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            mPosition.Update( mPosition.AnimSpeed * seconds );
-
-            //if ( mPosition0 != mPosition1 )
-            //    if ( Vector3.Distance( mPosition0, mPosition1 ) < seconds * mPositionSpeed )
-            //        mPosition0 = mPosition1;
-            //    else
-            //        mPosition0 = mPosition0.Slerp( mPosition1, seconds * mPositionSpeed );
-
-
-            if ( mTarget0 != mTarget1 )
-                if ( Vector3.Distance( mTarget0, mTarget1 ) < seconds * mTargetSpeed )
-                    mTarget0 = mTarget1;
-                else
-                    mTarget0 = mTarget0.Slerp( mTarget1, seconds * mTargetSpeed );
-
-
-            if ( mUpVector0 != mUpVector1 )
-                if ( Vector3.Distance( mUpVector0, mUpVector1 ) < seconds * mUpVectorSpeed )
-                    mUpVector0 = mUpVector1;
-                else
-                    mUpVector0 = mUpVector0.Slerp( mUpVector1, seconds * mUpVectorSpeed * 10 );
+            mPosition.Update( mPositionSpeed * seconds );
+            mTarget.Update( mTargetSpeed * seconds );
+            mUpVector.Update( mUpVectorSpeed * seconds );
         }
 
         public void AnimatePosition( Vector3 position, float speed )
         {
-            mPosition.AnimSpeed = speed;
+            mPositionSpeed = speed;
             mPosition.AnimateValue( position );
-            //mPosition1 = position;
-            //mPositionSpeed = speed;
         }
 
         public void AnimateTarget( Vector3 target, float speed )
         {
-            mTarget1 = target;
             mTargetSpeed = speed;
+            mTarget.AnimateValue( target );
         }
 
         public void AnimateUpVector( Vector3 upVector, float speed )
         {
-            mUpVector1 = upVector;
             mUpVectorSpeed = speed;
+            mUpVector.AnimateValue( upVector );
         }
 
         public void SkipAnimation()
         {
             mPosition.SkipAnimation();
-            //mPosition0 = mPosition1;
-            mTarget0 = mTarget1;
-            mUpVector0 = mUpVector1;
+            mTarget.SkipAnimation();
+            mUpVector.SkipAnimation();
         }
 
-        public bool IsAnimating()
+        public bool IsAnimating
         {
-            //mPosition0 != mPosition1
-            return mPosition.IsAnimating || mTarget0 != mTarget1 || mUpVector0 != mUpVector1;
+            get {
+                return mPosition.IsAnimating || mTarget.IsAnimating || mUpVector.IsAnimating;
+            }
         }
 
         public Matrix View
         {
             get {
-                var position0 = mPosition.Value;
-                if ( IsAnimating() || mViewMatrix == default( Matrix ) )
-                    Matrix.CreateLookAt( ref position0,
-                                         ref mTarget0,
-                                         ref mUpVector0,
-                                         out mViewMatrix );
+                if ( IsAnimating || mViewMatrix == default( Matrix ) )
+                    mViewMatrix = Matrix.CreateLookAt( Position, Target, UpVector );
+
                 return mViewMatrix;
             }
         }

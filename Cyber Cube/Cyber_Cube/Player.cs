@@ -42,31 +42,72 @@ namespace CyberCube
             model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
         }
 
+        private Fixture mTorso;
         private Fixture mFeet;
+
+        public int mNumFootContacts;
+
+        public override bool FreeFall
+        {
+            get {
+                return mNumFootContacts == 0;
+            }
+        }
 
         protected override Body CreateBody( World world )
         {
-            Body body = BodyFactory.CreateRectangle(
-                CubeFace.World,
+            Body body = base.CreateBody( world );
+
+            mTorso = FixtureFactory.AttachRectangle(
                 25.ToUnits(),
                 50.ToUnits(),
                 1,
-                ComputeFacePosition().ToUnits() );
+                Vector2.Zero,
+                body,
+                "torso" );
 
             mFeet = FixtureFactory.AttachRectangle(
                 20.ToUnits(),
                 10.ToUnits(),
                 1,
                 new Vector2( 0, 25 ).ToUnits(),
-                body );
+                body,
+                "feet" );
             mFeet.IsSensor = true;
 
-            //mFeet.OnCollision += ( a, b, c ) => IsJumping = false;
+            world.ContactManager.BeginContact += c => {
 
-            body.BodyType = BodyType.Dynamic;
-            body.Rotation = Rotation;
+                if ( c.FixtureA.UserData.Equals( "feet" ) )
+                    mNumFootContacts++;
+
+                //check if fixture A was the foot sensor
+                //void* fixtureUserData = contact->GetFixtureA()->GetUserData();
+                //if ( c. (int) fixtureUserData == 3 )
+                //    numFootContacts++;
+                ////check if fixture B was the foot sensor
+                //fixtureUserData = contact->GetFixtureB()->GetUserData();
+                //if ( (int) fixtureUserData == 3 )
+                //    numFootContacts++;
+
+                return true;
+            };
+
+            world.ContactManager.EndContact += c => {
+                ;
+            };
 
             return body;
+        }
+
+        protected override void ReconstructBody()
+        {
+            base.ReconstructBody();
+
+            mTorso = Body.FindFixture( "torso" );
+            mFeet = Body.FindFixture( "feet" );
+
+            mTorso.OnCollision += Torso_OnCollision;
+            mFeet.OnSeparation += Feet_OnSeparation;
         }
 
         public override void Initialize()
@@ -80,9 +121,6 @@ namespace CyberCube
             Body.CollisionCategories = Category.Cat2;
             Body.Mass = 68;
 
-            Body.OnCollision += Body_OnCollision;
-            Body.OnSeparation += Body_OnSeparation;
-
             pixel = new Texture2D( GraphicsDevice, 3, 3 );
             pixel.SetData( new[] { Color.White, Color.White, Color.White,
                                    Color.White, Color.White, Color.White,
@@ -91,7 +129,7 @@ namespace CyberCube
 			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
         }
 
-        private bool Body_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        private bool Torso_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
         {
             if ( contact.IsTouching && !fixtureB.IsSensor
                  && contact.Manifold.Type == ManifoldType.FaceA
@@ -108,9 +146,11 @@ namespace CyberCube
             return contact.IsTouching;
         }
 
-        private void Body_OnSeparation( Fixture fixtureA, Fixture fixtureB )
+        private void Feet_OnSeparation( Fixture fixtureA, Fixture fixtureB )
         {
-            if ( fixtureB.UserData is Curved && !IsJumping )
+            if ( fixtureB.Body.BodyType != BodyType.Dynamic
+                 && fixtureB.UserData is Curved
+                 && !IsJumping )
             {
                 Body.ApplyLinearImpulse( Vector2.UnitY.Rotate( Rotation ) * Velocity.Length() * 2 );
             }
@@ -124,12 +164,12 @@ namespace CyberCube
         public void Jump( ref Vector2 velocity )
         {
             IsJumping = true;
-            velocity.Y = FreeFall ? -10f : -20f;
+            velocity.Y = -10f;
         }
 
         public void JumpEnd( ref Vector2 velocity )
         {
-            if ( FreeFall && velocity.Y < 0 )
+            if ( velocity.Y < 0 )
                 velocity.Y *= 0.6f;
         }
 
@@ -163,11 +203,14 @@ namespace CyberCube
                 velocity.X += actionRight.Value * (xScale + 1) * timeDiff;
                 velocity.X -= actionLeft.Value * (xScale + 1) * timeDiff;
 
-                if ( input.GetAction( Action.Jump ) )
-                    this.Jump( ref velocity );
+                if ( !FreeFall )
+                {
+                    if ( input.GetAction( Action.Jump ) )
+                        this.Jump( ref velocity );
 
-                if ( input.GetAction( Action.JumpEnd ) )
-                    this.JumpEnd( ref velocity );
+                    if ( input.GetAction( Action.JumpEnd ) )
+                        this.JumpEnd( ref velocity );
+                }
             }
             else
             {
@@ -190,8 +233,8 @@ namespace CyberCube
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
-            Body.OnCollision += Body_OnCollision;
-            Body.OnSeparation += Body_OnSeparation;
+            //Body.OnCollision += Body_OnCollision;
+            //Body.OnSeparation += Body_OnSeparation;
             Cube.Rotate( dir );
         }
 

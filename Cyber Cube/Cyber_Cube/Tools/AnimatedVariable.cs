@@ -5,30 +5,30 @@ using System.Text;
 
 namespace CyberCube.Tools
 {
-    public class AnimatedVariable< T, Diff >
+    public class AnimatedVariable< T, Delta >
         where T : IEquatable< T >
-        where Diff : struct, IEquatable< Diff >, IComparable< Diff >
+        //where Delta : struct, IEquatable< Delta >, IComparable< Delta >
     {
-        public delegate void ValueChangedListener( AnimatedVariable< T, Diff > sender, T value );
+        public delegate void ValueChangedListener( AnimatedVariable< T, Delta > sender, T value );
 
-        public delegate T Interpolator( T t0, T t1, Diff amount );
-        public delegate Diff Difference( T t0, T t1 );
+        public delegate T Interpolator( T t0, T t1, Delta amount );
 
 
-        private T    mValue0;
-        private T    mValue1;
-        private Diff mAnimSpeed;
+        private T mValue0;
+        private T mValue1;
+        private readonly Interpolator mInterpolator;
 
         public event ValueChangedListener OnValueChanged;
 
-        private readonly Interpolator mInterpolator;
-        private readonly Difference   mDifference;
-
-        public AnimatedVariable( T value, Interpolator interpolator, Difference difference )
+        public AnimatedVariable( T value, Interpolator interpolator )
         {
-            Value = value;
+            if ( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+            if ( interpolator == null )
+                throw new ArgumentNullException( nameof( interpolator ) );
+
+            mValue0 = mValue1 = value;
             mInterpolator = interpolator;
-            mDifference = difference;
         }
 
         public T Value
@@ -38,7 +38,7 @@ namespace CyberCube.Tools
             }
             set {
                 if ( value == null )
-                    throw new ArgumentNullException( "Value cannot be null." );
+                    throw new ArgumentNullException( nameof( value ) );
 
                 bool changed = !mValue0.Equals( value );
                 mValue0 = mValue1 = value;
@@ -48,23 +48,10 @@ namespace CyberCube.Tools
             }
         }
 
-        public Diff AnimSpeed
-        {
-            get {
-                return mAnimSpeed;
-            }
-            set {
-                if ( value.CompareTo( default( Diff ) ) < 0 )
-                    throw new ArgumentOutOfRangeException( "AnimSpeed must be positive" );
-
-                mAnimSpeed = value;
-            }
-        }
-
         public void AnimateValue( T value )
         {
             if ( value == null )
-                throw new ArgumentNullException( "Value cannot be null." );
+                throw new ArgumentNullException( nameof( value ) );
 
             mValue1 = value;
         }
@@ -81,45 +68,12 @@ namespace CyberCube.Tools
             }
         }
 
-        public void Update( Diff amount )
+        public void Update( Delta amount )
         {
-            //Diff amount = ((dynamic) AnimSpeed) * seconds;
-
             if ( !mValue0.Equals( mValue1 ) )
             {
-                mValue0 = mDifference( mValue0, mValue1 ).CompareTo( amount ) > 0
-                          ? mInterpolator( mValue0, mValue1, amount )
-                          : mValue1;
-
+                mValue0 = mInterpolator( mValue0, mValue1, amount );
                 OnValueChanged?.Invoke( this, mValue0 );
-            }
-        }
-
-    }
-
-    public class AnimatedProperty<T>
-    {
-        public delegate T Getter();
-        public delegate void Setter( T value );
-
-        private T mValue1;
-        private readonly Getter mGet;
-        private readonly Setter mSet;
-
-        public AnimatedProperty( Getter getter, Setter setter, T value )
-        {
-            mGet = getter;
-            mSet = setter;
-            mValue1 = value;
-        }
-
-        public T Value
-        {
-            get {
-                return mGet();
-            }
-            set {
-                mSet( value );
             }
         }
 

@@ -207,6 +207,7 @@ namespace CyberCube
 
             PlayableCube.LoadContent( Content );
             EditableCube.LoadContent( Content );
+            PlayScreen.LoadContent( Content );
             Menu.LoadContent( Content );
             PauseMenu.LoadContent( Content );
 
