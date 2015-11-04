@@ -27,6 +27,11 @@ namespace CyberCube.Screens
             get; private set;
         }
 
+        public List<Enemy> Enemies
+        {
+            get; private set;
+        }
+
         #region Boilerplate
         /// <summary>
         /// Hides the base Cube property, exposing the methods of the PlayableCube class.
@@ -59,7 +64,15 @@ namespace CyberCube.Screens
             : base( game, playCube )
         {
             Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
+            Enemies = new List<Enemy>();
+            Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
+            Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
+
             Components.Add( Player );
+            foreach( Enemy enemy in Enemies ) 
+            {
+                Components.Add( enemy );
+            }
         }
         #endregion
 
