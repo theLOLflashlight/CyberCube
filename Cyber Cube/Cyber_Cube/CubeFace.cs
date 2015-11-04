@@ -17,7 +17,7 @@ namespace CyberCube
         public abstract partial class Face : DrawableCubeGameComponent
         {
 #if WINDOWS
-            protected readonly FarseerPhysics.DebugView.DebugViewXNA mDebugView;
+            protected FarseerPhysics.DebugView.DebugViewXNA mDebugView;
             protected readonly Matrix mDebugProjection;
 #endif
 
@@ -149,6 +149,8 @@ namespace CyberCube
                     Normal, textureTopRight );
             }
 
+            protected bool mIsInitialized;
+
             public override void Initialize()
             {
                 base.Initialize();
@@ -164,6 +166,7 @@ namespace CyberCube
                 mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
                 World.Step( 0 );
+                mIsInitialized = true;
             }
 
             public override void Update( GameTime gameTime )

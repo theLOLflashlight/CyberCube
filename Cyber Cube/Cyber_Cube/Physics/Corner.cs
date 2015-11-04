@@ -41,7 +41,8 @@ namespace CyberCube.Physics
         {
             Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, sides, radius );
             arc.Add( new Vector2( arc.First().X, arc.Last().Y ) );
-            arc.Add( arc.First() );
+            arc.Add( new Vector2( arc.First().X + 0.0001f, arc.First().Y ) );
+            //arc.Add( arc.First() );
             arc.Rotate( angle );
             arc.Translate( new Vector2( -radius / 2 ) );
 
@@ -83,11 +84,6 @@ namespace CyberCube.Physics
 
             foreach ( var f in fixtureList )
                 f.CollidesWith = Category.None;
-        }
-
-        public override Solid Clone( World world )
-        {
-            return DefaultDeepClone( base.Clone( world ) );
         }
 
         private Texture2D CreateCircleTexture( float radius )

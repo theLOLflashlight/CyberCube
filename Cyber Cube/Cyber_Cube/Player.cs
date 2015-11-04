@@ -75,27 +75,6 @@ namespace CyberCube
                 "feet" );
             mFeet.IsSensor = true;
 
-            world.ContactManager.BeginContact += c => {
-
-                if ( c.FixtureA.UserData.Equals( "feet" ) )
-                    mNumFootContacts++;
-
-                //check if fixture A was the foot sensor
-                //void* fixtureUserData = contact->GetFixtureA()->GetUserData();
-                //if ( c. (int) fixtureUserData == 3 )
-                //    numFootContacts++;
-                ////check if fixture B was the foot sensor
-                //fixtureUserData = contact->GetFixtureB()->GetUserData();
-                //if ( (int) fixtureUserData == 3 )
-                //    numFootContacts++;
-
-                return true;
-            };
-
-            world.ContactManager.EndContact += c => {
-                ;
-            };
-
             return body;
         }
 
@@ -108,11 +87,44 @@ namespace CyberCube
 
             mTorso.OnCollision += Torso_OnCollision;
             mFeet.OnSeparation += Feet_OnSeparation;
+
+            mFeet.OnCollision += ( a, b, c ) => {
+                if ( !b.IsSensor && b.UserData is Flat )
+                {
+                    AnimateRotation( -UpDir.Angle );
+                }
+                return true;
+            };
+        }
+
+        private bool BeginContact( Contact contact )
+        {
+            if ( contact.FixtureA.UserData as string == "feet"
+                 || contact.FixtureB.UserData as string == "feet" )
+            {
+                ++mNumFootContacts;
+            }
+            return true;
+        }
+
+        private void EndContact( Contact contact )
+        {
+            if ( contact.FixtureA.UserData as string == "feet"
+                 || contact.FixtureB.UserData as string == "feet" )
+            {
+                --mNumFootContacts;
+            }
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            foreach ( Cube.Face face in Cube.Faces )
+            {
+                face.World.ContactManager.BeginContact += BeginContact;
+                face.World.ContactManager.EndContact += EndContact;
+            }
 
             Body.FixedRotation = true;
             Body.GravityScale = 20f;
@@ -164,7 +176,7 @@ namespace CyberCube
         public void Jump( ref Vector2 velocity )
         {
             IsJumping = true;
-            velocity.Y = -10f;
+            velocity.Y = !FreeFall ? -10f : -8f;
         }
 
         public void JumpEnd( ref Vector2 velocity )
@@ -175,7 +187,14 @@ namespace CyberCube
 
         public override void Update( GameTime gameTime )
         {
+            base.Update( gameTime );
             var input = Game.Input;
+
+            if ( mNumFootContacts == 1 && !IsJumping
+                 || FreeFall && !IsJumping )
+            {
+                Rotation = -UpDir.Angle;
+            }
 
             if ( !input.HasFocus )
             {
@@ -203,28 +222,25 @@ namespace CyberCube
                 velocity.X += actionRight.Value * (xScale + 1) * timeDiff;
                 velocity.X -= actionLeft.Value * (xScale + 1) * timeDiff;
 
-                if ( !FreeFall )
-                {
-                    if ( input.GetAction( Action.Jump ) )
-                        this.Jump( ref velocity );
+                if ( input.GetAction( Action.Jump ) )
+                    this.Jump( ref velocity );
 
-                    if ( input.GetAction( Action.JumpEnd ) )
-                        this.JumpEnd( ref velocity );
-                }
+                if ( input.GetAction( Action.JumpEnd ) )
+                    this.JumpEnd( ref velocity );
             }
             else
             {
                 Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
             }
 
-            if ( velocity.Y >= 0 )
+            if ( velocity.Y >= 0 && !FreeFall )
                 IsJumping = false;
 
             velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
 
             Velocity = velocity.Rotate( Rotation );
 
-            base.Update( gameTime );
+            SetFacePosition( Body.Position.ToPixels() );
 
             Screen.Camera.Target = WorldPosition;
             Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ), 1 );

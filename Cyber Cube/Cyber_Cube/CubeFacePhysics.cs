@@ -14,9 +14,21 @@ namespace CyberCube
     {
         public partial class Face
         {
+            private World mWorld;
+
             public World World
             {
-                get; private set;
+                get {
+                    return mWorld;
+                }
+                internal set {
+                    mWorld = value;
+#if WINDOWS
+                    mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( mWorld );
+                    if ( mIsInitialized )
+                        mDebugView.LoadContent( GraphicsDevice, Game.Content );
+#endif
+                }
             }
 
             protected readonly List< Solid > mSolids = new List<Solid>();
@@ -40,7 +52,7 @@ namespace CyberCube
 
             private void SetUpWorld()
             {
-                World = new World( Vector2.Zero );
+                mWorld = new World( Vector2.Zero );
 
                 var box = new Box(
                         Game,

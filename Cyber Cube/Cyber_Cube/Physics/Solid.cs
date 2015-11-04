@@ -90,21 +90,27 @@ namespace CyberCube.Physics
             Texture.SetData( new[] { Color.White } );
         }
 
-        public virtual Solid Clone( World world )
+        public Solid Clone( World world )
         {
             Solid clone = (Solid) MemberwiseClone();
             clone.mWorld = world;
-            clone.Body = clone.Body.Clone( world );
+            clone.Body = clone.Body.DeepClone( world );
+
+            clone.PostClone();
 
             return clone;
         }
 
-        protected Solid DefaultDeepClone( Solid clone )
+        protected virtual void PostClone()
         {
-            foreach ( Fixture f in Body.FixtureList )
-                f.CloneOnto( clone.Body );
-            return clone;
         }
+
+        //protected Solid DefaultDeepClone( Solid clone )
+        //{
+        //    foreach ( Fixture f in Body.FixtureList )
+        //        f.CloneOnto( clone.Body );
+        //    return clone;
+        //}
 
         public abstract override void Draw( GameTime gameTime );
 

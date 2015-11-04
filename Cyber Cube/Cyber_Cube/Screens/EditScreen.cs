@@ -9,6 +9,7 @@ using CyberCube.Physics;
 using FarseerPhysics.Dynamics;
 using CyberCube.Screens.Brushes;
 using CyberCube.IO;
+using FarseerPhysics.Common;
 
 namespace CyberCube.Screens
 {
@@ -177,6 +178,14 @@ namespace CyberCube.Screens
                     return new ConsoleErrorMessage( ex.Message );
                 }
                 break;
+
+            case "save":
+                Cube.Save( "CubeLevel" );
+                return null;
+
+            case "load":
+                Cube.Load( "CubeLevel" );
+                return null;
             }
 
             return base.RunCommand( command );
@@ -192,7 +201,9 @@ namespace CyberCube.Screens
         private void TestLevel()
         {
             PlayableCube playCube = Cube.GeneratePlayableCube();
-            ScreenManager.PushScreen( new PlayScreen( Game, playCube ) );
+            //playCube.Load( "CubeLevel" );
+            PlayScreen playScreen = new PlayScreen( Game, playCube );
+            ScreenManager.PushScreen( playScreen );
         }
 
         public override void Update( GameTime gameTime )

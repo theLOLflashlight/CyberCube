@@ -123,7 +123,7 @@ namespace FarseerPhysics.Dynamics
         public float GravityScale { get; set; }
 
         // ANDREW: Custom addition
-        public Vector2 AdHocGravity = Vector2.Zero;
+        public Vector2 AdHocGravity { get; set; }
 
         public bool UseAdHocGravity { get; set; }
 

@@ -86,7 +86,7 @@ namespace CyberCube.Physics
                 1,
                 Vector2.Zero.ToUnits(),
                 Body,
-                new Flat() );
+                new Flat( "platform" ) );
             mPlatform.CollidesWith = Category.Cat2;
 
             mExclusionRec = FixtureFactory.AttachRectangle(
@@ -94,7 +94,8 @@ namespace CyberCube.Physics
                 sensorHeight.ToUnits(),
                 1,
                 offset.ToUnits(),
-                Body );
+                Body,
+                new SolidDescriptor( "exclusion" ) );
 
             mExclusionRec.IsSensor = true;
         }
@@ -117,14 +118,12 @@ namespace CyberCube.Physics
             };
         }
 
-        public override Solid Clone( World world )
+        protected override void PostClone()
         {
-            OneWayPlatform clone = (OneWayPlatform) base.Clone( world );
-            clone.mEdge = mEdge.CloneOnto( clone.Body );
-            clone.mPlatform = mPlatform.CloneOnto( clone.Body );
-            clone.mExclusionRec = mExclusionRec.CloneOnto( clone.Body );
+            base.PostClone();
 
-            return clone;
+            mPlatform = Body.FindFixture( new SolidDescriptor( "platform" ) );
+            mExclusionRec = Body.FindFixture( new SolidDescriptor( "exclusion" ) );
         }
 
         public override void Draw( GameTime gameTime )

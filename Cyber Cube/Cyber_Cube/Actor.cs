@@ -104,20 +104,21 @@ namespace CyberCube
 
         private float mRotation;
 
+        private Tools.AnimatedProperty< float, float > mAnimRotation;
+
         public float Rotation
         {
             get {
-                return Body?.Rotation ?? mRotation;
+                return mAnimRotation.Value;
             }
             set {
-                mRotation = value;
-                if ( Body != null )
-                {
-                    Body.Rotation = mRotation;
-                    Body.AdHocGravity = Vector2.UnitY.Rotate( mRotation );
-                    Body.Awake = true;
-                }
+                mAnimRotation.Value = value;
             }
+        }
+
+        public void AnimateRotation( float value )
+        {
+            mAnimRotation.AnimateValue( value );
         }
 
         public Vector2 UpVector
@@ -130,6 +131,18 @@ namespace CyberCube
         public Actor( CubeGame game, CubeScreen screen )
             : base( game, screen )
         {
+            mAnimRotation = new Tools.AnimatedProperty<float, float>( 0,
+                Utils.Lerp,
+                () => Body?.Rotation ?? mRotation,
+                value => {
+                    mRotation = value;
+                    if ( Body != null )
+                    {
+                        Body.Rotation = mRotation;
+                        Body.AdHocGravity = Vector2.UnitY.Rotate( mRotation );
+                        Body.Awake = true;
+                    }
+                } );
         }
 
         public Actor( CubeGame game, CubeScreen screen, Cube cube, Vector3 worldPos, Direction upDir )
@@ -198,9 +211,13 @@ namespace CyberCube
         {
             base.Update( gameTime );
 
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            mAnimRotation.Update( seconds * 10 );
+
             mRotation = Body.Rotation;
 
-            SetFacePosition( Body.Position.ToPixels() );
+            //SetFacePosition( Body.Position.ToPixels() );
         }
 
         protected virtual void ApplyRotation( CompassDirection dir )
@@ -237,7 +254,7 @@ namespace CyberCube
                    + new Vector2( adjustingFactor );
         }
 
-        private void SetFacePosition( Vector2 vec2d )
+        protected void SetFacePosition( Vector2 vec2d )
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
             vec2d -= new Vector2( adjustingFactor );

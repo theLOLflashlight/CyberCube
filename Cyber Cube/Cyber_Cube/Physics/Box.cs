@@ -26,22 +26,19 @@ namespace CyberCube.Physics
             mWidth = rec.Width;
             mHeight = rec.Height;
 
-            Body = BodyFactory.CreateRectangle(
-                    world,
+            Body = BodyFactory.CreateBody( world, rec.Center.ToUnits() );
+
+            FixtureFactory.AttachRectangle(
                     mWidth.ToUnits(),
                     mHeight.ToUnits(),
                     1,
-                    rec.Center.ToUnits(),
+                    Vector2.Zero,
+                    Body,
                     new Flat() );
 
             Body.BodyType = bodyType;
             Body.Mass = mass;
             Body.CollisionCategories = categories;
-        }
-
-        public override Solid Clone( World world )
-        {
-            return DefaultDeepClone( base.Clone( world ) );
         }
 
         public override void Draw( GameTime gameTime )
