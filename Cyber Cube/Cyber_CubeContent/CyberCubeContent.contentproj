@@ -51,32 +51,32 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="MenuItems\menuControls.png">
+    <Compile Include="NavigationItems\menuControls.png">
       <Name>menuControls</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MenuItems\menuExit.png">
+    <Compile Include="NavigationItems\menuExit.png">
       <Name>menuExit</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MenuItems\menuLevelEditor.png">
+    <Compile Include="NavigationItems\menuLevelEditor.png">
       <Name>menuLevelEditor</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MenuItems\menuLoadGame.png">
+    <Compile Include="NavigationItems\menuLoadGame.png">
       <Name>menuLoadGame</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MenuItems\menuNewGame.png">
+    <Compile Include="NavigationItems\menuNewGame.png">
       <Name>menuNewGame</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="MenuItems\TitleCard.png">
+    <Compile Include="NavigationItems\TitleCard.png">
       <Name>TitleCard</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
@@ -95,17 +95,17 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="PauseItems\pauseQuitMenu.png">
+    <Compile Include="NavigationItems\pauseQuitMenu.png">
       <Name>pauseQuitMenu</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="PauseItems\pauseResume.png">
+    <Compile Include="NavigationItems\pauseResume.png">
       <Name>pauseResume</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
-    <Compile Include="PauseItems\pauseSaveGame.png">
+    <Compile Include="NavigationItems\pauseSaveGame.png">
       <Name>pauseSaveGame</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>

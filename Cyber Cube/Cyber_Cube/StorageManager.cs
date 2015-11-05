@@ -20,38 +20,16 @@ namespace CyberCube
 {
 
     /// <summary>
-    /// Holds the data of an individual save.
+    /// Manager singleton for opening and closing the storage container and files.
     /// 
     /// Developed by Morgan Wynne.
     /// </summary>
-    public struct GameDataStorage
-    {
-        //TODO: Data goes here
-    }
-
-    /// <summary>
-    /// Manager singleton for storing and retreiving high scores and current progress.
-    /// Created from tutorial at http://www.pacificsimplicity.ca/blog/loading-and-save-highscore-xmlisolatedstorage-tutorial.
-    /// 
-    /// Developed by Morgan Wynne.
-    /// </summary>
-    /// <example>
-    /// This sample shows how to access the instance of this style of singleton from elsewhere in the program.
-    /// <code>
-    /// StorageManager.Instance;
-    /// </code>
-    /// </example>
     public class StorageManager
     {
         /// <summary>
-        /// The name of the save file that the data is streamed to.
-        /// </summary>
-        public string fileName = "cybercube.sav";
-
-        /// <summary>
         /// The name of the container to load/save from within the save file.
         /// </summary>
-        public string containerName = "cybercubesave";
+        private string containerName = "cybercubesave";
 
         /// <summary>
         /// Singleton instance of the StorageManager class.
@@ -59,11 +37,14 @@ namespace CyberCube
         private static readonly StorageManager instance = new StorageManager();
 
         /// <summary>
-        /// Currently loaded player data.
         /// 
-        /// TODO: Change this to private and make accessors for it once testing is completed.
         /// </summary>
-        public GameDataStorage data;
+        private StorageContainer container;
+
+        /// <summary>
+        /// 
+        /// </summary>
+        private IAsyncResult ShowSelectorResult;
 
         /// <summary>
         /// Represents a storage device for user data, such as a memory unit or hard drive.
@@ -71,9 +52,9 @@ namespace CyberCube
         private StorageDevice storageDevice;
 
         /// <summary>
-        /// Serializer for the 'data' variable into XML if on a Windows machine.
+        /// 
         /// </summary>
-        private XmlSerializer serializer;
+        private Stream fileStream = null;
 
         static StorageManager()
         {
@@ -88,77 +69,73 @@ namespace CyberCube
         public static StorageManager Instance
         { get { return instance; } }
 
-        /// <summary>
-        /// 
-        /// </summary>
-        public void Initialize()
+        private void OpenContainer()
         {
-            // TODO: Define how many saves there will be.
-            this.data = new GameDataStorage();
-            serializer = new XmlSerializer( typeof( GameDataStorage ) );
-        }
-
-        private StorageContainer InitializeStorageContainer( IAsyncResult result )
-        {
-            storageDevice = StorageDevice.EndShowSelector( result );
+            storageDevice = null;
+            this.ShowSelectorResult = StorageDevice.BeginShowSelector( PlayerIndex.One, null, null );
+            storageDevice = StorageDevice.EndShowSelector( this.ShowSelectorResult );
             if( storageDevice == null || !( storageDevice.IsConnected ) )
                 throw new Exception( "StorageDevice was null or not connected." );
 
             IAsyncResult r = storageDevice.BeginOpenContainer( containerName, null, null );
-            result.AsyncWaitHandle.WaitOne();
-            return storageDevice.EndOpenContainer( r );
+            this.ShowSelectorResult.AsyncWaitHandle.WaitOne();
+
+            this.container = storageDevice.EndOpenContainer( r );
         }
 
         /// <summary>
-        /// Begins the saving of data from the 'data' variable into the save file.
+        /// Finalizes all saves and closes the container.
         /// </summary>
-        public void Save()
+        public void Finish()
         {
-            if( !Guide.IsVisible )
-            {
-                storageDevice = null;
-                var result = StorageDevice.BeginShowSelector( PlayerIndex.One, null, null );
+            if( this.container.IsDisposed )
+                return;
 
-                StorageContainer container = this.InitializeStorageContainer( result );
-
-                // If the file exists, delete it and re-create it.
-                if( container.FileExists( fileName ) )
-                    container.DeleteFile( fileName );
-
-                // Open the file, stream the data, and close the file.
-                using( Stream stream = container.CreateFile( fileName ) )
-                {
-                    serializer.Serialize( stream, data );
-                }
-
-                result.AsyncWaitHandle.Close();
-                container.Dispose();
-            }
+            this.fileStream.Close();
+            this.fileStream = null;
+            this.container.Dispose();
+            this.ShowSelectorResult.AsyncWaitHandle.Close();
         }
 
         /// <summary>
-        /// Begins the loading of data from a save file into the 'data' variable.
+        /// Opens a write stream to the designated file.
         /// </summary>
-        public void Load()
+        /// <param name="fileName">The name of the file to open.</param>
+        /// <returns>A write stream to the file.</returns>
+        public Stream OpenWriteFile( string fileName )
         {
-            if( !Guide.IsVisible )
-            {
-                storageDevice = null;
-                var result = StorageDevice.BeginShowSelector( PlayerIndex.One, null, null );
+            // If a file stream is already open, close it.
+            if( this.fileStream != null )
+                this.fileStream.Close();
 
-                StorageContainer container = this.InitializeStorageContainer( result );
+            // Ensures the container is open.
+            if( this.container == null || this.container.IsDisposed )
+                StorageManager.Instance.OpenContainer();
 
-                if( container.FileExists( fileName ) )
-                {
-                    using( Stream stream = container.OpenFile( fileName, FileMode.Open ) )
-                    {
-                        data = (GameDataStorage)serializer.Deserialize( stream );
-                    }
-                }
+            // If the file already exists, delete it.
+            if( container.FileExists( fileName ) )
+                container.DeleteFile( fileName );
 
-                result.AsyncWaitHandle.Close();
-                container.Dispose();
-            }
+            this.fileStream = container.CreateFile( fileName );
+            return this.fileStream;
+        }
+
+        public Stream OpenReadFile( string fileName )
+        {
+            // If a file stream is already open, close it.
+            if( this.fileStream != null )
+                this.fileStream.Close();
+
+            // Ensures the container is open.
+            if( this.container == null || this.container.IsDisposed )
+                StorageManager.Instance.OpenContainer();
+
+            // Throws an exception if the file does not already exist.
+            if( !container.FileExists( fileName ) )
+                throw new Exception( "File does not exist" );
+
+            this.fileStream = container.OpenFile( fileName, FileMode.Open );
+            return this.fileStream;
         }
     }
 }

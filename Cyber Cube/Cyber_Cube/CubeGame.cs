@@ -9,7 +9,6 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 using CyberCube.IO;
-using CyberCube.MenuFiles;
 using System.Reflection;
 using CyberCube.Levels;
 using CyberCube.Screens;
@@ -172,7 +171,7 @@ namespace CyberCube
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
             Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
-            Input.AddPressedBinding( Action.PauseGame, Keys.P);
+            //Input.AddPressedBinding( Action.PauseGame, Keys.P);
 
 
             Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
@@ -195,8 +194,7 @@ namespace CyberCube
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-
-            StorageManager.Instance.Initialize();
+            
             mScreenManager.PushScreen( new MenuScreen( this ) );
         }
 
@@ -211,8 +209,8 @@ namespace CyberCube
             PlayableCube.LoadContent( Content );
             EditableCube.LoadContent( Content );
             PlayScreen.LoadContent( Content );
-            Menu.LoadContent( Content );
-            PauseMenu.LoadContent( Content );
+            MenuScreen.LoadContent( Content );
+            PauseScreen.LoadContent( Content );
 
             // TODO: use this.Content to load your game content here
         }
@@ -247,11 +245,10 @@ namespace CyberCube
             if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                 Console.Close();
 
-            //if ( Input.GetAction( Action.PauseGame ))
-            //{
-            //    mPauseMenu.EnterPauseMenu();
-            //    mMenu.CurrentMenuState = GameState.PauseGame;
-            //}
+            if ( Input.GetAction( Action.PauseGame ) )
+            {
+                mScreenManager.PushScreen( new PauseScreen( this ) );
+            }
         }
 
         /// <summary>
