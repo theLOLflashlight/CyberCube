@@ -11,6 +11,7 @@ namespace CyberCube {
 	public class Enemy : Actor {
 
         private Model model3D;
+        private Vector2 movingDirection = Vector2.UnitY;
         
 
 		public Enemy( CubeScreen screen, Cube cube, Vector3 worldPos, Direction upDir )
@@ -34,6 +35,31 @@ namespace CyberCube {
         public override void Update(GameTime gameTime) 
 		{
 			base.Update(gameTime);
+
+            float moveScale = 0.2f;
+            float stepAhead = 60f;
+            float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            Vector2 position = Transform3dTo2d(mWorldPosition);
+            Vector2 newPosition = position - Vector2.Multiply(movingDirection, moveScale * timeDiff);
+            
+            Vector2 futurePosition = position - Vector2.Multiply(movingDirection, moveScale * timeDiff * stepAhead);
+
+            if (futurePosition.X < -1 || futurePosition.X > 1) {
+                newPosition = position;
+                movingDirection *= -Vector2.UnitX;
+            }
+
+            if (futurePosition.Y < -1 || futurePosition.Y > 1) {
+                newPosition = position;
+                movingDirection *= -Vector2.UnitY;
+            }
+
+            mWorldPosition = Transform2dTo3d(newPosition);
+
+            // Need to reference Player class to set collision
+
+
         }
 
 		public override void Draw(GameTime gameTime) {
