@@ -67,10 +67,7 @@ namespace CyberCube.Screens.Brushes
                     face.World,
                     100,
                     mousePos.Value,
-                    Quarterpipe.Type.SE,
-                    BodyType.Static,
-                    ((100 * 100) - ((MathHelper.Pi * 100 * 100) / 4)) * 0.01f,
-                    Category.Cat2 );
+                    Quarterpipe.Type.SE );
 
                 qpipe.Body.UseAdHocGravity = true;
                 qpipe.Body.AdHocGravity =

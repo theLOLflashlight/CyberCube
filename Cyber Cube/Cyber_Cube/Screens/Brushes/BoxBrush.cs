@@ -78,9 +78,7 @@ namespace CyberCube.Screens.Brushes
                     face.Game,
                     face.World,
                     mRec,
-                    BodyType.Static,
-                    mRec.Width * mRec.Height * 0.01f,
-                    Category.Cat2 );
+                    BodyType.Static );
 
                 box.Body.UseAdHocGravity = true;
                 box.Body.AdHocGravity =

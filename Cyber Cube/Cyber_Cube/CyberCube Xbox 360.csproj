@@ -90,7 +90,7 @@
     <Compile Include="Physics\OneWayPlatform.cs" />
     <Compile Include="Physics\Quaterpipe.cs" />
     <Compile Include="Physics\Solid.cs" />
-    <Compile Include="Physics\SolidTypes.cs" />
+    <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />

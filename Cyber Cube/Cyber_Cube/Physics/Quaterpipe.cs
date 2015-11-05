@@ -41,12 +41,47 @@ namespace CyberCube.Physics
         {
             Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, sides, radius );
             arc.Add( new Vector2( arc.Last().X, arc.First().Y ) );
-            arc.Add( new Vector2( arc.First().X, arc.First().Y + 0.0001f ) );
-            //arc.Add( arc.First() );
+#if DEBUG
+            arc.Add( new Vector2( arc.First().X + 0.0001f, arc.First().Y ) );
+#else
+            arc.Add( arc.First() );
+#endif
             arc.Rotate( angle );
             arc.Translate( new Vector2( -radius / 2 ) );
 
             return arc;
+        }
+
+        public struct QuarterpipeMaker : ISolidMaker
+        {
+            public float Radius;
+
+            public QuarterpipeMaker( float radius )
+            {
+                Radius = radius;
+            }
+
+            public Solid MakeSolid( CubeGame game, World world, Body body )
+            {
+                return new Quarterpipe( game, world, body, Radius );
+            }
+        }
+
+        public Quarterpipe( CubeGame game, World world, Body body, float radius )
+            : base( game, world, body )
+        {
+            mRadius = radius;
+
+            Fixture curve = Body.FindFixture( new Concave() );
+            var tmpCat = curve.CollisionCategories;
+            Body.DestroyFixture( curve );
+
+            curve = FixtureFactory.AttachChainShape(
+                MakeArc( 100, radius.ToUnits(), 0 ),
+                Body,
+                new Concave() );
+
+            curve.CollisionCategories = tmpCat;
         }
 
         private float     mRadius;
@@ -58,32 +93,29 @@ namespace CyberCube.Physics
                             Vector2 position,
                             Type type,
                             BodyType bodyType = BodyType.Static,
-                            float mass = 1,
+                            float density = 1,
                             Category categories = Category.Cat1 )
-            : base( game, world )
+            : base( game, world, position.ToUnits(), AngleFromType( type ), new QuarterpipeMaker( radius ) )
         {
             mRadius = radius;
 
-            Body = BodyFactory.CreateChainShape(
-                world,
+            FixtureFactory.AttachChainShape(
                 MakeArc( 100, radius.ToUnits(), 0 ),
-                position.ToUnits(),
+                Body,
                 new Concave() );
-
-            Body.BodyType = bodyType;
-            Body.Mass = mass;
-            Body.CollisionCategories = categories;
-            Body.Rotation = AngleFromType( type );
 
             var fixtureList = FixtureFactory.AttachCompoundPolygon(
                 Triangulate.ConvexPartition(
                     MakeArc( 10, radius.ToUnits(), 0 ),
                     TriangulationAlgorithm.Earclip ),
-                1,
+                density,
                 Body );
 
             foreach ( var f in fixtureList )
                 f.CollidesWith = Category.None;
+
+            Body.BodyType = bodyType;
+            Body.CollisionCategories = categories;
         }
 
         private Texture2D CreateCircleTexture( float radius )

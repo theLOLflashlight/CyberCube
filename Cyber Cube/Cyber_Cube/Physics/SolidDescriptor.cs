@@ -5,6 +5,17 @@ using System.Text;
 
 namespace CyberCube.Physics
 {
+    public enum SolidType
+    {
+        None = 0,
+        Any = ~0,
+        Point = 1,
+        Flat = 2,
+        Curved = 4,
+        Convex = 4 + 8,
+        Concave = 4 + 16,
+    }
+
     public class SolidDescriptor : IEquatable< SolidDescriptor >
     {
         public string UserData { get; set; }

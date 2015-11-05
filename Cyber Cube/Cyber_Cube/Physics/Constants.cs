@@ -26,6 +26,16 @@ namespace CyberCube.Physics
             return null;
         }
 
+        public static IEnumerable<Fixture> FindFixtures( this Body body, object userData )
+        {
+            if ( userData == null )
+                throw new ArgumentNullException( nameof( userData ) );
+
+            foreach ( Fixture f in body.FixtureList )
+                if ( userData.Equals( f.UserData ) )
+                    yield return f;
+        }
+
 
         /// <summary>
         /// Converts an int to world unit scale (meters).

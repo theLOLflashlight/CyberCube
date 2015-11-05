@@ -47,6 +47,9 @@ namespace CyberCube
             { get; set; } = false;
 #endif
 
+            public bool AllowMultipleJumping
+            { get; set; } = true;
+
             public Color Background
             { get; set; } = Color.CornflowerBlue;
 

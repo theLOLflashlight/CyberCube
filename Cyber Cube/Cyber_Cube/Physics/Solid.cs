@@ -12,35 +12,44 @@ using System.Text;
 
 namespace CyberCube.Physics
 {
+    public interface ISolidMaker
+    {
+        Solid MakeSolid( CubeGame game, World world, Body body );
+    }
+
     public abstract class Solid : DrawableCubeGameComponent
     {
-
-        public Body Body
-        {
-            get; protected set;
-        }
+        public abstract override void Draw( GameTime gameTime );
 
         private World mWorld;
 
-        public World World
+        public Texture2D Texture;
+
+        protected Solid( CubeGame game,
+                         World world,
+                         Vector2 position = default( Vector2 ),
+                         float rotation = 0,
+                         ISolidMaker solidMaker = null )
+            : base( game )
         {
-            get {
-                return mWorld;
-            }
-            set {
-                if ( value == null )
-                    throw new NullReferenceException( "The value of World cannot be null" );
+            mWorld = world;
+            Body = BodyFactory.CreateBody( World, position, rotation, solidMaker );
 
-                World newWorld = value;
+            this.Visible = false;
+        }
 
-                if ( newWorld != mWorld )
-                {
-                    Body body = Body.DeepClone( newWorld );
-                    mWorld.RemoveBody( Body );
-                    Body = body;
-                }
-                mWorld = newWorld;
-            }
+        public Solid( CubeGame game, World world, Body body )
+            : base( game )
+        {
+            mWorld = world;
+            Body = body;
+
+            this.Visible = false;
+        }
+
+        public Body Body
+        {
+            get; private set;
         }
 
         public BodyType BodyType
@@ -73,15 +82,6 @@ namespace CyberCube.Physics
             }
         }
 
-        public Texture2D Texture;
-
-        public Solid( CubeGame game, World world )
-            : base( game )
-        {
-            mWorld = world;
-            this.Visible = false;
-        }
-
         public override void Initialize()
         {
             base.Initialize();
@@ -105,15 +105,27 @@ namespace CyberCube.Physics
         {
         }
 
-        //protected Solid DefaultDeepClone( Solid clone )
-        //{
-        //    foreach ( Fixture f in Body.FixtureList )
-        //        f.CloneOnto( clone.Body );
-        //    return clone;
-        //}
+        public World World
+        {
+            get {
+                return mWorld;
+            }
+            set {
+                if ( value == null )
+                    throw new NullReferenceException( "The value of World cannot be null" );
 
-        public abstract override void Draw( GameTime gameTime );
+                World newWorld = value;
 
+                if ( newWorld != mWorld )
+                {
+                    Body body = Body.DeepClone( newWorld );
+                    mWorld?.RemoveBody( Body );
+                    Body = body;
+                    PostClone();
+                }
+                mWorld = newWorld;
+            }
+        }
     }
     
 }

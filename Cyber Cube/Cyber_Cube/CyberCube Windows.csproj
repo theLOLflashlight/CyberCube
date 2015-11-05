@@ -73,7 +73,7 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
     <Compile Include="Physics\Corner.cs" />
-    <Compile Include="Physics\SolidTypes.cs" />
+    <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
     <Compile Include="Graphics\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />

@@ -148,7 +148,7 @@ namespace CyberCube.Screens.Brushes
 #if WINDOWS
             if ( mSelectedSolid != null )
             {
-                face.DebugView.BeginCustomDraw( face.DebugProjection, Matrix.Identity );
+                face.DebugView.BeginCustomDraw( Cube.Face.DEBUG_PROJECTION, Matrix.Identity );
 
                 double t = (gameTime.TotalGameTime.TotalSeconds % 4 / 2) - 1;
                 byte val = (byte) (150 + Math.Abs( t * 105 ));
