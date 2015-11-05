@@ -30,7 +30,7 @@ namespace CyberCube
 
         public EvaluateResult Evaluate( string expression )
         {
-            string[] tokens = expression.Trim().Split( ' ' );
+            string[] tokens = expression.Split( ' ' );
 
             if ( tokens.Length == 0 )
                 return new EvaluateResult( null );

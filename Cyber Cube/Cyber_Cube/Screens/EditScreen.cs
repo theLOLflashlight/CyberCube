@@ -143,6 +143,9 @@ namespace CyberCube.Screens
                 case "box":
                     return new BoxBrush( mScreen.Game );
 
+                case "line":
+                    return new PlatformBrush( mScreen.Game );
+
                 case "type":
                     return new BodyTypeBrush();
 
@@ -159,45 +162,40 @@ namespace CyberCube.Screens
 
         public override ConsoleMessage RunCommand( string command )
         {
-            switch ( command.Trim().ToLower() )
+            try
             {
-            default:
-                try
+                string[] tokens = command.Split( ' ' );
+
+                switch ( tokens[ 0 ].ToLower() )
                 {
-                    string[] tokens = command.Trim().Split( ' ' );
+                case "save":
+                    if ( tokens.Length != 2 )
+                        return new ConsoleErrorMessage( "Usage: save [filename]" );
 
-                    switch ( tokens[ 0 ].ToLower() )
-                    {
-                    case "save":
-                        if ( tokens.Length != 2 )
-                            return new ConsoleErrorMessage( "Usage: save [filename]" );
+                    Cube.Save( tokens[ 1 ] );
+                    return null;
 
-                        Cube.Save( tokens[ 1 ] );
-                        return null;
+                case "load":
+                    if ( tokens.Length != 2 )
+                        return new ConsoleErrorMessage( "Usage: load [filename]" );
 
-                    case "load":
-                        if ( tokens.Length != 2 )
-                            return new ConsoleErrorMessage( "Usage: load [filename]" );
-
-                        Cube.Load( tokens[ 1 ] );
-                        return null;
-                    }
-                
-                    var ret = ScreenProperties.Evaluate( command );
-
-                    if ( ret.Success )
-                    {
-                        if ( ret.Result != null )
-                            return ret.Result.ToString();
-
-                        return null;
-                    }
+                    Cube.Load( tokens[ 1 ] );
+                    return null;
                 }
-                catch ( Exception ex )
+
+                var ret = ScreenProperties.Evaluate( command );
+
+                if ( ret.Success )
                 {
-                    return new ConsoleErrorMessage( ex.Message );
+                    if ( ret.Result != null )
+                        return ret.Result.ToString();
+
+                    return null;
                 }
-                break;
+            }
+            catch ( Exception ex )
+            {
+                return new ConsoleErrorMessage( ex.Message );
             }
 
             return base.RunCommand( command );

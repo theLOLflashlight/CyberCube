@@ -96,6 +96,7 @@
     <Compile Include="Program.cs" />
     <Compile Include="CubeGame.cs" />
     <Compile Include="Screens\Brushes\BodyTypeBrush.cs" />
+    <Compile Include="Screens\Brushes\PlatformBrush.cs" />
     <Compile Include="Screens\Brushes\HandBrush.cs" />
     <Compile Include="Screens\Brushes\CornerBrush.cs" />
     <Compile Include="Screens\Brushes\QuarterpipeBrush.cs" />

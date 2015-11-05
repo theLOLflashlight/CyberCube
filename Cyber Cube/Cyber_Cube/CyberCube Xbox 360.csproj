@@ -98,6 +98,7 @@
     <Compile Include="Screens\Brushes\CornerBrush.cs" />
     <Compile Include="Screens\Brushes\HandBrush.cs" />
     <Compile Include="Screens\Brushes\IEditBrush.cs" />
+    <Compile Include="Screens\Brushes\PlatformBrush.cs" />
     <Compile Include="Screens\Brushes\QuarterpipeBrush.cs" />
     <Compile Include="Screens\GameScreen.cs" />
     <Compile Include="Screens\MenuScreen.cs" />

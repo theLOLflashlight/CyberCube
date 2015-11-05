@@ -54,8 +54,8 @@ namespace CyberCube.Physics
                                Category oneWayCategories = Category.Cat2 )
             : base( game, world, line.Center.ToUnits(), 0, new OneWayPlatformMaker( line ) )
         {
-            if ( line.X0 != line.X1 && line.Y0 != line.Y1 )
-                throw new ArgumentException( "Only vertical and horizontal edges are supported." );
+            if ( !line.IsHorizontal && !line.IsVertical )
+                throw new ArgumentException( "Only vertical and horizontal platforms are supported." );
 
             Vector2 offset;
             float edgeWidth, edgeHeight, sensorWidth, sensorHeight;

@@ -32,6 +32,21 @@ namespace CyberCube
             }
         }
 
+        public bool IsHorizontal
+        {
+            get {
+                return Y0 == Y1;
+            }
+        }
+
+        public bool IsVertical
+        {
+            get
+            {
+                return X0 == X1;
+            }
+        }
+
         public Line2( Vector2 p0, Vector2 p1 )
         {
             P0 = p0;

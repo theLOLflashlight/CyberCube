@@ -114,7 +114,8 @@ namespace CyberCube.IO
 
         private void RunCommand( string command )
         {
-            if ( string.IsNullOrEmpty( command?.Trim() ) )
+            command = command?.Trim();
+            if ( string.IsNullOrEmpty( command ) )
                 return;
 
             mHistory.Add( new ConsoleInputMessage( command, InputPrompt ) );
