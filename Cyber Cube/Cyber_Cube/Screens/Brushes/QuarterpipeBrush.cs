@@ -71,7 +71,7 @@ namespace CyberCube.Screens.Brushes
 
                 qpipe.Body.UseAdHocGravity = true;
                 qpipe.Body.AdHocGravity =
-                    Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
+                    Vector2.UnitY.Rotate( -face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
                 face.AddSolid( qpipe );

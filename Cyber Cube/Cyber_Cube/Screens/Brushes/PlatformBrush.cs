@@ -79,7 +79,7 @@ namespace CyberCube.Screens.Brushes
 
                 platform.Body.UseAdHocGravity = true;
                 platform.Body.AdHocGravity =
-                    Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
+                    Vector2.UnitY.Rotate( -face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
                 face.AddSolid( platform );

@@ -51,6 +51,14 @@ namespace CyberCube.IO
             
         }
 
+        public ActionState GetAction( BindTarget action, object sender )
+        {
+            if ( !HasFocus || CheckFocus( sender ) )
+                return GetAction( action );
+
+            return new ActionState( action, false );
+        }
+
         public ActionState GetAction( BindTarget action )
         {
             if ( mKeyPressedBinds.ContainsKey( action )

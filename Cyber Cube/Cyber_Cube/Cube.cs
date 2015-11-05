@@ -170,8 +170,8 @@ namespace CyberCube
             Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
             Effect.LightingEnabled = true;
 
-            Screen.Camera.Fov = MathHelper.Pi / 4.0f;
-            Screen.Camera.AspectRatio = (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height;
+            Screen.Camera.Fov = MathHelper.PiOver4;
+            Screen.Camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;//( float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height;
             Screen.Camera.NearPlaneDistance = NEAR_PLANE;
             Screen.Camera.FarPlaneDistance = FAR_PLANE;
 
@@ -187,13 +187,6 @@ namespace CyberCube
 
         public override void Update( GameTime gameTime )
         {
-            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
-            Matrix T = Matrix.CreateTranslation( mPosition );
-            Matrix S = Matrix.CreateScale( mScale );
-            Effect.World = S * R * T;
-
-            Screen.Camera.Apply( Effect );
-
             base.Update( gameTime );
 
             foreach ( Face face in Faces )
@@ -203,6 +196,13 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
+            Matrix S = Matrix.CreateScale( mScale );
+            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
+            Matrix T = Matrix.CreateTranslation( mPosition );
+            Effect.World = S * R * T;
+
+            Screen.Camera.Apply( Effect );
+
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 

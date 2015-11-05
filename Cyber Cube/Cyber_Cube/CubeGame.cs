@@ -42,16 +42,22 @@ namespace CyberCube
         public class CubeGameProperties : RuntimeProperties
         {
 #if WINDOWS
-            public bool DebugView
-            { get; set; } = false;
+            public bool DebugView { get; set; } = false;
 #endif
 
-            public bool AllowMultipleJumping
-            { get; set; } = true;
+            public bool AllowMultipleJumping { get; set; } = false;
 
-            public Color Background
-            { get; set; } = Color.CornflowerBlue;
+            public bool AllowManualGravity { get; set; } = false;
 
+            public Color Background { get; set; } = Color.CornflowerBlue;
+
+            public CubeGameProperties()
+            {
+#if DEBUG
+                AllowMultipleJumping = true;
+                AllowManualGravity = true;
+#endif
+            }
 
             protected override object Parse( string value, Type type )
             {
@@ -267,7 +273,7 @@ namespace CyberCube
             if ( Console.Closed )
                 Console.Open();
 
-            switch ( command )
+            switch ( command.ToLower() )
             {
             default:
                 try {
@@ -295,6 +301,16 @@ namespace CyberCube
 [background <xna color>]
 [exit]
 [clear]" );
+                return null;
+
+            case "cheats on":
+                GameProperties.AllowManualGravity = true;
+                GameProperties.AllowMultipleJumping = true;
+                return null;
+
+            case "cheats off":
+                GameProperties.AllowManualGravity = false;
+                GameProperties.AllowMultipleJumping = false;
                 return null;
 
             case "exit":

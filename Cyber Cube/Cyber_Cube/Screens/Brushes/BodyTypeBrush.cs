@@ -31,9 +31,11 @@ namespace CyberCube.Screens.Brushes
                 {
                 case BodyType.Static:
                     solid.BodyType = BodyType.Dynamic;
+                    solid.Body.CollisionCategories = Category.Cat2;
                     break;
                 case BodyType.Dynamic:
                     solid.BodyType = BodyType.Static;
+                    solid.Body.CollisionCategories = Category.Cat1;
                     break;
                 }
             }

@@ -16,6 +16,7 @@ using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using CyberCube.Physics;
 using FarseerPhysics.Common;
+using CyberCube.Tools;
 
 namespace CyberCube
 {
@@ -25,11 +26,19 @@ namespace CyberCube
         private Model model3D;
 		private float aspectRatio;
 
+        private AnimatedVariable<float, float> mModelRotation;
+
         public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, Direction upDir )
             : base( cube.Game, screen, cube, worldPos, upDir )
         {
             this.Visible = true;
             this.DrawOrder = 1;
+
+            mModelRotation = new AnimatedVariable<float, float>(
+                (f0, f1, step) => {
+                    var diff = MathHelper.WrapAngle( f1 - f0 );
+                    return f0.Lerp( f0 + diff, step );
+                } );
         }
 
         public override void Reset( Vector3 worldPos, Direction upDir )
@@ -102,7 +111,7 @@ namespace CyberCube
                 if ( !b.IsSensor && b.UserData is Flat )
                 {
                     var diff = MathHelper.WrapAngle( -UpDir.Angle - Rotation );
-                    AnimateRotation( Rotation + diff );
+                    Rotation = Rotation + diff;
                 }
                 return true;
             };
@@ -201,7 +210,7 @@ namespace CyberCube
 
         public override void Update( GameTime gameTime )
         {
-            base.Update( gameTime );
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             var input = Game.Input;
 
             if ( mNumFootContacts == 1 && !IsJumping
@@ -210,51 +219,47 @@ namespace CyberCube
                 Rotation = -UpDir.Angle;
             }
 
-            if ( !input.HasFocus )
+            if ( Game.GameProperties.AllowManualGravity )
             {
-                if ( input.GetAction( Action.RotateClockwise ) )
+                if ( input.GetAction( Action.RotateClockwise, this ) )
                     UpDir = Direction.FromAngle( -Rotation + (MathHelper.PiOver4 + 0.0001f) );
 
-                if ( input.GetAction( Action.RotateAntiClockwise ) )
+                if ( input.GetAction( Action.RotateAntiClockwise, this ) )
                     UpDir = Direction.FromAngle( -Rotation - (MathHelper.PiOver4 + 0.0001f) );
             }
 
-            float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
-            float xScale = FreeFall ? 10 : 20;
+            float movementScale = FreeFall ? 10 : 20;
 
             Vector2 velocity = Velocity.Rotate( -Rotation );
 
-            if ( !input.HasFocus )
-            {
-                var actionRight = input.GetAction( Action.MoveRight );
-                var actionLeft = input.GetAction( Action.MoveLeft );
+            var actionRight = input.GetAction( Action.MoveRight, this );
+            var actionLeft = input.GetAction( Action.MoveLeft, this );
 
-                if ( !actionRight && !actionLeft )
-                    Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
+            if ( !actionRight && !actionLeft )
+                velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
 
-                velocity.X += actionRight.Value * (xScale + 1) * timeDiff;
-                velocity.X -= actionLeft.Value * (xScale + 1) * timeDiff;
+            velocity.X += actionRight.Value * (movementScale + 1) * seconds;
+            velocity.X -= actionLeft.Value * (movementScale + 1) * seconds;
 
-                if ( input.GetAction( Action.Jump ) )
-                    this.Jump( ref velocity );
+            if ( input.GetAction( Action.Jump, this ) )
+                this.Jump( ref velocity );
 
-                if ( input.GetAction( Action.JumpEnd ) )
-                    this.JumpEnd( ref velocity );
-            }
-            else
-            {
-                Utils.Lerp( ref velocity.X, 0, xScale * timeDiff );
-            }
+            if ( input.GetAction( Action.JumpEnd, this ) )
+                this.JumpEnd( ref velocity );
 
+            velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
             if ( velocity.Y >= 0 && !FreeFall )
                 IsJumping = false;
 
-            velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
-
             Velocity = velocity.Rotate( Rotation );
 
-            SetFacePosition( Body.Position.ToPixels() );
+            // ACTOR UPDATE \\
+            base.Update( gameTime );
+
+
+            mModelRotation.AnimateValue( Rotation );
+            mModelRotation.Update( MathHelper.TwoPi * seconds );
+
 
             Vector3 pos = Normal * Cube.CameraDistance;
             pos += WorldPosition * 2f;
@@ -268,61 +273,36 @@ namespace CyberCube
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
+            mModelRotation.Value = Rotation;
             Cube.Rotate( dir );
         }
 
         public override void Draw( GameTime gameTime )
         {
-            //if ( Cube.Mode == Cube.CubeMode.Play )
-            //{
-			    // Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
-			    Matrix[] transforms = (new Matrix[model3D.Bones.Count]);
-			    model3D.CopyAbsoluteBoneTransformsTo( transforms );
+			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
+			Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
+			model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
-			    // Draw the model. A model can have multiple meshes, so loop.
-			    foreach (ModelMesh mesh in model3D.Meshes)
-			    {
-				    // This is where the mesh orientation is set, as well 
-				    // as our camera and projection.
-				    foreach (BasicEffect effect in mesh.Effects)
-				    {
-					    effect.EnableDefaultLighting();
-					    effect.World = transforms[mesh.ParentBone.Index] *
-						    Matrix.CreateTranslation( WorldPosition.X, WorldPosition.Y, WorldPosition.Z ) *
-						    Matrix.CreateScale( 0.0008f );
+			// Draw the model. A model can have multiple meshes, so loop.
+			foreach ( ModelMesh mesh in model3D.Meshes )
+			{
+				// This is where the mesh orientation is set, as well 
+				// as our camera and projection.
+				foreach ( BasicEffect effect in mesh.Effects )
+				{
+					effect.EnableDefaultLighting();
+					effect.World = transforms[ mesh.ParentBone.Index ]
+                        * Matrix.CreateScale( 0.0006f )
+                        * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
+                        * Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
+                        * Matrix.CreateFromAxisAngle( CubeFace.Normal, -mModelRotation )
+                        * Matrix.CreateTranslation( WorldPosition );
 
-                        Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
-                                   * Matrix.CreateFromAxisAngle( CubeFace.Normal, -Rotation );
-
-                        effect.World *= m;
-
-					    effect.View = Matrix.CreateLookAt( Screen.Camera.Position,
-						    Vector3.Zero, Screen.Camera.UpVector );
-					    effect.Projection = Matrix.CreatePerspectiveFieldOfView(
-						    MathHelper.ToRadians( 45.0f ), aspectRatio,
-						    1.0f, 10000.0f );
-				    }
-				    // Draw the mesh, using the effects set above.
-				    mesh.Draw();
-			    }
-            //}
-
-            // Find screen equivalent of 3D location in world
-            /*Vector3 screenLocation = GraphicsDevice.Viewport.Project(
-                this.WorldPosition,
-                Cube.Effect.Projection,
-                Cube.Effect.View,
-                Cube.Effect.World );
-
-            // Draw our pixel texture there
-            mSpriteBatch.Begin();
-            mSpriteBatch.Draw( pixel,
-                               new Vector2(
-                                   screenLocation.X - 1,
-                                   screenLocation.Y - 1 ),
-                               FreeFall ? Color.Black : Color.White );
-
-            mSpriteBatch.End();*/
+                    Screen.Camera.Apply( effect );
+				}
+				// Draw the mesh, using the effects set above.
+				mesh.Draw();
+			}
         }
 
     }

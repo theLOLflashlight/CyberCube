@@ -2,6 +2,7 @@
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
 using System.Linq;
@@ -42,7 +43,7 @@ namespace CyberCube.Physics
         private Fixture mPlatform;
         private Fixture mExclusionRec;
 
-        public const float SENSOR_RANGE = 100f;
+        public const float SENSOR_RANGE = 20f;
         public const float EDGE_THICKNESS = 10f;
 
         private int mExclusionCount = 0;
@@ -132,6 +133,8 @@ namespace CyberCube.Physics
             Initialize();
         }
 
+        private Texture2D mShadowTexture;
+
         private void Initialize()
         {
             mExclusionRec.OnCollision = ( a, b, c ) => {
@@ -147,6 +150,9 @@ namespace CyberCube.Physics
                 mPlatform.RestoreCollisionWith( b );
                 --mExclusionCount;
             };
+
+            mShadowTexture = new Texture2D( GraphicsDevice, 1, 1 );
+            mShadowTexture.SetData( new Color[] { new Color( 0, 0, 0, 64 ) } );
         }
 
         protected override void PostClone()
@@ -162,15 +168,16 @@ namespace CyberCube.Physics
         {
             mSpriteBatch.Begin( /*SpriteSortMode.Deferred, BlendState.NonPremultiplied*/ );
 
-            Color shadowColor = /*mExclusionCount > 0
-                                ? new Color( 255, 255, 255, 64 )
-                                : */new Color( 0, 0, 0, 64 );
+            //if ( mExclusionCount > 0 )
+            //    mShadowTexture.SetData( new Color[] { new Color( 255, 255, 255, 64 ) } );
+            //else
+            //    mShadowTexture.SetData( new Color[] { new Color( 0, 0, 0, 64 ) } );
 
             Line2 line = mLine.Rotate( Body.Rotation );
             line += Body.Position.ToPixels();
 
-            mSpriteBatch.DrawLine( line, Texture, shadowColor, 30 );
-            mSpriteBatch.DrawLine( line, Texture, shadowColor, 20 );
+            mSpriteBatch.DrawLine( line, mShadowTexture, Color.White, 30 );
+            mSpriteBatch.DrawLine( line, mShadowTexture, Color.White, 20 );
             mSpriteBatch.DrawLine( line, Texture, BodyType == BodyType.Static ? Color.Black : Color.White, 10 );
 
             mSpriteBatch.End();

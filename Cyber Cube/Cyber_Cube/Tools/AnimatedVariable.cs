@@ -40,6 +40,11 @@ namespace CyberCube.Tools
             ValueChanged?.Invoke( this, value );
         }
 
+        public static implicit operator T( AnimatedVariable<T, Delta> animVar )
+        {
+            return animVar.Value;
+        }
+
         public T Value
         {
             get {
