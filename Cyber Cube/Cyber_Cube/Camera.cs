@@ -17,10 +17,10 @@ namespace CyberCube
         private AnimatedVariable<float, float> mNearPlaneDist;
         private AnimatedVariable<float, float> mFarPlaneDist;
 
-        private float mFovSpeed = 1;
-        private float mAspectRatioSpeed = 1;
-        private float mNearPlaneDistSpeed = 1;
-        private float mFarPlaneDistSpeed = 1;
+        public float FovSpeed { get; set; } = 1;
+        public float AspectRatioSpeed { get; set; } = 1;
+        public float NearPlaneDistSpeed { get; set; } = 1;
+        public float FarPlaneDistSpeed { get; set; } = 1;
 
 
         private Matrix mViewMatrix = default( Matrix );
@@ -29,20 +29,9 @@ namespace CyberCube
         private AnimatedVariable<Vector3, float> mTarget;
         private AnimatedVariable<Vector3, float> mUpVector;
 
-        private float mPositionSpeed = 1;
-        private float mTargetSpeed = 1;
-        private float mUpVectorSpeed = 1;
-
-
-        /*private Matrix mWorldMatrix = default( Matrix );
-
-        private AnimatedVariable<Vector3, float> mScale;
-        private AnimatedVariable<Vector3, float> mRotation;
-        private AnimatedVariable<Vector3, float> mTranslation;
-
-        private float mScaleSpeed = 1;
-        private float mRotationSpeed = 1;
-        private float mTranslationSpeed = 1;*/
+        public float PositionSpeed { get; set; } = 1;
+        public float TargetSpeed { get; set; } = 1;
+        public float UpVectorSpeed { get; set; } = 1;
 
 
         public Camera( CubeGame game )
@@ -74,16 +63,20 @@ namespace CyberCube
             mTarget.ValueChanged += OnViewValueChanged;
             mUpVector.ValueChanged += OnViewValueChanged;
             #endregion
+        }
 
-            #region Init World
-            /*mScale = new AnimatedVariable<Vector3, float>( Vector3.One, Utils.Lerp );
-            mRotation = new AnimatedVariable<Vector3, float>( Vector3.Zero, Utils.Lerp );
-            mTranslation = new AnimatedVariable<Vector3, float>( Vector3.Zero, Utils.Lerp );
+        public override void Update( GameTime gameTime )
+        {
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            mScale.ValueChanged += OnWorldValueChanged;
-            mRotation.ValueChanged += OnWorldValueChanged;
-            mTranslation.ValueChanged += OnWorldValueChanged;*/
-            #endregion
+            mFov.Update( FovSpeed * seconds );
+            mAspectRatio.Update( AspectRatioSpeed * seconds );
+            mNearPlaneDist.Update( NearPlaneDistSpeed * seconds );
+            mFarPlaneDist.Update( FarPlaneDistSpeed * seconds );
+
+            mPosition.Update( PositionSpeed * seconds );
+            mTarget.Update( TargetSpeed * seconds );
+            mUpVector.Update( UpVectorSpeed * seconds );
         }
 
         public void Apply( Effect effect )
@@ -123,21 +116,6 @@ namespace CyberCube
             }
         }
 
-        /*public Matrix World
-        {
-            get {
-                if ( IsWorldAnimating || mWorldMatrix == default( Matrix ) )
-                {
-                    Matrix S = Matrix.CreateScale( Scale );
-                    Matrix R = Matrix.CreateFromYawPitchRoll( Rotation.Y, Rotation.X, Rotation.Z );
-                    Matrix T = Matrix.CreateTranslation( Position );
-                    mWorldMatrix = S * R * T;
-                }
-
-                return mWorldMatrix;
-            }
-        }*/
-
         private void OnProjectionValueChanged( AnimatedVariable<float, float> sender, float value )
         {
             if ( !sender.IsAnimating )
@@ -149,13 +127,6 @@ namespace CyberCube
             if ( !sender.IsAnimating )
                 mViewMatrix = default( Matrix );
         }
-
-        /*private void OnWorldValueChanged( AnimatedVariable<Vector3, float> sender, Vector3 value )
-        {
-            if ( !sender.IsAnimating )
-                mWorldMatrix = default( Matrix );
-        }*/
-
 
         #region Projection Params
         public float Fov
@@ -231,122 +202,57 @@ namespace CyberCube
         }
         #endregion
 
-        #region World Params
-        /*public Vector3 Scale
-        {
-            get {
-                return mScale.Value;
-            }
-            set {
-                mScale.Value = value;
-            }
-        }
-
-        public Vector3 Rotation
-        {
-            get {
-                return mRotation.Value;
-            }
-            set {
-                mRotation.Value = value;
-            }
-        }
-
-        public Vector3 Translation
-        {
-            get {
-                return mTranslation.Value;
-            }
-            set {
-                mTranslation.Value = value;
-            }
-        }*/
-        #endregion
-
-
-        public override void Update( GameTime gameTime )
-        {
-            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
-
-            mFov.Update( mFovSpeed * seconds );
-            mAspectRatio.Update( mAspectRatioSpeed * seconds );
-            mNearPlaneDist.Update( mNearPlaneDistSpeed * seconds );
-            mFarPlaneDist.Update( mFarPlaneDistSpeed * seconds );
-
-            mPosition.Update( mPositionSpeed * seconds );
-            mTarget.Update( mTargetSpeed * seconds );
-            mUpVector.Update( mUpVectorSpeed * seconds );
-
-            //mScale.Update( mScaleSpeed * seconds );
-            //mRotation.Update( mRotationSpeed * seconds );
-            //mTranslation.Update( mTranslationSpeed * seconds );
-        }
-
-
         #region Animate Projection
-        public void AnimateFov( float fov, float speed )
+        public void AnimateFov( float fov, float? speed = null )
         {
-            mFovSpeed = speed;
+            if ( speed != null )
+                FovSpeed = speed.Value;
             mFov.AnimateValue( fov );
         }
 
-        public void AnimateAspectRatio( float aspectRatio, float speed )
+        public void AnimateAspectRatio( float aspectRatio, float? speed = null )
         {
-            mAspectRatioSpeed = speed;
+            if ( speed != null )
+                AspectRatioSpeed = speed.Value;
             mAspectRatio.AnimateValue( aspectRatio );
         }
 
-        public void AnimateNearPlaneDist( float nearPlaneDist, float speed )
+        public void AnimateNearPlaneDist( float nearPlaneDist, float? speed = null )
         {
-            mNearPlaneDistSpeed = speed;
+            if ( speed != null )
+                NearPlaneDistSpeed = speed.Value;
             mNearPlaneDist.AnimateValue( nearPlaneDist );
         }
 
-        public void AnimateFarPlaneDist( float farPlaneDist, float speed )
+        public void AnimateFarPlaneDist( float farPlaneDist, float? speed = null )
         {
-            mFarPlaneDistSpeed = speed;
+            if ( speed != null )
+                FarPlaneDistSpeed = speed.Value;
             mFarPlaneDist.AnimateValue( farPlaneDist );
         }
         #endregion
 
         #region Animate View
-        public void AnimatePosition( Vector3 position, float speed )
+        public void AnimatePosition( Vector3 position, float? speed = null )
         {
-            mPositionSpeed = speed;
+            if ( speed != null )
+                PositionSpeed = speed.Value;
             mPosition.AnimateValue( position );
         }
 
-        public void AnimateTarget( Vector3 target, float speed )
+        public void AnimateTarget( Vector3 target, float? speed = null )
         {
-            mTargetSpeed = speed;
+            if ( speed != null )
+                TargetSpeed = speed.Value;
             mTarget.AnimateValue( target );
         }
 
-        public void AnimateUpVector( Vector3 upVector, float speed )
+        public void AnimateUpVector( Vector3 upVector, float? speed = null )
         {
-            mUpVectorSpeed = speed;
+            if ( speed != null )
+                UpVectorSpeed = speed.Value;
             mUpVector.AnimateValue( upVector );
         }
-        #endregion
-
-        #region Animate World
-        /*public void AnimateScale( Vector3 scale, float speed )
-        {
-            mScaleSpeed = speed;
-            mScale.AnimateValue( scale );
-        }
-
-        public void AnimateRotation( Vector3 rotation, float speed )
-        {
-            mRotationSpeed = speed;
-            mRotation.AnimateValue( rotation );
-        }
-
-        public void AnimateTranslation( Vector3 translation, float speed )
-        {
-            mTranslationSpeed = speed;
-            mTranslation.AnimateValue( translation );
-        }*/
         #endregion
 
         #region Skip Animation
@@ -354,7 +260,6 @@ namespace CyberCube
         {
             SkipProjectionAnimation();
             SkipViewAnimation();
-            //SkipWorldAnimation();
         }
 
         public void SkipProjectionAnimation()
@@ -371,21 +276,14 @@ namespace CyberCube
             mTarget.SkipAnimation();
             mUpVector.SkipAnimation();
         }
-
-        /*public void SkipWorldAnimation()
-        {
-            mScale.SkipAnimation();
-            mRotation.SkipAnimation();
-            mTranslation.SkipAnimation();
-        }*/
         #endregion
 
         #region Is Animating
-        public bool IsAnimating()
+        public bool IsAnimating
         {
-            return IsProjectionAnimating
-                   || IsViewAnimating;
-                   //|| IsWorldAnimating;
+            get {
+                return IsProjectionAnimating || IsViewAnimating;
+            }
         }
 
         public bool IsProjectionAnimating
@@ -406,15 +304,6 @@ namespace CyberCube
                        || mUpVector.IsAnimating;
             }
         }
-
-        /*public bool IsWorldAnimating
-        {
-            get {
-                return mScale.IsAnimating
-                       || mRotation.IsAnimating
-                       || mTranslation.IsAnimating;
-            }
-        }*/
         #endregion
     }
 }

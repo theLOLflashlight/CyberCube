@@ -262,7 +262,7 @@ namespace CyberCube
 
             Screen.Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
             Screen.Camera.Target = WorldPosition;
-            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ), 1 );
+            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ) );
         }
 
         protected override void ApplyRotation( CompassDirection dir )

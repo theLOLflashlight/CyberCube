@@ -34,6 +34,18 @@ namespace CyberCube.Screens
         {
         }
 
+        public virtual void Resume( GameTime gameTime )
+        {
+        }
+
+        public virtual void Pause( GameTime gameTime )
+        {
+        }
+
+        public virtual void Destroy( GameTime gameTime )
+        {
+        }
+
         /// <summary>
         /// Pops the screen from its screen manager, returning to the previous screen.
         /// </summary>

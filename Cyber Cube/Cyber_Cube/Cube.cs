@@ -96,7 +96,7 @@ namespace CyberCube
 
             //ConnectFaces();
 
-            CameraDistance = 4;
+            CameraDistance = 4f;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
         }
@@ -169,9 +169,6 @@ namespace CyberCube
             Effect.DirectionalLight0.DiffuseColor = Vector3.One;
             Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
             Effect.LightingEnabled = true;
-
-            //Effect.Projection = Matrix.CreatePerspectiveFieldOfView( MathHelper.Pi / 4.0f,
-            //    (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, NEAR_PLANE, FAR_PLANE );
 
             Screen.Camera.Fov = MathHelper.Pi / 4.0f;
             Screen.Camera.AspectRatio = (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height;
