@@ -43,7 +43,7 @@ namespace CyberCube.Levels
             UpDir = player.UpDir;
 
             Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+            Screen.Camera.AnimateUpVector( ComputeUpVector() );
             //Screen.Camera.SkipAnimation();
         }
 

@@ -16,6 +16,8 @@ namespace CyberCube.Screens
         /// </summary>
         private Stack< GameScreen > mScreens;
 
+        private List< GameScreen > mPendingScreens;
+
         /// <summary>
         /// Gets the screen that is currently being updated/drawn.
         /// </summary>
@@ -44,48 +46,62 @@ namespace CyberCube.Screens
             : base( game )
         {
             mScreens = new Stack< GameScreen >();
-        }
-
-        public override void Initialize()
-        {
-            base.Initialize();
-
-            foreach ( GameScreen screen in mScreens )
-                screen.Initialize();
+            mPendingScreens = new List< GameScreen >();
         }
 
         /// <summary>
-        /// Adds a screen to the top of the screen manager and initializes it.
+        /// Adds a screen to the top of the screen manager on the next call to update.
         /// </summary>
         /// <param name="screen">Screen to add.</param>
         public void PushScreen( GameScreen screen )
         {
+            if ( screen == null )
+                throw new ArgumentNullException( nameof( screen ) );
+
+            mPendingScreens.Add( screen );
+        }
+
+        private void PushScreen( GameScreen screen, GameTime gameTime )
+        {
+            TopScreen?.Pause( gameTime );
+
             if ( Game.Initialized )
                 screen.Initialize();
+
             screen.ScreenManager = this;
             mScreens.Push( screen );
+
+            screen.Resume( gameTime );
         }
 
         /// <summary>
-        /// Removes and returns the top screen in the screen manager.
+        /// Removes one screen from the top of the screen manager on the next update.
+        /// This is effect is cumulative.
         /// </summary>
-        public GameScreen PopScreen()
+        public void PopScreen()
         {
-            GameScreen screen = mScreens.Pop();
-            screen.ScreenManager = null;
-            return screen;
+            mPendingScreens.Add( null );
+        }
+
+        private void PopScreen( GameTime gameTime )
+        {
+            TopScreen.Destroy( gameTime );
+            mScreens.Pop().ScreenManager = null;
+
+            TopScreen?.Resume( gameTime );
         }
 
         /// <summary>
-        /// Removes and returns a number of screens from the top of the screen manager. Screens 
-        /// are returned in the order they are removed.
+        /// Removes a number of screens from the top of the screen manager on the next update.
         /// </summary>
         /// <param name="n">Number of screens to remove.</param>
-        /// <returns></returns>
-        public IEnumerable< GameScreen > PopScreens( int n )
+        public void PopScreens( int n )
         {
-            for ( int i = 0; i < n; ++i )
-                yield return PopScreen();
+            if ( n < 1 )
+                throw new ArgumentOutOfRangeException( nameof( n ), "Value must be greater than 0." );
+
+            while ( n-- > 0 )
+                PopScreen();
         }
 
         /// <summary>
@@ -103,6 +119,16 @@ namespace CyberCube.Screens
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
+
+            foreach ( GameScreen screen in mPendingScreens )
+            {
+                if ( screen == null )
+                    PopScreen( gameTime );
+                else
+                    PushScreen( screen, gameTime );
+            }
+
+            mPendingScreens.Clear();
 
             TopScreen?.Update( gameTime );
         }

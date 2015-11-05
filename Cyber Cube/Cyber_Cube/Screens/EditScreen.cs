@@ -216,6 +216,13 @@ namespace CyberCube.Screens
             ScreenManager.PushScreen( playScreen );
         }
 
+        public override void Resume( GameTime gameTime )
+        {
+            base.Resume( gameTime );
+
+            Camera.PositionSpeed = MathHelper.Pi * (float) Math.Sqrt( Cube.CameraDistance );
+        }
+
         public override void Update( GameTime gameTime )
         {
             var input = Game.Input;
@@ -225,8 +232,8 @@ namespace CyberCube.Screens
 
             base.Update( gameTime );
 
-            Camera.AnimatePosition( Cube.CurrentFace.Normal * Cube.CameraDistance, Cube.CameraDistance );
-            Camera.AnimateUpVector( Cube.ComputeUpVector(), 1 );
+            Camera.AnimatePosition( Cube.CurrentFace.Normal * Cube.CameraDistance );
+            Camera.AnimateUpVector( Cube.ComputeUpVector() );
         }
 
         public override void Draw( GameTime gameTime )
