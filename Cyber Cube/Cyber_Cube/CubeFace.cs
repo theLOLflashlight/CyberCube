@@ -88,10 +88,6 @@ namespace CyberCube
                 SetUpVertices();
                 SetUpWorld();
                 this.Visible = false;
-
-#if WINDOWS
-                mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
-#endif
             }
 
             private void SetUpVertices()
@@ -143,8 +139,6 @@ namespace CyberCube
                     Normal, textureTopRight );
             }
 
-            protected bool mIsInitialized;
-
             public override void Initialize()
             {
                 base.Initialize();
@@ -153,14 +147,12 @@ namespace CyberCube
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
 
-                foreach ( Solid solid in mSolids )
-                    solid.Initialize();
-
 #if WINDOWS
+                mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
                 mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
+
                 World.Step( 0 );
-                mIsInitialized = true;
             }
 
             public override void Update( GameTime gameTime )

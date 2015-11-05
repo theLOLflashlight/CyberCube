@@ -15,6 +15,7 @@ using CyberCube.Graphics;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using CyberCube.Physics;
+using FarseerPhysics.Common;
 
 namespace CyberCube
 {
@@ -58,13 +59,22 @@ namespace CyberCube
         {
             Body body = base.CreateBody( world );
 
-            mTorso = FixtureFactory.AttachRectangle(
+            Vertices verts = PolygonTools.CreateRoundedRectangle(
                 25.ToUnits(),
                 50.ToUnits(),
-                1,
-                Vector2.Zero,
-                body,
-                "torso" );
+                5.ToUnits(),
+                5.ToUnits(),
+                0 );
+
+            FixtureFactory.AttachPolygon( verts, 1, body, "torso" );
+
+            //mTorso = FixtureFactory.AttachRectangle(
+            //    25.ToUnits(),
+            //    50.ToUnits(),
+            //    1,
+            //    Vector2.Zero,
+            //    body,
+            //    "torso" );
 
             mFeet = FixtureFactory.AttachRectangle(
                 20.ToUnits(),
@@ -246,6 +256,11 @@ namespace CyberCube
 
             SetFacePosition( Body.Position.ToPixels() );
 
+            Vector3 pos = Normal * Cube.CameraDistance;
+            pos += WorldPosition * 2f;
+            pos.Normalize();
+
+            Screen.Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
             Screen.Camera.Target = WorldPosition;
             Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ), 1 );
         }

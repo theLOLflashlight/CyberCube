@@ -33,6 +33,8 @@ namespace CyberCube.Physics
 
             mPlatform = Body.FindFixture( new SolidDescriptor( "platform" ) );
             mExclusionRec = Body.FindFixture( new SolidDescriptor( "exclusion" ) );
+
+            Initialize();
         }
 
         private Line2 mLine;
@@ -41,7 +43,7 @@ namespace CyberCube.Physics
         private Fixture mExclusionRec;
 
         public const float SENSOR_RANGE = 100f;
-        public const float EDGE_THICKNESS = 1f;
+        public const float EDGE_THICKNESS = 10f;
 
         private int mExclusionCount = 0;
 
@@ -57,12 +59,12 @@ namespace CyberCube.Physics
             if ( !line.IsHorizontal && !line.IsVertical )
                 throw new ArgumentException( "Only vertical and horizontal platforms are supported." );
 
-            Vector2 offset;
+            Vector2 offset, offset2;
             float edgeWidth, edgeHeight, sensorWidth, sensorHeight;
 
             #region Variable setup
             {
-                bool horizontal = line.Y0 == line.Y1;
+                bool horizontal = line.IsHorizontal;
                 bool inverted = line.X1 < line.X0 || line.Y1 > line.Y0;
 
                 edgeWidth    = horizontal
@@ -81,8 +83,15 @@ namespace CyberCube.Physics
                 offset = horizontal
                          ? Vector2.UnitY * ((sensorHeight / 2) + edgeHeight)
                          : Vector2.UnitX * ((sensorWidth / 2) + edgeWidth);
+                offset2 = horizontal
+                         ? Vector2.UnitY * (edgeHeight / 2)
+                         : Vector2.UnitX * (edgeWidth / 2);
+
                 if ( inverted )
+                {
                     offset = -offset;
+                    offset2 = -offset2;
+                }
             }
 #endregion
 
@@ -94,7 +103,7 @@ namespace CyberCube.Physics
                 edgeWidth.ToUnits(),
                 edgeHeight.ToUnits(),
                 density,
-                Vector2.Zero,
+                offset2.ToUnits(),
                 Body,
                 new Flat( "platform" ) );
 
@@ -119,12 +128,12 @@ namespace CyberCube.Physics
 
             mPlatform.CollidesWith = oneWayCategories;
             edge.CollidesWith &= ~oneWayCategories;
+
+            Initialize();
         }
 
-        public override void Initialize()
+        private void Initialize()
         {
-            base.Initialize();
-
             mExclusionRec.OnCollision = ( a, b, c ) => {
                 if ( !b.IsSensor )
                 {
@@ -146,6 +155,7 @@ namespace CyberCube.Physics
 
             mPlatform = Body.FindFixture( new SolidDescriptor( "platform" ) );
             mExclusionRec = Body.FindFixture( new SolidDescriptor( "exclusion" ) );
+            Initialize();
         }
 
         public override void Draw( GameTime gameTime )

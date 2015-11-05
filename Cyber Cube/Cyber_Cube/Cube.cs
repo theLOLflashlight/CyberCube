@@ -96,7 +96,7 @@ namespace CyberCube
 
             //ConnectFaces();
 
-            CameraDistance = 6;
+            CameraDistance = 4;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
         }
@@ -170,9 +170,13 @@ namespace CyberCube
             Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
             Effect.LightingEnabled = true;
 
-            //COMP7051
-            Effect.Projection = Matrix.CreatePerspectiveFieldOfView( MathHelper.Pi / 4.0f,
-                (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, NEAR_PLANE, FAR_PLANE );
+            //Effect.Projection = Matrix.CreatePerspectiveFieldOfView( MathHelper.Pi / 4.0f,
+            //    (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height, NEAR_PLANE, FAR_PLANE );
+
+            Screen.Camera.Fov = MathHelper.Pi / 4.0f;
+            Screen.Camera.AspectRatio = (float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height;
+            Screen.Camera.NearPlaneDistance = NEAR_PLANE;
+            Screen.Camera.FarPlaneDistance = FAR_PLANE;
 
             Screen.Camera.Position = CameraDistance * CurrentFace.Normal;
             Screen.Camera.Target = mPosition;
@@ -191,7 +195,7 @@ namespace CyberCube
             Matrix S = Matrix.CreateScale( mScale );
             Effect.World = S * R * T;
 
-            Effect.View = Screen.Camera.View;
+            Screen.Camera.Apply( Effect );
 
             base.Update( gameTime );
 

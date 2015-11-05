@@ -224,6 +224,9 @@ namespace CyberCube.Screens
                 TestLevel();
 
             base.Update( gameTime );
+
+            Camera.AnimatePosition( Cube.CurrentFace.Normal * Cube.CameraDistance, Cube.CameraDistance );
+            Camera.AnimateUpVector( Cube.ComputeUpVector(), 1 );
         }
 
         public override void Draw( GameTime gameTime )

@@ -82,6 +82,7 @@ namespace CyberCube.Physics
                 new Concave() );
 
             curve.CollisionCategories = tmpCat;
+            Initialize();
         }
 
         private float     mRadius;
@@ -116,6 +117,14 @@ namespace CyberCube.Physics
 
             Body.BodyType = bodyType;
             Body.CollisionCategories = categories;
+
+            Initialize();
+        }
+
+        protected override void PostClone()
+        {
+            base.PostClone();
+            Initialize();
         }
 
         private Texture2D CreateCircleTexture( float radius )
@@ -149,10 +158,8 @@ namespace CyberCube.Physics
             return texture;
         }
 
-        public override void Initialize()
+        private void Initialize()
         {
-            base.Initialize();
-
             mQuarterpipeTex = CreateCircleTexture( (int) mRadius );
         }
 

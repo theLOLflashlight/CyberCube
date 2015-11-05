@@ -17,7 +17,7 @@ namespace CyberCube.Physics
         Solid MakeSolid( CubeGame game, World world, Body body );
     }
 
-    public abstract class Solid : DrawableCubeGameComponent
+    public abstract class Solid : DrawableCubeGameObject
     {
         public abstract override void Draw( GameTime gameTime );
 
@@ -34,8 +34,7 @@ namespace CyberCube.Physics
         {
             mWorld = world;
             Body = BodyFactory.CreateBody( World, position, rotation, solidMaker );
-
-            this.Visible = false;
+            Initialize();
         }
 
         public Solid( CubeGame game, World world, Body body )
@@ -43,8 +42,11 @@ namespace CyberCube.Physics
         {
             mWorld = world;
             Body = body;
+            Initialize();
+        }
 
-            this.Visible = false;
+        public sealed override void Update( GameTime gameTime )
+        {
         }
 
         public Body Body
@@ -82,10 +84,8 @@ namespace CyberCube.Physics
             }
         }
 
-        public override void Initialize()
+        private void Initialize()
         {
-            base.Initialize();
-
             Texture = new Texture2D( GraphicsDevice, 1, 1 );
             Texture.SetData( new[] { Color.White } );
         }
@@ -103,6 +103,7 @@ namespace CyberCube.Physics
 
         protected virtual void PostClone()
         {
+            Initialize();
         }
 
         public World World

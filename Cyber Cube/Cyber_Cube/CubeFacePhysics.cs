@@ -28,8 +28,7 @@ namespace CyberCube
 
 #if WINDOWS
                     mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( value );
-                    if ( mIsInitialized )
-                        mDebugView.LoadContent( GraphicsDevice, Game.Content );
+                    mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
                     mWorld = value;
                 }
@@ -115,8 +114,6 @@ namespace CyberCube
                     return;
 
                 mSolids.Add( solid );
-                if ( Game.Initialized )
-                    solid.Initialize();
             }
 
             public void RemoveSolid( Solid solid )
