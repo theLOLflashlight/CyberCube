@@ -145,13 +145,13 @@ namespace CyberCube
         internal void Save( string name )
         {
             foreach ( Face face in Faces )
-                WorldSerializer.Serialize( face.World, $"{name}_{face.Name}" );
+                WorldSerializer.Serialize( face.World, $"{name}_{face.Name.ToLower()}.ccf" );
         }
 
         internal void Load( string name )
         {
             foreach ( Face face in Faces )
-                face.World = WorldSerializer.Deserialize( $"{name}_{face.Name}" );
+                face.World = WorldSerializer.Deserialize( $"{name}_{face.Name.ToLower()}.ccf" );
         }
 
         public const float NEAR_PLANE = 1f;
@@ -182,12 +182,6 @@ namespace CyberCube
 
             foreach ( Face face in Faces )
                 face.Initialize();
-        }
-
-        public void Reset()
-        {
-            foreach ( var face in Faces )
-                face.ResetWorld();
         }
 
         public override void Update( GameTime gameTime )

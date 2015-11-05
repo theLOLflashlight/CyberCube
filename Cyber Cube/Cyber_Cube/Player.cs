@@ -91,7 +91,8 @@ namespace CyberCube
             mFeet.OnCollision += ( a, b, c ) => {
                 if ( !b.IsSensor && b.UserData is Flat )
                 {
-                    AnimateRotation( -UpDir.Angle );
+                    var diff = MathHelper.WrapAngle( -UpDir.Angle - Rotation );
+                    AnimateRotation( Rotation + diff );
                 }
                 return true;
             };
@@ -175,8 +176,11 @@ namespace CyberCube
 
         public void Jump( ref Vector2 velocity )
         {
+            if ( FreeFall && !Game.GameProperties.AllowMultipleJumping )
+                return;
+
             IsJumping = true;
-            velocity.Y = !FreeFall ? -10f : -8f;
+            velocity.Y = -10f;
         }
 
         public void JumpEnd( ref Vector2 velocity )
@@ -207,7 +211,7 @@ namespace CyberCube
 
             float timeDiff = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            var xScale = (FreeFall ? 20 : 100);
+            float xScale = FreeFall ? 10 : 20;
 
             Vector2 velocity = Velocity.Rotate( -Rotation );
 
@@ -249,8 +253,6 @@ namespace CyberCube
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
-            //Body.OnCollision += Body_OnCollision;
-            //Body.OnSeparation += Body_OnSeparation;
             Cube.Rotate( dir );
         }
 

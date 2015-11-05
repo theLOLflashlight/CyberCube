@@ -88,6 +88,18 @@ namespace CyberCube.Screens
                 yield return PopScreen();
         }
 
+        /// <summary>
+        ///  Temporary fix for removing screens for the screenmanager
+        /// </summary>
+        /// <param name="n"></param>
+        public void PauseMenuToMainMenu(int n)
+        {
+            for (int i = 0; i < n; ++i)
+            {
+                mScreens.Pop();
+            }
+        }
+
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );

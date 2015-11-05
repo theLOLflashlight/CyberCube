@@ -102,13 +102,6 @@ namespace CyberCube.Levels
                     return mDebugView;
                 }
             }
-
-            public Matrix DebugProjection
-            {
-                get {
-                    return mDebugProjection;
-                }
-            }
 #endif
 
             private IEditBrush LeftBrush

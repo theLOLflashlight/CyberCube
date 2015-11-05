@@ -22,12 +22,16 @@ namespace CyberCube
                     return mWorld;
                 }
                 internal set {
-                    mWorld = value;
+                    mSolids.Clear();
+                    foreach ( Body body in value.BodyList )
+                        AddSolid( (body.UserData as ISolidMaker)?.MakeSolid( Game, value, body ) );
+
 #if WINDOWS
-                    mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( mWorld );
+                    mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( value );
                     if ( mIsInitialized )
                         mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
+                    mWorld = value;
                 }
             }
 
@@ -38,16 +42,7 @@ namespace CyberCube
                 mSolids.Clear();
                 World.Clear();
                 foreach ( Solid solid in from.mSolids )
-                {
-                    mSolids.Add( solid.Clone( World ) );
-                }
-            }
-
-            public void ResetWorld()
-            {
-                mSolids.Clear();
-                World.Clear();
-                SetUpWorld();
+                    AddSolid( solid.Clone( World ) );
             }
 
             private void SetUpWorld()
@@ -116,6 +111,9 @@ namespace CyberCube
 
             public void AddSolid( Solid solid )
             {
+                if ( solid == null )
+                    return;
+
                 mSolids.Add( solid );
                 if ( Game.Initialized )
                     solid.Initialize();

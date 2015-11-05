@@ -11,14 +11,37 @@ namespace CyberCube.Physics
 {
     public class OneWayPlatform : Solid
     {
-        protected Line2 mLine;
+        public struct OneWayPlatformMaker : ISolidMaker
+        {
+            public Line2 Line;
 
-        protected Fixture mEdge;
-        protected Fixture mPlatform;
-        protected Fixture mExclusionRec;
+            public OneWayPlatformMaker( Line2 line )
+            {
+                Line = line;
+            }
 
-        const float SENSOR_RANGE = 100f;
-        const float EDGE_THICKNESS = 1f;
+            public Solid MakeSolid( CubeGame game, World world, Body body )
+            {
+                return new OneWayPlatform( game, world, body, Line );
+            }
+        }
+
+        public OneWayPlatform( CubeGame game, World world, Body body, Line2 line )
+            : base( game, world, body )
+        {
+            mLine = line - line.Center;
+
+            mPlatform = Body.FindFixture( new SolidDescriptor( "platform" ) );
+            mExclusionRec = Body.FindFixture( new SolidDescriptor( "exclusion" ) );
+        }
+
+        private Line2 mLine;
+
+        private Fixture mPlatform;
+        private Fixture mExclusionRec;
+
+        public const float SENSOR_RANGE = 100f;
+        public const float EDGE_THICKNESS = 1f;
 
         private int mExclusionCount = 0;
 
@@ -26,24 +49,21 @@ namespace CyberCube.Physics
                                World world,
                                Line2 line,
                                BodyType bodyType = BodyType.Static,
-                               float mass = 1 )
-            : base( game, world )
+                               float density = 1,
+                               Category categories = Category.Cat1,
+                               Category oneWayCategories = Category.Cat2 )
+            : base( game, world, line.Center.ToUnits(), 0, new OneWayPlatformMaker( line ) )
         {
             if ( line.X0 != line.X1 && line.Y0 != line.Y1 )
                 throw new ArgumentException( "Only vertical and horizontal edges are supported." );
 
-            Vector2 center, offset;
+            Vector2 offset;
             float edgeWidth, edgeHeight, sensorWidth, sensorHeight;
 
             #region Variable setup
             {
                 bool horizontal = line.Y0 == line.Y1;
                 bool inverted = line.X1 < line.X0 || line.Y1 > line.Y0;
-#if XBOX
-                center = Vector2.Zero;
-#endif
-                center.X = (line.X0 + line.X1) / 2;
-                center.Y = (line.Y0 + line.Y1) / 2;
 
                 edgeWidth    = horizontal
                                ? line.Length
@@ -66,43 +86,45 @@ namespace CyberCube.Physics
             }
 #endregion
 
-            mLine = line - center;
-
-            Body = BodyFactory.CreateBody( world, center.ToUnits() );
-            Body.BodyType = bodyType;
-            Body.Mass = mass;
-
-            mEdge = FixtureFactory.AttachEdge(
-                mLine.P0.ToUnits(),
-                mLine.P1.ToUnits(),
-                Body );
-            mEdge.CollidesWith = Category.All ^ Category.Cat2;
+            mLine = line - line.Center;
 
             // Not really an Edge, just a thin rectangle. This is necessary for accurate 
             // collision and exclusion detection.
             mPlatform = FixtureFactory.AttachRectangle(
                 edgeWidth.ToUnits(),
                 edgeHeight.ToUnits(),
-                1,
-                Vector2.Zero.ToUnits(),
+                density,
+                Vector2.Zero,
                 Body,
                 new Flat( "platform" ) );
-            mPlatform.CollidesWith = Category.Cat2;
 
             mExclusionRec = FixtureFactory.AttachRectangle(
                 sensorWidth.ToUnits(),
                 sensorHeight.ToUnits(),
-                1,
+                0,
                 offset.ToUnits(),
                 Body,
                 new SolidDescriptor( "exclusion" ) );
-
             mExclusionRec.IsSensor = true;
+
+            // This edge allows the solid to collide with all bodies which can't pass through it.
+            Fixture edge = FixtureFactory.AttachEdge(
+                mLine.P0.ToUnits(),
+                mLine.P1.ToUnits(),
+                Body,
+                new Flat() );
+
+            Body.BodyType = bodyType;
+            Body.CollisionCategories = categories;
+
+            mPlatform.CollidesWith = oneWayCategories;
+            edge.CollidesWith &= ~oneWayCategories;
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
             mExclusionRec.OnCollision = ( a, b, c ) => {
                 if ( !b.IsSensor )
                 {

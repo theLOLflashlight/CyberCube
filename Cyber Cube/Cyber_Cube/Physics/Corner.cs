@@ -41,12 +41,36 @@ namespace CyberCube.Physics
         {
             Vertices arc = PolygonTools.CreateArc( MathHelper.PiOver2, sides, radius );
             arc.Add( new Vector2( arc.First().X, arc.Last().Y ) );
-            arc.Add( new Vector2( arc.First().X + 0.0001f, arc.First().Y ) );
-            //arc.Add( arc.First() );
+#if DEBUG
+            arc.Add( new Vector2( arc.First().X, arc.First().Y - 0.0001f ) );
+#else
+            arc.Add( arc.First() );
+#endif
             arc.Rotate( angle );
             arc.Translate( new Vector2( -radius / 2 ) );
 
             return arc;
+        }
+
+        public struct CornerMaker : ISolidMaker
+        {
+            public float Radius;
+
+            public CornerMaker( float radius )
+            {
+                Radius = radius;
+            }
+
+            public Solid MakeSolid( CubeGame game, World world, Body body )
+            {
+                return new Corner( game, world, body, Radius );
+            }
+        }
+
+        public Corner( CubeGame game, World world, Body body, float radius )
+            : base( game, world, body )
+        {
+            mRadius = radius;
         }
 
         private float     mRadius;
@@ -58,28 +82,25 @@ namespace CyberCube.Physics
                        Vector2 position,
                        Type type,
                        BodyType bodyType = BodyType.Static,
-                       float mass = 1,
+                       float density = 1,
                        Category categories = Category.Cat1 )
-            : base( game, world )
+            : base( game, world, position.ToUnits(), AngleFromType( type ), new CornerMaker( radius ) )
         {
             mRadius = radius;
 
-            Body = BodyFactory.CreateChainShape(
-                world,
+            FixtureFactory.AttachChainShape(
                 MakeArc( 100, radius.ToUnits(), 0 ),
-                position.ToUnits(),
+                Body,
                 new Convex() );
 
             Body.BodyType = bodyType;
-            Body.Mass = mass;
             Body.CollisionCategories = categories;
-            Body.Rotation = AngleFromType( type );
 
             var fixtureList = FixtureFactory.AttachCompoundPolygon(
                 Triangulate.ConvexPartition(
                     MakeArc( 100, radius.ToUnits(), 0 ),
                     TriangulationAlgorithm.Earclip ),
-                1,
+                density,
                 Body );
 
             foreach ( var f in fixtureList )

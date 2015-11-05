@@ -43,17 +43,15 @@ namespace CyberCube.Screens
         private GamePadState OldPadState;
         private KeyboardState OldKeyState;
 
-        //private Menu mMenu;
-
         public static void LoadContent(ContentManager content)
         {
-            sTitleCard = content.Load<Texture2D>("MenuItems\\TitleCard");
+            sTitleCard = content.Load<Texture2D>("NavigationItems\\TitleCard");
 
-            sNewGame = content.Load<Texture2D>("MenuItems\\menuNewGame");
-            sLoadGame = content.Load<Texture2D>("MenuItems\\menuLoadGame");
-            sLevelEdit = content.Load<Texture2D>("MenuItems\\menuLevelEditor");
-            sControls = content.Load<Texture2D>("MenuItems\\menuControls");
-            sExit = content.Load<Texture2D>("MenuItems\\menuExit");
+            sNewGame = content.Load<Texture2D>("NavigationItems\\menuNewGame");
+            sLoadGame = content.Load<Texture2D>("NavigationItems\\menuLoadGame");
+            sLevelEdit = content.Load<Texture2D>("NavigationItems\\menuLevelEditor");
+            sControls = content.Load<Texture2D>("NavigationItems\\menuControls");
+            sExit = content.Load<Texture2D>("NavigationItems\\menuExit");
 
             sVersionFont = content.Load<SpriteFont>("ConsoleFont");
         }

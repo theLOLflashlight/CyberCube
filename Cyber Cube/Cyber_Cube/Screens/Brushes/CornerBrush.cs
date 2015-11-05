@@ -67,10 +67,7 @@ namespace CyberCube.Screens.Brushes
                     face.World,
                     100,
                     mousePos.Value,
-                    Corner.Type.SE,
-                    BodyType.Static,
-                    ((MathHelper.Pi * 100 * 100) / 4) * 0.01f,
-                    Category.Cat2 );
+                    Corner.Type.SE );
 
                 corner.Body.UseAdHocGravity = true;
                 corner.Body.AdHocGravity =

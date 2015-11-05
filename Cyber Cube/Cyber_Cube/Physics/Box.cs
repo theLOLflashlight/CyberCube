@@ -12,32 +12,53 @@ namespace CyberCube.Physics
 {
     public class Box : Solid
     {
-        protected float mWidth;
-        protected float mHeight;
+        public struct BoxMaker : ISolidMaker
+        {
+            public float Width;
+            public float Height;
+
+            public BoxMaker( float width, float height )
+            {
+                Width = width;
+                Height = height;
+            }
+
+            public Solid MakeSolid( CubeGame game, World world, Body body )
+            {
+                return new Box( game, world, body, Width, Height );
+            }
+        }
+
+        public Box( CubeGame game, World world, Body body, float width, float height )
+            : base( game, world, body )
+        {
+            mWidth = width;
+            mHeight = height;
+        }
+
+        private float mWidth;
+        private float mHeight;
 
         public Box( CubeGame game,
                     World world,
                     RectangleF rec,
                     BodyType bodyType = BodyType.Static,
-                    float mass = 1,
+                    float density = 1,
                     Category categories = Category.Cat1 )
-            : base( game, world )
+            : base( game, world, rec.Center.ToUnits(), 0, new BoxMaker( rec.Width, rec.Height ) )
         {
             mWidth = rec.Width;
             mHeight = rec.Height;
 
-            Body = BodyFactory.CreateBody( world, rec.Center.ToUnits() );
-
             FixtureFactory.AttachRectangle(
                     mWidth.ToUnits(),
                     mHeight.ToUnits(),
-                    1,
+                    density,
                     Vector2.Zero,
                     Body,
                     new Flat() );
 
             Body.BodyType = bodyType;
-            Body.Mass = mass;
             Body.CollisionCategories = categories;
         }
 

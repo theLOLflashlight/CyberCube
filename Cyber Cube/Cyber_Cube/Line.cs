@@ -25,6 +25,13 @@ namespace CyberCube
             }
         }
 
+        public Vector2 Center
+        {
+            get {
+                return new Vector2( X0 + X1, Y0 + Y1 ) / 2;
+            }
+        }
+
         public Line2( Vector2 p0, Vector2 p1 )
         {
             P0 = p0;
