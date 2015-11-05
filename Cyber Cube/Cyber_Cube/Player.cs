@@ -181,7 +181,7 @@ namespace CyberCube
         private void Feet_OnSeparation( Fixture fixtureA, Fixture fixtureB )
         {
             if ( fixtureB.Body.BodyType != BodyType.Dynamic
-                 && fixtureB.UserData is Curved
+                 && fixtureB.UserData is Convex
                  && !IsJumping )
             {
                 Body.ApplyLinearImpulse( Vector2.UnitY.Rotate( Rotation ) * Velocity.Length() * 2 );
