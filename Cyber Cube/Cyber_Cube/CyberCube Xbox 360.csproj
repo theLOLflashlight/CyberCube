@@ -81,7 +81,6 @@
     <Compile Include="Levels\EditableCube.cs" />
     <Compile Include="Levels\PlayableCube.cs" />
     <Compile Include="Line.cs" />
-    <Compile Include="MenuFiles\PauseMenu.cs" />
     <Compile Include="Physics\Box.cs" />
     <Compile Include="Physics\Constants.cs" />
     <Compile Include="Physics\Corner.cs" />
