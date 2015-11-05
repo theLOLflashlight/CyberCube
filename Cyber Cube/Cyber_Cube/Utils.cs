@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework.Input;
 using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace CyberCube
@@ -28,6 +29,16 @@ namespace CyberCube
             };
 
             return buttons;
+        }
+
+        public static object GetValue( this PropertyInfo property, object obj )
+        {
+            return property.GetValue( obj, null );
+        }
+
+        public static void SetValue( this PropertyInfo property, object obj, object value )
+        {
+            property.SetValue( obj, value, null );
         }
 
         public static Vector2 Measure( this SpriteFont font )
@@ -103,7 +114,11 @@ namespace CyberCube
         /// </summary>
         public static Vector3 Lerp( this Vector3 v0, Vector3 v1, float amount )
         {
-            return Vector3.Lerp( v0, v1, amount );
+            Lerp( ref v0.X, v1.X, amount );
+            Lerp( ref v0.Y, v1.Y, amount );
+            Lerp( ref v0.Z, v1.Z, amount );
+            return v0;
+            //return Vector3.Lerp( v0, v1, amount );
         }
 
         /// <summary>

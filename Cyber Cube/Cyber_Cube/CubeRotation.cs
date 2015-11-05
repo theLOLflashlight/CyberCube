@@ -55,8 +55,8 @@ namespace CyberCube
         public void RotateClockwise()
         {
             --UpDir;
-            Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+            //Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            //Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         /// <summary>
@@ -65,8 +65,8 @@ namespace CyberCube
         public void RotateAntiClockwise()
         {
             ++UpDir;
-            Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
-            Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+            //Screen.Camera.AnimatePosition( CameraDistance * CurrentFace.Normal, CameraDistance );
+            //Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         /// <summary>
@@ -84,8 +84,8 @@ namespace CyberCube
             UpDir = GetNextUpDirection( direction, backDir );
             CurrentFace = nextFace;
 
-            Screen.Camera.AnimatePosition( CurrentFace.Normal * CameraDistance, CameraDistance );
-            Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
+            //Screen.Camera.AnimatePosition( CurrentFace.Normal * CameraDistance, CameraDistance );
+            //Screen.Camera.AnimateUpVector( ComputeUpVector(), 1 );
         }
 
         /// <summary>

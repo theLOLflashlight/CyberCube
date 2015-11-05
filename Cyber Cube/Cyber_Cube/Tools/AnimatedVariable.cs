@@ -6,10 +6,9 @@ using System.Text;
 namespace CyberCube.Tools
 {
     public class AnimatedVariable< T, Delta >
-        where T : IEquatable< T >
-        //where Delta : struct, IEquatable< Delta >, IComparable< Delta >
+        where T : IEquatable< T >, new()
     {
-        public delegate void ValueChangedListener( AnimatedVariable< T, Delta > sender, T value );
+        public delegate void ValueChangedEventHandler( AnimatedVariable< T, Delta > sender, T value );
 
         public delegate T Interpolator( T t0, T t1, Delta amount );
 
@@ -18,7 +17,12 @@ namespace CyberCube.Tools
         private T mValue1;
         private readonly Interpolator mInterpolator;
 
-        public event ValueChangedListener OnValueChanged;
+        public event ValueChangedEventHandler ValueChanged;
+
+        public AnimatedVariable( Interpolator interpolator )
+            : this( new T(), interpolator )
+        {
+        }
 
         public AnimatedVariable( T value, Interpolator interpolator )
         {
@@ -29,6 +33,11 @@ namespace CyberCube.Tools
 
             mValue0 = mValue1 = value;
             mInterpolator = interpolator;
+        }
+
+        private void OnValueChanged( T value )
+        {
+            ValueChanged?.Invoke( this, value );
         }
 
         public T Value
@@ -44,7 +53,7 @@ namespace CyberCube.Tools
                 mValue0 = mValue1 = value;
 
                 if ( changed )
-                    OnValueChanged?.Invoke( this, mValue0 );
+                    OnValueChanged( mValue0 );
             }
         }
 
@@ -73,7 +82,7 @@ namespace CyberCube.Tools
             if ( !mValue0.Equals( mValue1 ) )
             {
                 mValue0 = mInterpolator( mValue0, mValue1, amount );
-                OnValueChanged?.Invoke( this, mValue0 );
+                OnValueChanged( mValue0 );
             }
         }
 

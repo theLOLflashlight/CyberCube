@@ -1,15 +1,15 @@
 ﻿using System;
 using System.Collections.Generic;
 using System.Linq;
+using System.Reflection;
 using System.Text;
 
 namespace CyberCube.Tools
 {
     public class AnimatedProperty< T, Delta >
         where T : IEquatable< T >
-        //where Delta : struct, IEquatable< Delta >, IComparable< Delta >
     {
-        public delegate void ValueChangedListener( AnimatedProperty< T, Delta > sender, T value );
+        public delegate void ValueChangedEventHandler( AnimatedProperty< T, Delta > sender, T value );
 
         public delegate T Interpolator( T t0, T t1, Delta amount );
 
@@ -31,7 +31,19 @@ namespace CyberCube.Tools
         private readonly Getter mGet;
         private readonly Setter mSet;
 
-        public event ValueChangedListener OnValueChanged;
+        public event ValueChangedEventHandler ValueChanged;
+
+        public AnimatedProperty( Interpolator interpolator, PropertyInfo property, object obj, object[] index = null )
+            : this( interpolator,
+                    () => (T) property.GetValue( obj, index ),
+                    v => property.SetValue( obj, v, index ) )
+        {
+        }
+
+        public AnimatedProperty( Interpolator interpolator, Getter getter, Setter setter )
+            : this( getter(), interpolator, getter, setter )
+        {
+        }
 
         public AnimatedProperty( T value, Interpolator interpolator, Getter getter, Setter setter )
         {
@@ -50,6 +62,11 @@ namespace CyberCube.Tools
             mInterpolator = interpolator;
         }
 
+        private void OnValueChanged( T value )
+        {
+            ValueChanged?.Invoke( this, value );
+        }
+
         public T Value
         {
             get {
@@ -63,7 +80,7 @@ namespace CyberCube.Tools
                 mValue0 = mValue1 = value;
 
                 if ( changed )
-                    OnValueChanged?.Invoke( this, mValue0 );
+                    OnValueChanged( mValue0 );
             }
         }
 
@@ -92,7 +109,7 @@ namespace CyberCube.Tools
             if ( !mValue0.Equals( mValue1 ) )
             {
                 mValue0 = mInterpolator( mValue0, mValue1, amount );
-                OnValueChanged?.Invoke( this, mValue0 );
+                OnValueChanged( mValue0 );
             }
         }
 

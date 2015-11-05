@@ -62,6 +62,7 @@
     <Compile Include="Actor.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CubeFacePhysics.cs" />
+    <Compile Include="CubeGameObjects.cs" />
     <Compile Include="CubeUtils.cs" />
     <Compile Include="Direction.cs" />
     <Compile Include="Cube.cs" />

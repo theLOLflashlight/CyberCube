@@ -14,6 +14,11 @@ namespace CyberCube.Physics
         public const float PIXEL_TO_UNIT = 1 / UNIT_TO_PIXEL;
 
 
+        /// <summary>
+        /// Finds the first fixture attached to the body whose UserData matches the supplied value.
+        /// </summary>
+        /// <param name="body">The body to search</param>
+        /// <param name="userData">The object to match against.</param>
         public static Fixture FindFixture( this Body body, object userData )
         {
             if ( userData == null )
@@ -26,6 +31,11 @@ namespace CyberCube.Physics
             return null;
         }
 
+        /// <summary>
+        /// Finds all the fixtures attached to the body whose UserData matches the supplied value.
+        /// </summary>
+        /// <param name="body">The body to search</param>
+        /// <param name="userData">The object to match against.</param>
         public static IEnumerable<Fixture> FindFixtures( this Body body, object userData )
         {
             if ( userData == null )

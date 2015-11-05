@@ -11,6 +11,25 @@ namespace CyberCube
         public Vector2 P0;
         public Vector2 P1;
 
+        public Line2( Vector2 p0, Vector2 p1 )
+        {
+            P0 = p0;
+            P1 = p1;
+        }
+
+        public Line2( float x0, float y0, float x1, float y1 )
+        {
+            P0 = new Vector2( x0, y0 );
+            P1 = new Vector2( x1, y1 );
+        }
+
+        public Vector2 this[ float t ]
+        {
+            get {
+                return P0 + (t * (P1 - P0));
+            }
+        }
+
         public float Length
         {
             get {
@@ -41,22 +60,9 @@ namespace CyberCube
 
         public bool IsVertical
         {
-            get
-            {
+            get {
                 return X0 == X1;
             }
-        }
-
-        public Line2( Vector2 p0, Vector2 p1 )
-        {
-            P0 = p0;
-            P1 = p1;
-        }
-
-        public Line2( float x0, float y0, float x1, float y1 )
-        {
-            P0 = new Vector2( x0, y0 );
-            P1 = new Vector2( x1, y1 );
         }
 
         public void Reverse()
@@ -119,13 +125,6 @@ namespace CyberCube
             }
 
             return null;
-        }
-
-        public Vector2 this[ float t ]
-        {
-            get {
-                return P0 + (t * (P1 - P0));
-            }
         }
 
         public Line2 Rotate( float radians )
@@ -202,6 +201,25 @@ namespace CyberCube
         public Vector3 P0;
         public Vector3 P1;
 
+        public Line3( Vector3 p0, Vector3 p1 )
+        {
+            P0 = p0;
+            P1 = p1;
+        }
+
+        public Line3( float x0, float y0, float z0, float x1, float y1, float z1 )
+        {
+            P0 = new Vector3( x0, y0, z0 );
+            P1 = new Vector3( x1, y1, z1 );
+        }
+
+        public Vector3 this[ float t ]
+        {
+            get {
+                return P0 + (t * (P1 - P0));
+            }
+        }
+
         public float Length
         {
             get {
@@ -216,10 +234,11 @@ namespace CyberCube
             }
         }
 
-        public Line3( Vector3 p0, Vector3 p1 )
+        public Vector3 Center
         {
-            P0 = p0;
-            P1 = p1;
+            get {
+                return new Vector3( X0 + X1, Y0 + Y1, Z0 + Z1 ) / 2;
+            }
         }
 
         public void Reverse()
@@ -233,13 +252,6 @@ namespace CyberCube
         {
             outLine.P0 = P1;
             outLine.P1 = P0;
-        }
-
-        public Vector3 this[ float t ]
-        {
-            get {
-                return P0 + (t * (P1 - P0));
-            }
         }
 
         public static Line3 operator +( Line3 line, Vector3 vec )

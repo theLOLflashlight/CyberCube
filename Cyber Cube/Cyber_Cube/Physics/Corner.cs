@@ -71,6 +71,7 @@ namespace CyberCube.Physics
             : base( game, world, body )
         {
             mRadius = radius;
+            Initialize();
         }
 
         private float     mRadius;
@@ -105,6 +106,14 @@ namespace CyberCube.Physics
 
             foreach ( var f in fixtureList )
                 f.CollidesWith = Category.None;
+
+            Initialize();
+        }
+
+        protected override void PostClone()
+        {
+            base.PostClone();
+            Initialize();
         }
 
         private Texture2D CreateCircleTexture( float radius )
@@ -138,10 +147,8 @@ namespace CyberCube.Physics
             return texture;
         }
 
-        public override void Initialize()
+        private void Initialize()
         {
-            base.Initialize();
-
             mCornerTex = CreateCircleTexture( (int) mRadius );
         }
 
