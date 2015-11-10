@@ -82,7 +82,7 @@ namespace CyberCube
                 Name = name;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
-                Rotation = rotation.Angle;
+                Rotation = -rotation.Angle;
                 BackgroundColor = Color.Transparent;
 
                 SetUpVertices();

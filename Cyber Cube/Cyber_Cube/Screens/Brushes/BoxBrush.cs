@@ -82,7 +82,7 @@ namespace CyberCube.Screens.Brushes
 
                 box.Body.UseAdHocGravity = true;
                 box.Body.AdHocGravity =
-                    Vector2.UnitY.Rotate( -face.Cube.UpDir.Angle ).Rounded()
+                    Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
                 face.AddSolid( box );

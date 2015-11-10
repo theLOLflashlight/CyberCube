@@ -55,7 +55,7 @@ namespace CyberCube
             return Utils.RoundVector(
                        CurrentFace.UpVec.Rotate(
                            CurrentFace.Normal,
-                           UpDir.Angle ) );
+                           -UpDir.Angle ) );
         }
 
         /*

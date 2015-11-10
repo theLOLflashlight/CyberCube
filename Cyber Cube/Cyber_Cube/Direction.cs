@@ -97,7 +97,7 @@ namespace CyberCube
         public float Angle
         {
             get {
-                return -MathHelper.PiOver2 * (int) value;
+                return MathHelper.PiOver2 * (int) value;
             }
         }
 

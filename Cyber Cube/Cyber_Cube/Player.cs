@@ -105,19 +105,22 @@ namespace CyberCube
             mFeet = Body.FindFixture( "feet" );
 
             mTorso.OnCollision += Torso_OnCollision;
+
+            mTorso.OnCollision += Torso_OnDoorCollision;
+
             mFeet.OnSeparation += Feet_OnSeparation;
 
             mFeet.OnCollision += ( a, b, c ) => {
                 if ( !b.IsSensor && b.UserData is Flat )
                 {
-                    var diff = MathHelper.WrapAngle( -UpDir.Angle - Rotation );
+                    var diff = MathHelper.WrapAngle( UpDir.Angle - Rotation );
                     Rotation = Rotation + diff;
                 }
                 return true;
             };
         }
 
-        private bool BeginContact( Contact contact )
+        private bool BeginFeetContact( Contact contact )
         {
             if ( contact.FixtureA.UserData as string == "feet"
                  || contact.FixtureB.UserData as string == "feet" )
@@ -127,7 +130,7 @@ namespace CyberCube
             return true;
         }
 
-        private void EndContact( Contact contact )
+        private void EndFeetContact( Contact contact )
         {
             if ( contact.FixtureA.UserData as string == "feet"
                  || contact.FixtureB.UserData as string == "feet" )
@@ -142,8 +145,8 @@ namespace CyberCube
 
             foreach ( Cube.Face face in Cube.Faces )
             {
-                face.World.ContactManager.BeginContact += BeginContact;
-                face.World.ContactManager.EndContact += EndContact;
+                face.World.ContactManager.BeginContact += BeginFeetContact;
+                face.World.ContactManager.EndContact += EndFeetContact;
             }
 
             Body.FixedRotation = true;
@@ -170,11 +173,22 @@ namespace CyberCube
                 Vector2 groundNormal = contact.Manifold.LocalNormal.Rotate( fixtureB.Body.Rotation );
                 float groundNormalAngle = (float) Math.Atan2( groundNormal.Y, groundNormal.X ) + MathHelper.PiOver2;
 
-                if ( Math.Abs( MathHelper.WrapAngle( groundNormalAngle - Rotation ) ) <= MathHelper.PiOver4 )
+                if ( MathTools.AnglesWithinRange( Rotation, groundNormalAngle, MathHelper.PiOver4 ) )
                     Rotation = groundNormalAngle;
 
                 return true;
             }
+            return contact.IsTouching;
+        }
+
+        private bool Torso_OnDoorCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        {
+            if ( fixtureB.UserData as SolidDescriptor == new SolidDescriptor( "end_door" )
+                 && MathTools.AnglesWithinRange( Rotation, fixtureB.Body.Rotation, 0 ) )
+            {
+                this.Screen.Back();
+            }
+
             return contact.IsTouching;
         }
 
@@ -225,11 +239,11 @@ namespace CyberCube
 
         public override void Update( GameTime gameTime )
         {
-            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             var input = Game.Input;
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
             if ( mNumFootContacts == 1 && !IsJumping || FreeFall && !IsJumping )
-                Rotation = -UpDir.Angle;
+                Rotation = UpDir.Angle;
 
             if ( Game.GameProperties.AllowManualGravity )
             {

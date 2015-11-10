@@ -110,7 +110,7 @@ namespace CyberCube
             float df = Math.Abs( z - f );
             float db = Math.Abs( z - b );
 
-            float m = Tools.MathUtils.Min( dl, dr, dt, de, df, db );
+            float m = Tools.MathTools.Min( dl, dr, dt, de, df, db );
             //Math.Min( Math.Min( df, Math.Min( dl, dr ) ), Math.Min( db, Math.Min( dt, de ) ) );
 
             if ( m == df )
@@ -183,7 +183,7 @@ namespace CyberCube
                 float magY = Math.Abs( worldMouse.Y );
                 float magZ = Math.Abs( worldMouse.Z );
 
-                float max = Tools.MathUtils.Max( magX, magY, magZ );
+                float max = Tools.MathTools.Max( magX, magY, magZ );
 
                 if ( magX == max )
                     worldMouse.X = Math.Sign( worldMouse.X );

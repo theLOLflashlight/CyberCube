@@ -146,6 +146,9 @@ namespace CyberCube.Screens
                 case "line":
                     return new PlatformBrush( mScreen.Game );
 
+                case "door":
+                    return new EndDoorBrush( mScreen.Game );
+
                 case "type":
                     return new BodyTypeBrush();
 

@@ -1,11 +1,12 @@
-﻿using System;
+﻿using Microsoft.Xna.Framework;
+using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
 namespace CyberCube.Tools
 {
-    public static class MathUtils
+    public static class MathTools
     {
 
         public static T Min< T >( T arg1, params T[] args )
@@ -30,6 +31,11 @@ namespace CyberCube.Tools
                     max = arg;
 
             return max;
+        }
+
+        public static bool AnglesWithinRange( float angleA, float angleB, float range )
+        {
+            return Math.Abs( MathHelper.WrapAngle( angleA - angleB ) ) <= range;
         }
 
     }

@@ -98,7 +98,7 @@ namespace CyberCube
                 return Direction.FromAngle( -Rotation );
             }
             set {
-                Rotation = -value.Angle;
+                Rotation = value.Angle;
             }
         }
 
@@ -217,7 +217,7 @@ namespace CyberCube
             Body.Mass = mass;
 
             float pastUpDirAngle = UpDir.Angle;
-            float rotDif = -UpDir.Angle - Rotation;
+            float rotDif = UpDir.Angle - Rotation;
 
             UpDir = Cube.GetNextUpDirection( UpDir, dir, backDir );
             CubeFace = nextFace;
@@ -225,7 +225,7 @@ namespace CyberCube
 
             Body.Position = ComputeFacePosition().ToUnits();
 
-            Velocity = Velocity.Rotate( pastUpDirAngle - UpDir.Angle );
+            Velocity = Velocity.Rotate( UpDir.Angle - pastUpDirAngle );
 
             ReconstructBody();
         }

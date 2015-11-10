@@ -73,9 +73,11 @@
     <Compile Include="CubeRotation.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
+    <Compile Include="Levels\EndDoor.cs" />
     <Compile Include="Physics\Corner.cs" />
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
+    <Compile Include="Screens\Brushes\EndDoorBrush.cs" />
     <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />

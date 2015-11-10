@@ -84,7 +84,7 @@ namespace CyberCube.Screens.Brushes
                     mSelectedSolid.Rotation -= MathHelper.PiOver2;
 
 
-                mSelectedSolid.Position += delta.Rotate( -face.Cube.UpDir.Angle );
+                mSelectedSolid.Position += delta.Rotate( face.Cube.UpDir.Angle );
 
                 if ( input.Keyboard_WasAnyKeyPressed( Keys.Delete, Keys.Back ) )
                 {
