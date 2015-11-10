@@ -14,7 +14,7 @@ namespace CyberCube
 
     public partial class Cube
     {
-        public abstract partial class Face : DrawableCubeGameComponent
+        public abstract partial class Face : DrawableCubeGameObject
         {
 #if WINDOWS
             protected FarseerPhysics.DebugView.DebugViewXNA mDebugView;
@@ -87,24 +87,23 @@ namespace CyberCube
 
                 SetUpVertices();
                 SetUpWorld();
-                this.Visible = false;
             }
 
             private void SetUpVertices()
             {
-                Vector3[] face = new Vector3[ 6 ];
+                Vector3[] vertex = new Vector3[ 6 ];
                 // top left
-                face[ 0 ] = new Vector3( -1, 1, 0 );
+                vertex[ 0 ] = new Vector3( -1, 1, 0 );
                 // bottom left
-                face[ 1 ] = new Vector3( -1, -1, 0 );
+                vertex[ 1 ] = new Vector3( -1, -1, 0 );
                 // top right
-                face[ 2 ] = new Vector3( 1, 1, 0 );
+                vertex[ 2 ] = new Vector3( 1, 1, 0 );
                 // bottom left
-                face[ 3 ] = new Vector3( -1, -1, 0 );
+                vertex[ 3 ] = new Vector3( -1, -1, 0 );
                 // bottom right
-                face[ 4 ] = new Vector3( 1, -1, 0 );
+                vertex[ 4 ] = new Vector3( 1, -1, 0 );
                 // top right
-                face[ 5 ] = new Vector3( 1, 1, 0 );
+                vertex[ 5 ] = new Vector3( 1, 1, 0 );
 
                 Vector2 textureTopLeft = Vector2.Zero;
                 Vector2 textureTopRight = Vector2.UnitX;
@@ -115,50 +114,44 @@ namespace CyberCube
                                   * Matrix.CreateFromAxisAngle( Normal, Rotation );
 
                 mVertexData[ 0 ] = new VertexPositionNormalTexture(
-                    face[ 0 ].Transform( rotation ) + Normal,
+                    vertex[ 0 ].Transform( rotation ) + Normal,
                     Normal, textureTopLeft );
 
                 mVertexData[ 1 ] = new VertexPositionNormalTexture(
-                    face[ 1 ].Transform( rotation ) + Normal,
+                    vertex[ 1 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 mVertexData[ 2 ] = new VertexPositionNormalTexture(
-                    face[ 2 ].Transform( rotation ) + Normal,
+                    vertex[ 2 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
 
                 mVertexData[ 3 ] = new VertexPositionNormalTexture(
-                    face[ 3 ].Transform( rotation ) + Normal,
+                    vertex[ 3 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
                 mVertexData[ 4 ] = new VertexPositionNormalTexture(
-                    face[ 4 ].Transform( rotation ) + Normal,
+                    vertex[ 4 ].Transform( rotation ) + Normal,
                     Normal, textureBottomRight );
 
                 mVertexData[ 5 ] = new VertexPositionNormalTexture(
-                    face[ 5 ].Transform( rotation ) + Normal,
+                    vertex[ 5 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
             }
 
-            public override void Initialize()
+            public void Initialize()
             {
-                base.Initialize();
-
                 RenderTarget = new RenderTarget2D( GraphicsDevice, WIDTH, HEIGHT );
                 pixel = new Texture2D( GraphicsDevice, 1, 1 );
                 pixel.SetData( new[] { Color.White } );
-
 #if WINDOWS
                 mDebugView = new FarseerPhysics.DebugView.DebugViewXNA( World );
                 mDebugView.LoadContent( GraphicsDevice, Game.Content );
 #endif
-
                 World.Step( 0 );
             }
 
             public override void Update( GameTime gameTime )
             {
-                base.Update( gameTime );
-
                 foreach ( Solid solid in mSolids )
                     solid.Update( gameTime );
             }

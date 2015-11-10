@@ -5,7 +5,7 @@ using System.Text;
 
 namespace CyberCube.Tools
 {
-    public static class Utils
+    public static class MathUtils
     {
 
         public static T Min< T >( T arg1, params T[] args )

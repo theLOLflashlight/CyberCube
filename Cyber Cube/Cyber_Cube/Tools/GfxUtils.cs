@@ -8,9 +8,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Graphics
+namespace CyberCube.Tools
 {
-    public static class Utils
+    public static class GfxUtils
     {
 
         public static void DrawLine( this SpriteBatch batch, Line2 line, Texture2D texture, Color color, float thickness = 1 )

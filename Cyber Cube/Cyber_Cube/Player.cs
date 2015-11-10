@@ -11,7 +11,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using CyberCube.Screens;
 using CyberCube.Levels;
-using CyberCube.Graphics;
+using CyberCube.Tools;
 using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using CyberCube.Physics;
@@ -184,8 +184,23 @@ namespace CyberCube
                  && fixtureB.UserData is Convex
                  && !IsJumping )
             {
-                Body.ApplyLinearImpulse( Vector2.UnitY.Rotate( Rotation ) * Velocity.Length() * 2 );
+                ApplyRelativeLinearImpulse( Vector2.UnitY * Velocity.Length() * 2 );
             }
+        }
+
+        public void ApplyAngularImpulse( float impulse )
+        {
+            Body.ApplyAngularImpulse( impulse );
+        }
+
+        public void ApplyLinearImpulse( Vector2 impulse )
+        {
+            Body.ApplyLinearImpulse( impulse );
+        }
+
+        public void ApplyRelativeLinearImpulse( Vector2 impulse )
+        {
+            Body.ApplyLinearImpulse( impulse.Rotate( Rotation ) );
         }
 
         public bool IsJumping
@@ -193,7 +208,7 @@ namespace CyberCube
             get; private set;
         }
 
-        public void Jump( ref Vector2 velocity )
+        private void Jump( ref Vector2 velocity )
         {
             if ( FreeFall && !Game.GameProperties.AllowMultipleJumping )
                 return;
@@ -202,7 +217,7 @@ namespace CyberCube
             velocity.Y = -10f;
         }
 
-        public void JumpEnd( ref Vector2 velocity )
+        private void JumpStop( ref Vector2 velocity )
         {
             if ( velocity.Y < 0 )
                 velocity.Y *= 0.6f;
@@ -213,11 +228,8 @@ namespace CyberCube
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             var input = Game.Input;
 
-            if ( mNumFootContacts == 1 && !IsJumping
-                 || FreeFall && !IsJumping )
-            {
+            if ( mNumFootContacts == 1 && !IsJumping || FreeFall && !IsJumping )
                 Rotation = -UpDir.Angle;
-            }
 
             if ( Game.GameProperties.AllowManualGravity )
             {
@@ -228,24 +240,24 @@ namespace CyberCube
                     UpDir = Direction.FromAngle( -Rotation - (MathHelper.PiOver4 + 0.0001f) );
             }
 
-            float movementScale = FreeFall ? 10 : 20;
-
-            Vector2 velocity = Velocity.Rotate( -Rotation );
-
             var actionRight = input.GetAction( Action.MoveRight, this );
             var actionLeft = input.GetAction( Action.MoveLeft, this );
 
-            if ( !actionRight && !actionLeft )
+            Vector2 velocity = Velocity.Rotate( -Rotation );
+
+            float movementScale = FreeFall ? 10 : 20;
+
+            if ( !(actionRight || actionLeft) )
                 velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
 
-            velocity.X += actionRight.Value * (movementScale + 1) * seconds;
-            velocity.X -= actionLeft.Value * (movementScale + 1) * seconds;
+            velocity.X += actionRight * (movementScale + 1) * seconds;
+            velocity.X -= actionLeft * (movementScale + 1) * seconds;
 
             if ( input.GetAction( Action.Jump, this ) )
                 this.Jump( ref velocity );
 
-            if ( input.GetAction( Action.JumpEnd, this ) )
-                this.JumpEnd( ref velocity );
+            if ( input.GetAction( Action.JumpStop, this ) )
+                this.JumpStop( ref velocity );
 
             velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
             if ( velocity.Y >= 0 && !FreeFall )

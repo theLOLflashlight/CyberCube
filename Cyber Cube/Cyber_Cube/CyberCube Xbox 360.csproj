@@ -71,7 +71,6 @@
     <Compile Include="CubeRotation.cs" />
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
-    <Compile Include="Graphics\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
     <Compile Include="IO\IInputProvider.cs" />
@@ -113,6 +112,7 @@
     <Compile Include="Tools\AnimatedProperty.cs" />
     <Compile Include="Tools\AnimatedVariable.cs" />
     <Compile Include="Tools\Exceptions.cs" />
+    <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="Tools\MathUtils.cs" />
     <Compile Include="Tools\Rectanglef.cs" />
     <Compile Include="Utils.cs" />

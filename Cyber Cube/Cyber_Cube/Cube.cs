@@ -171,7 +171,7 @@ namespace CyberCube
             Effect.LightingEnabled = true;
 
             Screen.Camera.Fov = MathHelper.PiOver4;
-            Screen.Camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;//( float) Game.Window.ClientBounds.Width / (float) Game.Window.ClientBounds.Height;
+            Screen.Camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;
             Screen.Camera.NearPlaneDistance = NEAR_PLANE;
             Screen.Camera.FarPlaneDistance = FAR_PLANE;
 

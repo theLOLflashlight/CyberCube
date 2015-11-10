@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using System.Collections.ObjectModel;
 
 namespace CyberCube.Screens
 {
@@ -12,10 +13,16 @@ namespace CyberCube.Screens
     public class ScreenManager : SimpleDrawableCubeGameComponent
     {
         /// <summary>
-        /// The screens owned by the screen manager.
+        /// A stack of screens owned by the screen manager.
         /// </summary>
         private Stack< GameScreen > mScreens;
 
+        /// <summary>
+        /// A list of screens which will be pushed (in order) onto the stack of 
+        /// screens owned by the screen manager on the next call to Update. A 
+        /// null element in this list will pop the current top screen instead 
+        /// (still in order).
+        /// </summary>
         private List< GameScreen > mPendingScreens;
 
         /// <summary>
@@ -35,6 +42,18 @@ namespace CyberCube.Screens
         {
             get {
                 return mScreens.Count;
+            }
+        }
+
+        /// <summary>
+        /// Gets the screens currently owned by the screen manager in the 
+        /// reverse order in which they were added (top screen first).
+        /// </summary>
+        public IEnumerable< GameScreen > Screens
+        {
+            get {
+                foreach ( GameScreen screen in mScreens.Reverse() )
+                    yield return screen;
             }
         }
 
@@ -61,16 +80,20 @@ namespace CyberCube.Screens
             mPendingScreens.Add( screen );
         }
 
+        /// <summary>
+        /// Immediately pauses the current top screen, pushes a different 
+        /// screen on top of it and resumes the new top screen.
+        /// </summary>
+        /// <param name="screen">Screen to add.</param>
+        /// <param name="gameTime">Time at which the screen was pushed.</param>
         private void PushScreen( GameScreen screen, GameTime gameTime )
         {
             TopScreen?.Pause( gameTime );
 
-            if ( Game.Initialized )
-                screen.Initialize();
-
+            screen.Initialize();
             screen.ScreenManager = this;
-            mScreens.Push( screen );
 
+            mScreens.Push( screen );
             screen.Resume( gameTime );
         }
 
@@ -83,6 +106,11 @@ namespace CyberCube.Screens
             mPendingScreens.Add( null );
         }
 
+        /// <summary>
+        /// Immediately destroys the current top screen, pops it off the top 
+        /// and resumes the new top screen.
+        /// </summary>
+        /// <param name="gameTime">Time at which the screen was popped.</param>
         private void PopScreen( GameTime gameTime )
         {
             TopScreen.Destroy( gameTime );
@@ -105,6 +133,21 @@ namespace CyberCube.Screens
         }
 
         /// <summary>
+        /// Removes all screens from the screen manager on the next update. 
+        /// Screens added before this call will be added before they are 
+        /// removed and screens added after this call will not be removed.
+        /// </summary>
+        public void ClearScreens()
+        {
+            int count = Count;
+            foreach ( var screen in mPendingScreens )
+                count += screen != null ? 1 : -1;
+
+            for ( int i = 0; i < count; ++i )
+                PopScreen();
+        }
+
+        /// <summary>
         ///  Temporary fix for removing screens for the screenmanager
         /// </summary>
         /// <param name="n"></param>
@@ -121,15 +164,12 @@ namespace CyberCube.Screens
             base.Update( gameTime );
 
             foreach ( GameScreen screen in mPendingScreens )
-            {
                 if ( screen == null )
                     PopScreen( gameTime );
                 else
                     PushScreen( screen, gameTime );
-            }
 
             mPendingScreens.Clear();
-
             TopScreen?.Update( gameTime );
         }
 

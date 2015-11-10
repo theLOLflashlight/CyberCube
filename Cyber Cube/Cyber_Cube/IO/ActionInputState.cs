@@ -16,7 +16,7 @@ namespace CyberCube.IO
         public struct ActionState
         {
             public readonly BindTarget Action;
-            public float Value;
+            public readonly float Value;
 
             public ActionState( BindTarget action, float value )
             {
@@ -27,6 +27,11 @@ namespace CyberCube.IO
             public ActionState( BindTarget action, bool value )
                 : this( action, value ? 1f : 0f )
             {
+            }
+
+            public static implicit operator float( ActionState input )
+            {
+                return input.Value;
             }
 
             public static implicit operator bool( ActionState input )
@@ -48,19 +53,26 @@ namespace CyberCube.IO
         public InputState()
             : base()
         {
-            
         }
 
+        /// <summary>
+        /// Gets the action state for the supplied action. If the current input state 
+        /// has a focus, this method will return a default action state if the sender 
+        /// is not that focus.
+        /// </summary>
+        /// <param name="action">The action to check.</param>
+        /// <param name="sender">The user of this method.</param>
         public ActionState GetAction( BindTarget action, object sender )
         {
             if ( !HasFocus || CheckFocus( sender ) )
                 return GetAction( action );
 
-            return new ActionState( action, false );
+            return default( ActionState );
         }
 
         public ActionState GetAction( BindTarget action )
         {
+            #region Key Binds
             if ( mKeyPressedBinds.ContainsKey( action )
                  && Keyboard_WasKeyPressed( mKeyPressedBinds[ action ] ) )
                 return new ActionState( action, true );
@@ -68,12 +80,13 @@ namespace CyberCube.IO
             if ( mKeyReleasedBinds.ContainsKey( action )
                  && Keyboard_WasKeyReleased( mKeyReleasedBinds[ action ] ) )
                 return new ActionState( action, true );
+            #endregion
 
             if ( mKeyBinds.ContainsKey( action )
                  && Keyboard.IsKeyDown( mKeyBinds[ action ] ) )
                 return new ActionState( action, true );
 
-
+            #region Button Binds
             if ( mButtonPressedBinds.ContainsKey( action )
                  && GamePad_WasButtonPressed( mButtonPressedBinds[ action ] ) )
                 return new ActionState( action, true );
@@ -81,11 +94,11 @@ namespace CyberCube.IO
             if ( mButtonReleasedBinds.ContainsKey( action )
                  && GamePad_WasButtonReleased( mButtonReleasedBinds[ action ] ) )
                 return new ActionState( action, true );
+            #endregion
 
             if ( mButtonBinds.ContainsKey( action )
                  && GamePad.IsButtonDown( mButtonBinds[ action ] ) )
                 return new ActionState( action, true );
-
 
             if ( mDynamicBinds.ContainsKey( action ) )
             {
@@ -98,8 +111,7 @@ namespace CyberCube.IO
         }
 
 
-        // Key
-
+        #region Key Bindings
         public void AddBinding( BindTarget action, Keys key )
         {
             AddBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
@@ -115,9 +127,9 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mKeyBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
-        // Key Pressed
-
+        #region Key Pressed Bindings
         public void AddPressedBinding( BindTarget action, Keys key )
         {
             AddPressedBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
@@ -133,9 +145,9 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mKeyPressedBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
-        // Key Released
-
+        #region Key Released Bindings
         public void AddReleasedBinding( BindTarget action, Keys key )
         {
             AddReleasedBindings( new KeyValuePair<BindTarget, Keys>( action, key ) );
@@ -151,10 +163,10 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mKeyReleasedBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
 
-        // Button
-
+        #region Button Bindings
         public void AddBinding( BindTarget action, Buttons button )
         {
             AddBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
@@ -170,9 +182,9 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mButtonBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
-        // Button Pressed
-
+        #region Button Pressed Bindings
         public void AddPressedBinding( BindTarget action, Buttons button )
         {
             AddPressedBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
@@ -188,9 +200,9 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mButtonPressedBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
-        // Button Released
-
+        #region Button Released Bindings
         public void AddReleasedBinding( BindTarget action, Buttons button )
         {
             AddReleasedBindings( new KeyValuePair<BindTarget, Buttons>( action, button ) );
@@ -206,10 +218,10 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mButtonReleasedBinds.Add( binding.Key, binding.Value );
         }
+        #endregion
 
 
-        // Dynamic Input
-
+        #region Dynamic Input Bindings
         public void AddBinding( BindTarget action, DynamicInput dynamicInput )
         {
             AddBindings( new KeyValuePair<BindTarget, DynamicInput>( action, dynamicInput ) );
@@ -225,6 +237,6 @@ namespace CyberCube.IO
             foreach ( var binding in bindings )
                 mDynamicBinds.Add( binding.Key, binding.Value );
         }
-
+        #endregion
     }
 }

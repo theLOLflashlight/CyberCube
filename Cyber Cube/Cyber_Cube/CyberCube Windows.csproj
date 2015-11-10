@@ -76,7 +76,7 @@
     <Compile Include="Physics\Corner.cs" />
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
-    <Compile Include="Graphics\GfxUtils.cs" />
+    <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
     <Compile Include="IO\IInputProvider.cs" />

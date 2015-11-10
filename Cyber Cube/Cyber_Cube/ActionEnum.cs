@@ -7,7 +7,8 @@ namespace CyberCube
 {
     public enum Action
     {
-        MoveLeft, MoveRight, MoveUp, MoveDown, Jump, JumpEnd,
+        None = 0,
+        MoveLeft, MoveRight, MoveUp, MoveDown, Jump, JumpStop,
         RotateLeft, RotateRight, RotateUp, RotateDown, RotateClockwise, RotateAntiClockwise,
         ToggleCubeMode, PauseGame
     }
