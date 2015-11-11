@@ -79,13 +79,13 @@ namespace CyberCube
             if ( -_45deg < angle && angle <= _45deg )
                 return Direction.Up;
 
-            if ( -_135deg < angle && angle <= -_45deg )
+            if ( _45deg < angle && angle <= _135deg )
                 return Direction.Right;
 
             //if ( _135deg < angle || angle <= -_135deg )
             //    return Direction.Down;
 
-            if ( _45deg < angle && angle <= _135deg )
+            if ( -_135deg < angle && angle <= -_45deg )
                 return Direction.Left;
 
             return Direction.Down;

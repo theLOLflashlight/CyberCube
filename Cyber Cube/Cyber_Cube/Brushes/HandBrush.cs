@@ -1,5 +1,6 @@
 ﻿using CyberCube.Levels;
 using CyberCube.Physics;
+using CyberCube.Screens;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
@@ -10,7 +11,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Screens.Brushes
+namespace CyberCube.Brushes
 {
     public class HandBrush : IEditBrush
     {

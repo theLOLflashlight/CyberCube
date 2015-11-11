@@ -24,10 +24,10 @@ namespace CyberCube.Levels
         public EndDoor( CubeGame game, World world, Body body )
             : base( game, world, body )
         {
-            mRotation = body.Rotation;
         }
 
-        private float mRotation;
+        public const float WIDTH = 70f;
+        public const float HEIGHT = 100f;
 
         public EndDoor( CubeGame game,
                         World world,
@@ -38,8 +38,8 @@ namespace CyberCube.Levels
             : base( game, world, pos.ToUnits(), 0, new EndDoorMaker() )
         {
             var door = FixtureFactory.AttachRectangle(
-                    70.ToUnits(),
-                    100.ToUnits(),
+                    WIDTH.ToUnits(),
+                    HEIGHT.ToUnits(),
                     density,
                     Vector2.Zero,
                     Body,
@@ -57,8 +57,8 @@ namespace CyberCube.Levels
 
             Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
-                70f / Texture.Width,
-                100f / Texture.Height );
+                WIDTH / Texture.Width,
+                HEIGHT / Texture.Height );
 
             mSpriteBatch.Draw(
                 Texture,

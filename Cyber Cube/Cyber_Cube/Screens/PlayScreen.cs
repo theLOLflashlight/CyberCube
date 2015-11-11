@@ -1,12 +1,9 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
+using CyberCube.Actors;
 using CyberCube.Levels;
-using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using System.Collections.Generic;
 
 namespace CyberCube.Screens
 {
@@ -76,6 +73,13 @@ namespace CyberCube.Screens
         }
         #endregion
 
+        private bool mEndLevel = false;
+
+        public void EndLevel()
+        {
+            mEndLevel = true;
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -84,6 +88,9 @@ namespace CyberCube.Screens
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
+
+            if ( mEndLevel )
+                this.Back();
         }
 
         public override void Draw( GameTime gameTime )
@@ -91,7 +98,9 @@ namespace CyberCube.Screens
             base.Draw( gameTime );
 
             mSpriteBatch.Begin();
-            mSpriteBatch.DrawString( sFont, "collisions: " + Player.mNumFootContacts, new Vector2( 0, 60 ), Color.White );
+#if DEBUG
+            mSpriteBatch.DrawString( sFont, $"collisions: {Player.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
+#endif
             mSpriteBatch.End();
         }
     }

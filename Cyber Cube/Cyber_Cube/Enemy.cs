@@ -1,4 +1,5 @@
-﻿using CyberCube.IO;
+﻿using CyberCube.Actors;
+using CyberCube.IO;
 using CyberCube.Screens;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;

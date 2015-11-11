@@ -1,5 +1,4 @@
-﻿using CyberCube.Tools;
-using CyberCube.Levels;
+﻿using CyberCube.Levels;
 using CyberCube.Physics;
 using CyberCube.Tools;
 using FarseerPhysics.Dynamics;
@@ -10,21 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Screens.Brushes
+namespace CyberCube.Brushes
 {
-    public class PlatformBrush : IEditBrush
+    public class EndDoorBrush : IEditBrush
     {
         private EditableCube.Face mFace;
 
-        private Line2 mLine;
-
-        private bool ValidLine
-        {
-            get {
-                return mLine.Length >= 1.ToPixels()
-                       && (mLine.IsHorizontal || mLine.IsVertical);
-            }
-        }
+        private Vector2 mStartPos;
+        private Vector2 mCurrentPos;
 
         private Texture2D mTexture;
 
@@ -33,7 +25,7 @@ namespace CyberCube.Screens.Brushes
             get; set;
         }
 
-        public PlatformBrush( CubeGame game )
+        public EndDoorBrush( CubeGame game )
         {
             Game = game;
         }
@@ -48,10 +40,9 @@ namespace CyberCube.Screens.Brushes
             mTexture = new Texture2D( Game.GraphicsDevice, 1, 1 );
             mTexture.SetData( new[] { Color.White } );
 
-
             mFace = face;
             Started = true;
-            mLine.P0 = EditScreen.SnapVector( mousePos, 25 );
+            mStartPos = mousePos;
         }
 
         public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
@@ -59,10 +50,7 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mLine.P1 = EditScreen.SnapVector( mousePos, 25 );
-
-            if ( !ValidLine )
-                mLine.P1 = mousePos;
+            mCurrentPos = mousePos;
         }
 
         public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
@@ -70,19 +58,19 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            if ( ValidLine )
+            if ( mousePos != null )
             {
-                OneWayPlatform platform = new OneWayPlatform(
+                EndDoor door = new EndDoor(
                     face.Game,
                     face.World,
-                    mLine );
+                    mousePos.Value );
 
-                platform.Body.UseAdHocGravity = true;
-                platform.Body.AdHocGravity =
+                door.Body.UseAdHocGravity = true;
+                door.Body.AdHocGravity =
                     Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
-                face.AddSolid( platform );
+                face.AddSolid( door );
             }
 
             Cancel();
@@ -92,7 +80,8 @@ namespace CyberCube.Screens.Brushes
         {
             mFace = null;
             Started = false;
-            mLine = default( Line2 );
+            mStartPos = Vector2.Zero;
+            mCurrentPos = Vector2.Zero;
             mTexture = null;
         }
 
@@ -101,11 +90,18 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            Color color = ValidLine
-                          ? new Color( 0, 0, 0, 255 )
-                          : new Color( 0, 0, 0, 128 );
-
-            spriteBatch.DrawLine( mLine, mTexture, color, 10 );
+            spriteBatch.Draw(
+                mTexture,
+                mCurrentPos,
+                null,
+                Color.White,
+                0,//Body.Rotation,
+                new Vector2(
+                    mTexture.Width,
+                    mTexture.Height ) / 2,
+                new Vector2( EndDoor.WIDTH, EndDoor.HEIGHT ),
+                SpriteEffects.None,
+                0 );
         }
     }
 }

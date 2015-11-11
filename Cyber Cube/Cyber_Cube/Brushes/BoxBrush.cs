@@ -1,5 +1,6 @@
 ﻿using CyberCube.Levels;
 using CyberCube.Physics;
+using CyberCube.Screens;
 using CyberCube.Tools;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
@@ -9,14 +10,22 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Screens.Brushes
+namespace CyberCube.Brushes
 {
-    public class EndDoorBrush : IEditBrush
+    public class BoxBrush : IEditBrush
     {
         private EditableCube.Face mFace;
 
+        private RectangleF mRec;
         private Vector2 mStartPos;
-        private Vector2 mCurrentPos;
+
+        private bool ValidRec
+        {
+            get {
+                return mRec.Width >= 0.5.ToPixels()
+                       && mRec.Height >= 0.5.ToPixels();
+            }
+        }
 
         private Texture2D mTexture;
 
@@ -25,7 +34,7 @@ namespace CyberCube.Screens.Brushes
             get; set;
         }
 
-        public EndDoorBrush( CubeGame game )
+        public BoxBrush( CubeGame game )
         {
             Game = game;
         }
@@ -42,7 +51,7 @@ namespace CyberCube.Screens.Brushes
 
             mFace = face;
             Started = true;
-            mStartPos = mousePos;
+            mStartPos = EditScreen.SnapVector( mousePos, 25 );
         }
 
         public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
@@ -50,7 +59,13 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mCurrentPos = mousePos;
+            mousePos = EditScreen.SnapVector( mousePos, 25 );
+
+            mRec.X = Math.Min( mStartPos.X, mousePos.X );
+            mRec.Y = Math.Min( mStartPos.Y, mousePos.Y );
+
+            mRec.Width = Math.Abs( mStartPos.X - mousePos.X );
+            mRec.Height = Math.Abs( mStartPos.Y - mousePos.Y );
         }
 
         public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
@@ -58,19 +73,20 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            if ( mousePos != null )
+            if ( ValidRec )
             {
-                EndDoor door = new EndDoor(
+                Box box = new Box(
                     face.Game,
                     face.World,
-                    mousePos.Value );
+                    mRec,
+                    BodyType.Static );
 
-                door.Body.UseAdHocGravity = true;
-                door.Body.AdHocGravity =
+                box.Body.UseAdHocGravity = true;
+                box.Body.AdHocGravity =
                     Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
-                face.AddSolid( door );
+                face.AddSolid( box );
             }
 
             Cancel();
@@ -80,8 +96,8 @@ namespace CyberCube.Screens.Brushes
         {
             mFace = null;
             Started = false;
+            mRec = Rectangle.Empty;
             mStartPos = Vector2.Zero;
-            mCurrentPos = Vector2.Zero;
             mTexture = null;
         }
 
@@ -90,18 +106,11 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            spriteBatch.Draw(
-                mTexture,
-                mCurrentPos,
-                null,
-                Color.White,
-                0,//Body.Rotation,
-                new Vector2(
-                    mTexture.Width,
-                    mTexture.Height ) / 2,
-                new Vector2( 70, 100 ),
-                SpriteEffects.None,
-                0 );
+            Color color = ValidRec
+                          ? new Color( 0, 0, 0, 255 )
+                          : new Color( 0, 0, 0, 128 );
+
+            spriteBatch.Draw( mTexture, (Rectangle) mRec, color );
         }
     }
 }

@@ -16,17 +16,32 @@ using FarseerPhysics.Dynamics.Contacts;
 using FarseerPhysics.Collision;
 using CyberCube.Physics;
 using FarseerPhysics.Common;
-using CyberCube.Tools;
 
-namespace CyberCube
+namespace CyberCube.Actors
 {
-    public class Player : Actor
+    public partial class Player : Actor
     {
-        private Texture2D pixel;
-        private Model model3D;
-		private float aspectRatio;
+        public const float JUMP_VELOCITY = -10f;
+        public const float JUMP_STOP_FACTOR = 0.6f;
+        public const float MAX_RUN_SPEED = 5;
+        public const float AIR_MOVEMENT_SCALE = 10;
+        public const float GROUND_MOVEMENT_SCALE = 20;
 
+        private Model model3D;
+
+        private Fixture mTorso;
+        private Fixture mFeet;
         private AnimatedVariable<float, float> mModelRotation;
+
+        public new PlayScreen Screen
+        {
+            get {
+                return (PlayScreen) base.Screen;
+            }
+            set {
+                base.Screen = (PlayScreen) value;
+            }
+        }
 
         public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, Direction upDir )
             : base( cube.Game, screen, cube, worldPos, upDir )
@@ -41,27 +56,17 @@ namespace CyberCube
                 } );
         }
 
-        public override void Reset( Vector3 worldPos, Direction upDir )
-        {
-            base.Reset( worldPos, upDir );
-        }
-
         protected override void LoadContent()
         {
             base.LoadContent();
             model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
         }
 
-        private Fixture mTorso;
-        private Fixture mFeet;
-
-        public int mNumFootContacts;
-
-        public override bool FreeFall
+        protected override void ApplyRotation( CompassDirection dir )
         {
-            get {
-                return mNumFootContacts == 0;
-            }
+            base.ApplyRotation( dir );
+            mModelRotation.Value = Rotation;
+            Cube.Rotate( dir );
         }
 
         protected override Body CreateBody( World world )
@@ -74,25 +79,16 @@ namespace CyberCube
                 5.ToUnits(),
                 5.ToUnits(),
                 0 );
-
             FixtureFactory.AttachPolygon( verts, 1, body, "torso" );
 
-            //mTorso = FixtureFactory.AttachRectangle(
-            //    25.ToUnits(),
-            //    50.ToUnits(),
-            //    1,
-            //    Vector2.Zero,
-            //    body,
-            //    "torso" );
-
-            mFeet = FixtureFactory.AttachRectangle(
+            var feet = FixtureFactory.AttachRectangle(
                 20.ToUnits(),
                 10.ToUnits(),
                 1,
                 new Vector2( 0, 25 ).ToUnits(),
                 body,
                 "feet" );
-            mFeet.IsSensor = true;
+            feet.IsSensor = true;
 
             return body;
         }
@@ -105,38 +101,10 @@ namespace CyberCube
             mFeet = Body.FindFixture( "feet" );
 
             mTorso.OnCollision += Torso_OnCollision;
-
             mTorso.OnCollision += Torso_OnDoorCollision;
 
             mFeet.OnSeparation += Feet_OnSeparation;
-
-            mFeet.OnCollision += ( a, b, c ) => {
-                if ( !b.IsSensor && b.UserData is Flat )
-                {
-                    var diff = MathHelper.WrapAngle( UpDir.Angle - Rotation );
-                    Rotation = Rotation + diff;
-                }
-                return true;
-            };
-        }
-
-        private bool BeginFeetContact( Contact contact )
-        {
-            if ( contact.FixtureA.UserData as string == "feet"
-                 || contact.FixtureB.UserData as string == "feet" )
-            {
-                ++mNumFootContacts;
-            }
-            return true;
-        }
-
-        private void EndFeetContact( Contact contact )
-        {
-            if ( contact.FixtureA.UserData as string == "feet"
-                 || contact.FixtureB.UserData as string == "feet" )
-            {
-                --mNumFootContacts;
-            }
+            //mFeet.OnCollision += Feet_OnCollision;
         }
 
         public override void Initialize()
@@ -155,51 +123,6 @@ namespace CyberCube
             Body.AdHocGravity = Vector2.UnitY;
             Body.CollisionCategories = Category.Cat2;
             Body.Mass = 68;
-
-            pixel = new Texture2D( GraphicsDevice, 3, 3 );
-            pixel.SetData( new[] { Color.White, Color.White, Color.White,
-                                   Color.White, Color.White, Color.White,
-                                   Color.White, Color.White, Color.White } );
-
-			aspectRatio = GraphicsDevice.Viewport.AspectRatio;
-        }
-
-        private bool Torso_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
-        {
-            if ( contact.IsTouching && !fixtureB.IsSensor
-                 && contact.Manifold.Type == ManifoldType.FaceA
-                 && contact.Manifold.PointCount >= 1 )
-            {
-                Vector2 groundNormal = contact.Manifold.LocalNormal.Rotate( fixtureB.Body.Rotation );
-                float groundNormalAngle = (float) Math.Atan2( groundNormal.Y, groundNormal.X ) + MathHelper.PiOver2;
-
-                if ( MathTools.AnglesWithinRange( Rotation, groundNormalAngle, MathHelper.PiOver4 ) )
-                    Rotation = groundNormalAngle;
-
-                return true;
-            }
-            return contact.IsTouching;
-        }
-
-        private bool Torso_OnDoorCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
-        {
-            if ( fixtureB.UserData as SolidDescriptor == new SolidDescriptor( "end_door" )
-                 && MathTools.AnglesWithinRange( Rotation, fixtureB.Body.Rotation, 0 ) )
-            {
-                this.Screen.Back();
-            }
-
-            return contact.IsTouching;
-        }
-
-        private void Feet_OnSeparation( Fixture fixtureA, Fixture fixtureB )
-        {
-            if ( fixtureB.Body.BodyType != BodyType.Dynamic
-                 && fixtureB.UserData is Convex
-                 && !IsJumping )
-            {
-                ApplyRelativeLinearImpulse( Vector2.UnitY * Velocity.Length() * 2 );
-            }
         }
 
         public void ApplyAngularImpulse( float impulse )
@@ -228,13 +151,13 @@ namespace CyberCube
                 return;
 
             IsJumping = true;
-            velocity.Y = -10f;
+            velocity.Y = JUMP_VELOCITY;
         }
 
         private void JumpStop( ref Vector2 velocity )
         {
             if ( velocity.Y < 0 )
-                velocity.Y *= 0.6f;
+                velocity.Y *= JUMP_STOP_FACTOR;
         }
 
         public override void Update( GameTime gameTime )
@@ -242,65 +165,62 @@ namespace CyberCube
             var input = Game.Input;
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
+            #region Rotation
             if ( mNumFootContacts == 1 && !IsJumping || FreeFall && !IsJumping )
                 Rotation = UpDir.Angle;
 
             if ( Game.GameProperties.AllowManualGravity )
             {
                 if ( input.GetAction( Action.RotateClockwise, this ) )
-                    UpDir = Direction.FromAngle( -Rotation + (MathHelper.PiOver4 + 0.0001f) );
+                    UpDir = Direction.FromAngle( Rotation - (MathHelper.PiOver4 + 0.0001f) );
 
                 if ( input.GetAction( Action.RotateAntiClockwise, this ) )
-                    UpDir = Direction.FromAngle( -Rotation - (MathHelper.PiOver4 + 0.0001f) );
+                    UpDir = Direction.FromAngle( Rotation + (MathHelper.PiOver4 + 0.0001f) );
             }
+            #endregion
 
-            var actionRight = input.GetAction( Action.MoveRight, this );
-            var actionLeft = input.GetAction( Action.MoveLeft, this );
-
+            // Rotation-normalized velocity proxy
             Vector2 velocity = Velocity.Rotate( -Rotation );
 
-            float movementScale = FreeFall ? 10 : 20;
+            #region Running
+            float movementScale = FreeFall ? AIR_MOVEMENT_SCALE : GROUND_MOVEMENT_SCALE;
+            var actionRight = input.GetAction( Action.MoveRight, this );
+            var actionLeft = input.GetAction( Action.MoveLeft, this );
 
             if ( !(actionRight || actionLeft) )
                 velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
 
             velocity.X += actionRight * (movementScale + 1) * seconds;
             velocity.X -= actionLeft * (movementScale + 1) * seconds;
+            velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
+            #endregion
 
+            #region Jumping
             if ( input.GetAction( Action.Jump, this ) )
-                this.Jump( ref velocity );
+                Jump( ref velocity );
 
             if ( input.GetAction( Action.JumpStop, this ) )
-                this.JumpStop( ref velocity );
+                JumpStop( ref velocity );
 
-            velocity.X = MathHelper.Clamp( velocity.X, -5, +5 );
             if ( velocity.Y >= 0 && !FreeFall )
                 IsJumping = false;
+            #endregion
 
             Velocity = velocity.Rotate( Rotation );
 
             // ACTOR UPDATE \\
             base.Update( gameTime );
 
-
             mModelRotation.AnimateValue( Rotation );
             mModelRotation.Update( MathHelper.TwoPi * seconds );
 
-
             Vector3 pos = Normal * Cube.CameraDistance;
-            pos += WorldPosition * 2f;
+            pos += WorldPosition * 2;
             pos.Normalize();
 
-            Screen.Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
             Screen.Camera.Target = WorldPosition;
+            Screen.Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
             Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ) );
-        }
-
-        protected override void ApplyRotation( CompassDirection dir )
-        {
-            base.ApplyRotation( dir );
-            mModelRotation.Value = Rotation;
-            Cube.Rotate( dir );
         }
 
         public override void Draw( GameTime gameTime )

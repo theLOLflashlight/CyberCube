@@ -1,12 +1,8 @@
-﻿using CyberCube.Physics;
+﻿using CyberCube.Actors;
 using CyberCube.Screens;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
 
 namespace CyberCube.Levels
 {

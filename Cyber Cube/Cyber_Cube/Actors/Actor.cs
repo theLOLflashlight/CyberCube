@@ -8,7 +8,7 @@ using FarseerPhysics.Factories;
 using CyberCube.Screens;
 using CyberCube.Physics;
 
-namespace CyberCube
+namespace CyberCube.Actors
 {
     public abstract class Actor : DrawableCubeScreenGameComponent
     {
@@ -95,7 +95,7 @@ namespace CyberCube
         public Direction UpDir
         {
             get {
-                return Direction.FromAngle( -Rotation );
+                return Direction.FromAngle( Rotation );
             }
             set {
                 Rotation = value.Angle;
@@ -103,8 +103,6 @@ namespace CyberCube
         }
 
         private float mRotation;
-
-        //private Tools.AnimatedProperty< float, float > mAnimRotation;
 
         public float Rotation
         {
@@ -142,15 +140,6 @@ namespace CyberCube
             UpDir = upDir;
 
             CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
-        }
-
-        public virtual void Reset( Vector3 worldPos, Direction upDir )
-        {
-            mWorldPosition = worldPos;
-            UpDir = upDir;
-
-            CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
-            this.Initialize();
         }
 
         protected virtual Body CreateBody( World world )

@@ -59,7 +59,18 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionEnum.cs" />
-    <Compile Include="Actor.cs" />
+    <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\Player.cs" />
+    <Compile Include="Actors\PlayerDebug.cs" />
+    <Compile Include="Actors\PlayerPhysicsHandlers.cs" />
+    <Compile Include="Brushes\BodyTypeBrush.cs" />
+    <Compile Include="Brushes\BoxBrush.cs" />
+    <Compile Include="Brushes\CornerBrush.cs" />
+    <Compile Include="Brushes\EndDoorBrush.cs" />
+    <Compile Include="Brushes\HandBrush.cs" />
+    <Compile Include="Brushes\IEditBrush.cs" />
+    <Compile Include="Brushes\PlatformBrush.cs" />
+    <Compile Include="Brushes\QuarterpipeBrush.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CubeFacePhysics.cs" />
     <Compile Include="CubeGameObjects.cs" />
@@ -89,19 +100,10 @@
     <Compile Include="Physics\Quaterpipe.cs" />
     <Compile Include="Physics\Solid.cs" />
     <Compile Include="Physics\SolidDescriptor.cs" />
-    <Compile Include="Player.cs" />
     <Compile Include="Properties\AssemblyInfo.cs" />
     <Compile Include="Program.cs" />
     <Compile Include="CubeGame.cs" />
     <Compile Include="RuntimeProperties.cs" />
-    <Compile Include="Screens\Brushes\BodyTypeBrush.cs" />
-    <Compile Include="Screens\Brushes\BoxBrush.cs" />
-    <Compile Include="Screens\Brushes\CornerBrush.cs" />
-    <Compile Include="Screens\Brushes\EndDoorBrush.cs" />
-    <Compile Include="Screens\Brushes\HandBrush.cs" />
-    <Compile Include="Screens\Brushes\IEditBrush.cs" />
-    <Compile Include="Screens\Brushes\PlatformBrush.cs" />
-    <Compile Include="Screens\Brushes\QuarterpipeBrush.cs" />
     <Compile Include="Screens\GameScreen.cs" />
     <Compile Include="Screens\MenuScreen.cs" />
     <Compile Include="Screens\PauseScreen.cs" />
@@ -109,7 +111,6 @@
     <Compile Include="Screens\EditScreen.cs" />
     <Compile Include="Screens\PlayScreen.cs" />
     <Compile Include="Screens\ScreenManager.cs" />
-    <Compile Include="Solid2.cs" />
     <Compile Include="StorageManager.cs" />
     <Compile Include="Tools\AnimatedProperty.cs" />
     <Compile Include="Tools\AnimatedVariable.cs" />

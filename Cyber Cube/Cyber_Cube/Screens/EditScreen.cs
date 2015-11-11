@@ -1,15 +1,8 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Text;
-using Microsoft.Xna.Framework;
-using CyberCube.Levels;
-using Microsoft.Xna.Framework.Graphics;
-using CyberCube.Physics;
-using FarseerPhysics.Dynamics;
-using CyberCube.Screens.Brushes;
+using CyberCube.Brushes;
 using CyberCube.IO;
-using FarseerPhysics.Common;
+using CyberCube.Levels;
+using Microsoft.Xna.Framework;
+using System;
 
 namespace CyberCube.Screens
 {

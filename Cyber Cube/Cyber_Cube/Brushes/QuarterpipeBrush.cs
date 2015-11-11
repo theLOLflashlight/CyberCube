@@ -9,9 +9,9 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Screens.Brushes
+namespace CyberCube.Brushes
 {
-    public class CornerBrush : IEditBrush
+    public class QuarterpipeBrush : IEditBrush
     {
         private EditableCube.Face mFace;
 
@@ -25,7 +25,7 @@ namespace CyberCube.Screens.Brushes
             get; set;
         }
 
-        public CornerBrush( CubeGame game )
+        public QuarterpipeBrush( CubeGame game )
         {
             Game = game;
         }
@@ -37,7 +37,7 @@ namespace CyberCube.Screens.Brushes
 
         public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
         {
-            mTexture = Corner.CreateCornerTexture(
+            mTexture = Quarterpipe.CreateQuarterpipeTexture(
                 Game.GraphicsDevice,
                 100,
                 new Color( 255, 255, 255, 128 ) );
@@ -62,19 +62,19 @@ namespace CyberCube.Screens.Brushes
 
             if ( mousePos != null )
             {
-                Corner corner = new Corner(
+                Quarterpipe qpipe = new Quarterpipe(
                     face.Game,
                     face.World,
                     100,
                     mousePos.Value,
-                    Corner.Type.SE );
+                    Quarterpipe.Type.SE );
 
-                corner.Body.UseAdHocGravity = true;
-                corner.Body.AdHocGravity =
+                qpipe.Body.UseAdHocGravity = true;
+                qpipe.Body.AdHocGravity =
                     Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
-                face.AddSolid( corner );
+                face.AddSolid( qpipe );
             }
 
             Cancel();

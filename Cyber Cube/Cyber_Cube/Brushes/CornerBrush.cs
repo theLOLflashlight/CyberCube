@@ -9,22 +9,14 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 
-namespace CyberCube.Screens.Brushes
+namespace CyberCube.Brushes
 {
-    public class BoxBrush : IEditBrush
+    public class CornerBrush : IEditBrush
     {
         private EditableCube.Face mFace;
 
-        private RectangleF mRec;
         private Vector2 mStartPos;
-
-        private bool ValidRec
-        {
-            get {
-                return mRec.Width >= 0.5.ToPixels()
-                       && mRec.Height >= 0.5.ToPixels();
-            }
-        }
+        private Vector2 mCurrentPos;
 
         private Texture2D mTexture;
 
@@ -33,7 +25,7 @@ namespace CyberCube.Screens.Brushes
             get; set;
         }
 
-        public BoxBrush( CubeGame game )
+        public CornerBrush( CubeGame game )
         {
             Game = game;
         }
@@ -45,12 +37,14 @@ namespace CyberCube.Screens.Brushes
 
         public void Start( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
         {
-            mTexture = new Texture2D( Game.GraphicsDevice, 1, 1 );
-            mTexture.SetData( new[] { Color.White } );
+            mTexture = Corner.CreateCornerTexture(
+                Game.GraphicsDevice,
+                100,
+                new Color( 255, 255, 255, 128 ) );
 
             mFace = face;
             Started = true;
-            mStartPos = EditScreen.SnapVector( mousePos, 25 );
+            mStartPos = mousePos;
         }
 
         public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
@@ -58,13 +52,7 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mousePos = EditScreen.SnapVector( mousePos, 25 );
-
-            mRec.X = Math.Min( mStartPos.X, mousePos.X );
-            mRec.Y = Math.Min( mStartPos.Y, mousePos.Y );
-
-            mRec.Width = Math.Abs( mStartPos.X - mousePos.X );
-            mRec.Height = Math.Abs( mStartPos.Y - mousePos.Y );
+            mCurrentPos = mousePos;
         }
 
         public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
@@ -72,20 +60,21 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            if ( ValidRec )
+            if ( mousePos != null )
             {
-                Box box = new Box(
+                Corner corner = new Corner(
                     face.Game,
                     face.World,
-                    mRec,
-                    BodyType.Static );
+                    100,
+                    mousePos.Value,
+                    Corner.Type.SE );
 
-                box.Body.UseAdHocGravity = true;
-                box.Body.AdHocGravity =
+                corner.Body.UseAdHocGravity = true;
+                corner.Body.AdHocGravity =
                     Vector2.UnitY.Rotate( face.Cube.UpDir.Angle ).Rounded()
                     * 9.8f;
 
-                face.AddSolid( box );
+                face.AddSolid( corner );
             }
 
             Cancel();
@@ -95,8 +84,8 @@ namespace CyberCube.Screens.Brushes
         {
             mFace = null;
             Started = false;
-            mRec = Rectangle.Empty;
             mStartPos = Vector2.Zero;
+            mCurrentPos = Vector2.Zero;
             mTexture = null;
         }
 
@@ -105,11 +94,18 @@ namespace CyberCube.Screens.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            Color color = ValidRec
-                          ? new Color( 0, 0, 0, 255 )
-                          : new Color( 0, 0, 0, 128 );
-
-            spriteBatch.Draw( mTexture, (Rectangle) mRec, color );
+            spriteBatch.Draw(
+                mTexture,
+                mCurrentPos,
+                null,
+                Color.Black,
+                0,//Body.Rotation,
+                new Vector2(
+                    mTexture.Width,
+                    mTexture.Height ) / 2,
+                Vector2.One,
+                SpriteEffects.None,
+                0 );
         }
     }
 }

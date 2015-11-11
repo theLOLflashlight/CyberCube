@@ -1,4 +1,5 @@
-﻿using CyberCube.Physics;
+﻿using CyberCube.Brushes;
+using CyberCube.Physics;
 using CyberCube.Screens;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
