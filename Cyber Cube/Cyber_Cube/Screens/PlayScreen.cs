@@ -21,7 +21,50 @@ namespace CyberCube.Screens
 
         public Player Player
         {
-            get; private set;
+            get {
+                return mPlayerClones.Count > 0
+                    ? mPlayerClones[ mActivePlayerIndex ]
+                    : null;
+            }
+        }
+
+        private int mActivePlayerIndex = 0;
+
+        private List< Player > mPlayerClones = new List<Player>();
+
+        public void AddPlayer( Vector3 pos, float rotation )
+        {
+            Player clone = new Player( this, Cube, pos, rotation );
+
+            mPlayerClones.Add( clone );
+            Components.Add( clone );
+
+            clone.Initialize();
+        }
+
+        public void RemovePlayer( Player player )
+        {
+            Components.Remove( player );
+            mPlayerClones.Remove( player );
+
+            player.Dispose();
+
+            if ( mPlayerClones.Count == 0 )
+                EndLevel();
+            else
+                mActivePlayerIndex %= mPlayerClones.Count;
+        }
+
+        public void NextClone()
+        {
+            mActivePlayerIndex += 1;
+            mActivePlayerIndex %= mPlayerClones.Count;
+        }
+
+        public void PreviousClone()
+        {
+            mActivePlayerIndex += mPlayerClones.Count - 1;
+            mActivePlayerIndex %= mPlayerClones.Count;
         }
 
         public List<Enemy> Enemies
@@ -60,12 +103,11 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game, PlayableCube playCube )
             : base( game, playCube )
         {
-            Player = new Player( this, Cube, Vector3.UnitZ, Direction.Up );
             Enemies = new List<Enemy>();
             Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
             Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
 
-            Components.Add( Player );
+            //Components.Add( Player );
             foreach( Enemy enemy in Enemies ) 
             {
                 Components.Add( enemy );
@@ -77,20 +119,40 @@ namespace CyberCube.Screens
 
         public void EndLevel()
         {
+            if ( !mEndLevel )
+                this.Back();
             mEndLevel = true;
         }
 
         public override void Initialize()
         {
             base.Initialize();
+
+            StartPosition start = Cube.StartPosition;
+            AddPlayer( start.Position, start.Rotation );
         }
 
         public override void Update( GameTime gameTime )
         {
+            var input = Game.Input;
+
+            if ( !input.HasFocus || input.CheckFocusType<Player>() )
+                input.Focus = Player;
+
             base.Update( gameTime );
 
             if ( mEndLevel )
-                this.Back();
+                return;
+
+            Player p = Player;
+
+            Vector3 pos = p.Normal * Cube.CameraDistance;
+            pos += p.WorldPosition * 2;
+            pos.Normalize();
+
+            Camera.Target = p.WorldPosition;
+            Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
+            Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
         }
 
         public override void Draw( GameTime gameTime )
@@ -99,7 +161,7 @@ namespace CyberCube.Screens
 
             mSpriteBatch.Begin();
 #if DEBUG
-            mSpriteBatch.DrawString( sFont, $"collisions: {Player.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
+            mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
 #endif
             mSpriteBatch.End();
         }

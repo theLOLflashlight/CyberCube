@@ -56,8 +56,6 @@ namespace CyberCube.Levels
                     RotateAntiClockwise();
             }
 
-            Screen.Camera.Target = Screen.Player.WorldPosition;
-
             base.Update( gameTime );
         }
 

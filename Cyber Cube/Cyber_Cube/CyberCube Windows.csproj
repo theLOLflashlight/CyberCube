@@ -64,6 +64,7 @@
     <Compile Include="Actors\Actor.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />
     <Compile Include="Actors\PlayerPhysicsHandlers.cs" />
+    <Compile Include="Brushes\StartPositionBrush.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CubeGameObjects.cs" />
     <Compile Include="CubeUtils.cs" />
@@ -76,6 +77,7 @@
     <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
     <Compile Include="Levels\EndDoor.cs" />
+    <Compile Include="Levels\StartPosition.cs" />
     <Compile Include="Physics\Corner.cs" />
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />

@@ -154,6 +154,15 @@ namespace CyberCube.Actors
             return body;
         }
 
+        protected override void Dispose( bool disposing )
+        {
+            base.Dispose( disposing );
+            if ( disposing )
+            {
+                Body.Dispose();
+            }
+        }
+
         protected virtual void ReconstructBody()
         {
         }

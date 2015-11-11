@@ -52,7 +52,7 @@ namespace CyberCube
                         Game,
                         World,
                         new Rectangle( 360, 0, 100, 100 ),
-                        BodyType.Dynamic, 30, Category.Cat2 );
+                        BodyType.Dynamic, 30, Category.Cat3 );
 
                 box.Body.UseAdHocGravity = true;
                 box.Body.AdHocGravity = new Vector2( 0, 9.8f );

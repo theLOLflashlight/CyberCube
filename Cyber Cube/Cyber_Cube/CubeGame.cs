@@ -147,8 +147,13 @@ namespace CyberCube
             Input.AddBinding( Action.MoveRight, Keys.Right );
             Input.AddBinding( Action.MoveUp, Keys.Up );
             Input.AddBinding( Action.MoveDown, Keys.Down );
+
             Input.AddPressedBinding( Action.Jump, Keys.Up );
             Input.AddReleasedBinding( Action.JumpStop, Keys.Up );
+
+            Input.AddPressedBinding( Action.PlaceClone, Keys.C );
+            Input.AddPressedBinding( Action.CycleClone, Keys.V );
+            Input.AddPressedBinding( Action.DeleteClone, Keys.X );
 
             Input.AddPressedBinding( Action.RotateLeft, Keys.Left );
             Input.AddPressedBinding( Action.RotateRight, Keys.Right );
@@ -164,6 +169,7 @@ namespace CyberCube
             Input.AddBinding( Action.MoveRight, Buttons.DPadRight );
             Input.AddBinding( Action.MoveUp, Buttons.DPadUp );
             Input.AddBinding( Action.MoveDown, Buttons.DPadDown );
+
             Input.AddPressedBinding( Action.Jump, Buttons.A );
             Input.AddReleasedBinding( Action.JumpStop, Buttons.A );
 

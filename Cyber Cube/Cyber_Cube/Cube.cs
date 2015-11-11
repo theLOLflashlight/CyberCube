@@ -9,6 +9,7 @@ using CyberCube.Physics;
 using FarseerPhysics.Dynamics;
 using CyberCube.Screens;
 using FarseerPhysics.Common;
+using CyberCube.Levels;
 
 namespace CyberCube
 {
@@ -34,6 +35,8 @@ namespace CyberCube
         protected Vector3 mPosition = Vector3.Zero;
         protected Vector3 mRotation = Vector3.Zero;
         protected Vector3 mScale = Vector3.One;
+
+        public StartPosition StartPosition = new StartPosition( Vector3.UnitZ, 0 );
 
         public float CameraDistance
         {

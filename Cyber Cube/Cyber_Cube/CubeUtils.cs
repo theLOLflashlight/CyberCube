@@ -84,6 +84,11 @@ namespace CyberCube
                        + new Vector2( SIZE / 2f );
             }
 
+            public Vector3 ConvertFaceToCube( Vector2 vec2d )
+            {
+                return Cube.ComputeCubePosition( vec2d, this );
+            }
+
         }
 
         public Face GetFaceFromPosition( Vector3 vec )
@@ -132,6 +137,18 @@ namespace CyberCube
                 return mRightFace;
 
             throw new Tools.WtfException();
+        }
+
+        public Vector3 ComputeCubePosition( Vector2 vec2d, Face face )
+        {
+            const float adjustingFactor = Cube.Face.SIZE / 2;
+            vec2d -= new Vector2( adjustingFactor );
+            vec2d /= adjustingFactor;
+
+            return new Vector3( vec2d.X, -vec2d.Y, 0 )
+                       .Transform( Utils.RotateOntoQ( Vector3.UnitZ, face.Normal ) )
+                       .Rotate( face.Normal, face.Rotation )
+                       + face.Normal;
         }
 
 		public Vector2 ComputeFacePosition( Vector3 worldPosition, Face cubeFace )

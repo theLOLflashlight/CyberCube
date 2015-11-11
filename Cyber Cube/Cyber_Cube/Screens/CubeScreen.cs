@@ -5,6 +5,7 @@ using System.Text;
 using Microsoft.Xna.Framework;
 using CyberCube.Levels;
 using Microsoft.Xna.Framework.Input;
+using CyberCube.Actors;
 
 namespace CyberCube.Screens
 {
@@ -68,7 +69,8 @@ namespace CyberCube.Screens
         {
             base.Update( gameTime );
 
-            if ( !Game.Input.HasFocus && Game.Input.Keyboard_WasKeyPressed( Keys.Escape ) )
+            if ( (!Game.Input.HasFocus || Game.Input.CheckFocusType<Player>())
+                 && Game.Input.Keyboard_WasKeyPressed( Keys.Escape ) )
                 Back();
         }
 

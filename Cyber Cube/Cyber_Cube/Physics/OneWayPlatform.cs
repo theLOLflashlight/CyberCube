@@ -54,7 +54,7 @@ namespace CyberCube.Physics
                                BodyType bodyType = BodyType.Static,
                                float density = 1,
                                Category categories = Category.Cat1,
-                               Category oneWayCategories = Category.Cat2 )
+                               Category oneWayCategories = Category.Cat2 | Category.Cat3 )
             : base( game, world, line.Center.ToUnits(), 0, new OneWayPlatformMaker( line ) )
         {
             if ( !line.IsHorizontal && !line.IsVertical )

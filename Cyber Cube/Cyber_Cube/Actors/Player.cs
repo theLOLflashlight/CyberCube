@@ -43,13 +43,13 @@ namespace CyberCube.Actors
             }
         }
 
-        public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, Direction upDir )
-            : base( cube.Game, screen, cube, worldPos, upDir )
+        public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation )
+            : base( cube.Game, screen, cube, worldPos, Direction.FromAngle( rotation ) )
         {
             this.Visible = true;
             this.DrawOrder = 1;
 
-            mModelRotation = new AnimatedVariable<float, float>(
+            mModelRotation = new AnimatedVariable<float, float>( rotation,
                 (f0, f1, step) => {
                     var diff = MathHelper.WrapAngle( f1 - f0 );
                     return f0.Lerp( f0 + diff, step );
@@ -104,7 +104,7 @@ namespace CyberCube.Actors
             mTorso.OnCollision += Torso_OnDoorCollision;
 
             mFeet.OnSeparation += Feet_OnSeparation;
-            //mFeet.OnCollision += Feet_OnCollision;
+            mFeet.OnCollision += Feet_OnCollision;
         }
 
         public override void Initialize()
@@ -122,6 +122,7 @@ namespace CyberCube.Actors
             Body.UseAdHocGravity = true;
             Body.AdHocGravity = Vector2.UnitY;
             Body.CollisionCategories = Category.Cat2;
+            Body.CollidesWith = Category.All ^ Category.Cat2;
             Body.Mass = 68;
         }
 
@@ -214,13 +215,14 @@ namespace CyberCube.Actors
             mModelRotation.AnimateValue( Rotation );
             mModelRotation.Update( MathHelper.TwoPi * seconds );
 
-            Vector3 pos = Normal * Cube.CameraDistance;
-            pos += WorldPosition * 2;
-            pos.Normalize();
+            if ( input.GetAction( Action.PlaceClone, this ) )
+                Screen.AddPlayer( WorldPosition, Rotation );
 
-            Screen.Camera.Target = WorldPosition;
-            Screen.Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
-            Screen.Camera.AnimateUpVector( CubeFace.UpVec.Rotate( Normal, -Rotation ) );
+            if ( input.GetAction( Action.CycleClone, this ) )
+                Screen.NextClone();
+
+            if ( input.GetAction( Action.DeleteClone, this ) )
+                Screen.RemovePlayer( this );
         }
 
         public override void Draw( GameTime gameTime )

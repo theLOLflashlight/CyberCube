@@ -71,6 +71,7 @@
     <Compile Include="Brushes\IEditBrush.cs" />
     <Compile Include="Brushes\PlatformBrush.cs" />
     <Compile Include="Brushes\QuarterpipeBrush.cs" />
+    <Compile Include="Brushes\StartPositionBrush.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CubeFacePhysics.cs" />
     <Compile Include="CubeGameObjects.cs" />
@@ -92,6 +93,7 @@
     <Compile Include="Levels\EditableCube.cs" />
     <Compile Include="Levels\EndDoor.cs" />
     <Compile Include="Levels\PlayableCube.cs" />
+    <Compile Include="Levels\StartPosition.cs" />
     <Compile Include="Line.cs" />
     <Compile Include="Physics\Box.cs" />
     <Compile Include="Physics\Constants.cs" />

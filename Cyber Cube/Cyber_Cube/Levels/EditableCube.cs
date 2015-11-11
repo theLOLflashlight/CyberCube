@@ -15,9 +15,12 @@ namespace CyberCube.Levels
 {
     public class EditableCube : Cube
     {
+        private static Model sModel3D;
+
         public static void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
+            sModel3D = content.Load<Model>( "Models\\playerAlpha3D" );
         }
 
         public new EditScreen Screen
@@ -54,6 +57,7 @@ namespace CyberCube.Levels
             while ( editFaces.MoveNext() && playFaces.MoveNext() )
                 playFaces.Current.CopySolids( editFaces.Current );
 
+            cube.StartPosition = this.StartPosition;
             return cube;
         }
 
@@ -85,6 +89,37 @@ namespace CyberCube.Levels
             }
 
             base.Update( gameTime );
+        }
+
+        public override void Draw( GameTime gameTime )
+        {
+            base.Draw( gameTime );
+
+            Matrix[] transforms = new Matrix[ sModel3D.Bones.Count ];
+            sModel3D.CopyAbsoluteBoneTransformsTo( transforms );
+
+            Cube.Face face = GetFaceFromPosition( StartPosition.Position );
+
+            // Draw the model. A model can have multiple meshes, so loop.
+            foreach ( ModelMesh mesh in sModel3D.Meshes )
+            {
+                // This is where the mesh orientation is set, as well 
+                // as our camera and projection.
+                foreach ( BasicEffect effect in mesh.Effects )
+                {
+                    effect.EnableDefaultLighting();
+                    effect.World = transforms[ mesh.ParentBone.Index ]
+                        * Matrix.CreateScale( 0.0006f )
+                        * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
+                        * Vector3.UnitY.RotateOntoM( face.UpVec )
+                        * Matrix.CreateFromAxisAngle( face.Normal, -StartPosition.Rotation )
+                        * Matrix.CreateTranslation( StartPosition.Position );
+
+                    Screen.Camera.Apply( effect );
+                }
+                // Draw the mesh, using the effects set above.
+                mesh.Draw();
+            }
         }
 
         public new partial class Face : Cube.Face
