@@ -4,10 +4,16 @@ Microsoft Visual Studio Solution File, Format Version 12.00
 VisualStudioVersion = 14.0.23107.0
 MinimumVisualStudioVersion = 10.0.40219.1
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCube Windows", "Cyber Cube\Cyber_Cube\CyberCube Windows.csproj", "{167B0FD5-FD2F-444E-BBB9-2723201AE65B}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4636C7E1-B845-4B83-B96D-64A11B8A4515} = {4636C7E1-B845-4B83-B96D-64A11B8A4515}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCubeContent", "Cyber Cube\Cyber_CubeContent\CyberCubeContent.contentproj", "{FB88EB67-FC26-4548-9607-B575B694AE10}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "CyberCube Xbox 360", "Cyber Cube\Cyber_Cube\CyberCube Xbox 360.csproj", "{909DC58A-0787-477E-9E5D-75634D5A28C4}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4636C7E1-B845-4B83-B96D-64A11B8A4515} = {4636C7E1-B845-4B83-B96D-64A11B8A4515}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "Farseer Physics XNA", "Cyber Cube\Cyber_Cube\Farseer\Farseer Physics XNA.csproj", "{0A850700-1ABB-4288-A391-6726B90EBEB9}"
 EndProject
@@ -20,8 +26,14 @@ EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnedModelPipeline", "Cyber Cube\Cyber_Cube\SkinnedModel\SkinnedModelPipeline\SkinnedModelPipeline.csproj", "{4636C7E1-B845-4B83-B96D-64A11B8A4515}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnedModelXbox", "Cyber Cube\Cyber_Cube\SkinnedModel\SkinnedModel\SkinnedModelXbox.csproj", "{33670229-CE14-4705-A4C2-CAE8FEF5F520}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4636C7E1-B845-4B83-B96D-64A11B8A4515} = {4636C7E1-B845-4B83-B96D-64A11B8A4515}
+	EndProjectSection
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "SkinnedModelWindows", "Cyber Cube\Cyber_Cube\SkinnedModel\SkinnedModel\SkinnedModelWindows.csproj", "{0D41E29B-829F-4255-BCA5-64DC2677DA6D}"
+	ProjectSection(ProjectDependencies) = postProject
+		{4636C7E1-B845-4B83-B96D-64A11B8A4515} = {4636C7E1-B845-4B83-B96D-64A11B8A4515}
+	EndProjectSection
 EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
@@ -41,14 +53,12 @@ Global
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Debug|x86.ActiveCfg = Debug|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Debug|x86.Build.0 = Debug|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Debug|Xbox 360.ActiveCfg = Debug|x86
-		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Debug|Xbox 360.Build.0 = Debug|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|Any CPU.ActiveCfg = Release|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|Mixed Platforms.Build.0 = Release|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|x86.ActiveCfg = Release|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|x86.Build.0 = Release|x86
 		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|Xbox 360.ActiveCfg = Release|x86
-		{167B0FD5-FD2F-444E-BBB9-2723201AE65B}.Release|Xbox 360.Build.0 = Release|x86
 		{FB88EB67-FC26-4548-9607-B575B694AE10}.Debug|Any CPU.ActiveCfg = Debug|x86
 		{FB88EB67-FC26-4548-9607-B575B694AE10}.Debug|Mixed Platforms.ActiveCfg = Debug|x86
 		{FB88EB67-FC26-4548-9607-B575B694AE10}.Debug|x86.ActiveCfg = Debug|x86
@@ -79,14 +89,12 @@ Global
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.ActiveCfg = Debug|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|x86.Build.0 = Debug|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|Xbox 360.ActiveCfg = Debug|x86
-		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Debug|Xbox 360.Build.0 = Debug|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|Any CPU.ActiveCfg = Release|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.ActiveCfg = Release|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|x86.Build.0 = Release|x86
 		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|Xbox 360.ActiveCfg = Release|x86
-		{0A850700-1ABB-4288-A391-6726B90EBEB9}.Release|Xbox 360.Build.0 = Release|x86
 		{448C63FB-8177-4CC6-B2AD-1D44031B3C2E}.Debug|Any CPU.ActiveCfg = Debug|Xbox 360
 		{448C63FB-8177-4CC6-B2AD-1D44031B3C2E}.Debug|Mixed Platforms.ActiveCfg = Debug|Xbox 360
 		{448C63FB-8177-4CC6-B2AD-1D44031B3C2E}.Debug|Mixed Platforms.Build.0 = Debug|Xbox 360
@@ -105,7 +113,6 @@ Global
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|x86.ActiveCfg = Debug|x86
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|x86.Build.0 = Debug|x86
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|Xbox 360.ActiveCfg = Debug|x86
-		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Debug|Xbox 360.Build.0 = Debug|x86
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Release|Any CPU.ActiveCfg = Release|x86
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{FC7845FA-13FE-4FF8-822A-A577F3F59B00}.Release|Mixed Platforms.Build.0 = Release|x86
@@ -155,14 +162,12 @@ Global
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Debug|x86.ActiveCfg = Debug|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Debug|x86.Build.0 = Debug|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Debug|Xbox 360.ActiveCfg = Debug|Xbox 360
-		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Debug|Xbox 360.Build.0 = Debug|Xbox 360
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|Any CPU.ActiveCfg = Release|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|Mixed Platforms.ActiveCfg = Release|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|Mixed Platforms.Build.0 = Release|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|x86.ActiveCfg = Release|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|x86.Build.0 = Release|x86
 		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|Xbox 360.ActiveCfg = Release|Xbox 360
-		{0D41E29B-829F-4255-BCA5-64DC2677DA6D}.Release|Xbox 360.Build.0 = Release|Xbox 360
 	EndGlobalSection
 	GlobalSection(SolutionProperties) = preSolution
 		HideSolutionNode = FALSE
