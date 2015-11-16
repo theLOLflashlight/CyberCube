@@ -69,19 +69,19 @@ namespace CyberCube.Actors
 
             //model3D = Game.Content.Load<Model>("Models\\playerBeta");
 
-            mSkinData = model3D.Tag as SkinningData;
+            //mSkinData = model3D.Tag as SkinningData;
 
-            if (mSkinData == null)
-                throw new InvalidOperationException
-                    ("This model does not contain a SkinningData tag.");
+            //if (mSkinData == null)
+            //    throw new InvalidOperationException
+            //        ("This model does not contain a SkinningData tag.");
 
             // Create an animation player, and start decoding an animation clip.
-            mAnimationPlayer = new AnimationPlayer(mSkinData);
+            //mAnimationPlayer = new AnimationPlayer(mSkinData);
 
             // Default animation clip
-            mCurrentClip = mSkinData.AnimationClips["Armature|idle.001"];
+            //mCurrentClip = mSkinData.AnimationClips["Armature|idle.001"];
 
-            mAnimationPlayer.StartClip(mCurrentClip);
+            //mAnimationPlayer.StartClip(mCurrentClip);
         }
 
         protected override void ApplyRotation( CompassDirection dir )
@@ -237,7 +237,7 @@ namespace CyberCube.Actors
             mModelRotation.AnimateValue( Rotation );
             mModelRotation.Update( MathHelper.TwoPi * seconds );
 
-            mAnimationPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+            //mAnimationPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
 
             if ( input.GetAction( Action.PlaceClone, this ) )
                 Screen.AddPlayer( WorldPosition, Rotation );
@@ -252,20 +252,22 @@ namespace CyberCube.Actors
         public override void Draw( GameTime gameTime )
         {
 			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
-			//Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
-			//model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
-            Matrix[] transforms = mAnimationPlayer.GetSkinTransforms();
+			Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
+			model3D.CopyAbsoluteBoneTransformsTo( transforms );
+
+            //Matrix[] transforms = mAnimationPlayer.GetSkinTransforms();
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )
 			{
 				// This is where the mesh orientation is set, as well 
 				// as our camera and projection.
-				foreach ( SkinnedEffect effect in mesh.Effects )
-				{
+				//foreach ( SkinnedEffect effect in mesh.Effects )
+                foreach (BasicEffect effect in mesh.Effects)
+                {
 					effect.EnableDefaultLighting();
-                    effect.Parameters["Bones"].SetValue(transforms);
+                    //effect.Parameters["Bones"].SetValue(transforms);
 					effect.World = transforms[ mesh.ParentBone.Index ]
                         * Matrix.CreateScale( 0.0006f )
                         * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
