@@ -56,6 +56,10 @@
       <Project>{448C63FB-8177-4CC6-B2AD-1D44031B3C2E}</Project>
       <Name>Farseer Physics Xbox 360</Name>
     </ProjectReference>
+    <ProjectReference Include="SkinnedModel\SkinnedModel\SkinnedModelXbox.csproj">
+      <Project>{33670229-CE14-4705-A4C2-CAE8FEF5F520}</Project>
+      <Name>SkinnedModelXbox</Name>
+    </ProjectReference>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="ActionEnum.cs" />

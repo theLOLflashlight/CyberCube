@@ -88,6 +88,13 @@ namespace CyberCube
                 basicEffect.Projection = Projection;
                 basicEffect.View = View;
             }
+            else if(effect is SkinnedEffect)
+            {
+                var skinnedEffect = (SkinnedEffect)effect;
+
+                skinnedEffect.Projection = Projection;
+                skinnedEffect.View = View;
+            }
             else
             {
                 effect.Parameters[ "Projection" ].SetValue( Projection );
