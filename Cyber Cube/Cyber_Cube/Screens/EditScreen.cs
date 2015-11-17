@@ -180,6 +180,13 @@ namespace CyberCube.Screens
 
                     Cube.Load( tokens[ 1 ] );
                     return null;
+
+                case "load2":
+                    if ( tokens.Length != 2 )
+                        return new ConsoleErrorMessage( "Usage: load2 [filename]" );
+
+                    Cube.Load2( tokens[ 1 ] );
+                    return null;
                 }
 
                 var ret = ScreenProperties.Evaluate( command );

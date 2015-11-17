@@ -12,6 +12,11 @@ using System.Text;
 namespace CyberCube
 {
 
+    public enum CubeFaceType
+    {
+        Front, Back, Top, Bottom, Left, Right
+    }
+
     public partial class Cube
     {
         public abstract partial class Face : DrawableCubeGameObject
@@ -38,9 +43,16 @@ namespace CyberCube
                 get; private set;
             }
 
-            public string Name
+            public CubeFaceType Type
             {
                 get; set;
+            }
+
+            public string Name
+            {
+                get {
+                    return Type.ToString();
+                }
             }
 
             public Vector3 Normal
@@ -75,11 +87,11 @@ namespace CyberCube
                 }
             }
 
-            public Face( Cube cube, string name, Vector3 normal, Vector3 up, Direction rotation )
+            public Face( Cube cube, CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )
                 : base( cube.Game )
             {
                 Cube = cube;
-                Name = name;
+                Type = type;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
                 Rotation = -rotation.Angle;

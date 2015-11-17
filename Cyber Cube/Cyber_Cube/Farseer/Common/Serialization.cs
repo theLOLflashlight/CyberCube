@@ -31,6 +31,16 @@ namespace FarseerPhysics.Common
         }
 
         /// <summary>
+        /// Serialize the world to an XML stream
+        /// </summary>
+        /// <param name="world"></param>
+        /// <param name="stream"></param>
+        public static void Serialize(World world, Stream stream)
+        {
+            WorldXmlSerializer.Serialize(world, stream);
+        }
+
+        /// <summary>
         /// Deserialize the world from an XML file
         /// </summary>
         /// <param name="filename"></param>
@@ -40,6 +50,15 @@ namespace FarseerPhysics.Common
             {
                 return WorldXmlDeserializer.Deserialize(fs);
             }
+        }
+
+        /// <summary>
+        /// Deserialize the world from an XML stream
+        /// </summary>
+        /// <param name="stream"></param>
+        public static World Deserialize(Stream stream)
+        {
+            return WorldXmlDeserializer.Deserialize(stream);
         }
     }
 

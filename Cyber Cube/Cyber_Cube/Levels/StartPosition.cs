@@ -6,12 +6,12 @@ using System.Text;
 
 namespace CyberCube.Levels
 {
-    public struct StartPosition
+    public struct CubePosition
     {
         public Vector3 Position;
         public float Rotation;
 
-        public StartPosition( Vector3 pos, float rotation )
+        public CubePosition( Vector3 pos, float rotation )
         {
             Position = pos;
             Rotation = rotation;

@@ -128,7 +128,7 @@ namespace CyberCube.Screens
         {
             base.Initialize();
 
-            StartPosition start = Cube.StartPosition;
+            CubePosition start = Cube.StartPosition;
             AddPlayer( start.Position, start.Rotation );
         }
 

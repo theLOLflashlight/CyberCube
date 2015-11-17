@@ -10,6 +10,8 @@ using FarseerPhysics.Dynamics;
 using CyberCube.Screens;
 using FarseerPhysics.Common;
 using CyberCube.Levels;
+using System.IO;
+using System.Xml.Serialization;
 
 namespace CyberCube
 {
@@ -36,7 +38,7 @@ namespace CyberCube
         protected Vector3 mRotation = Vector3.Zero;
         protected Vector3 mScale = Vector3.One;
 
-        public StartPosition StartPosition = new StartPosition( Vector3.UnitZ, 0 );
+        public CubePosition StartPosition = new CubePosition( Vector3.UnitZ, 0 );
 
         public float CameraDistance
         {
@@ -83,12 +85,12 @@ namespace CyberCube
         {
             Screen = screen;
 
-            mFrontFace = NewFace( "Front", Vector3.UnitZ, Vector3.UnitY, Direction.Up );
-            mBackFace = NewFace( "Back", -Vector3.UnitZ, -Vector3.UnitY, Direction.Right );
-            mTopFace = NewFace( "Top", Vector3.UnitY, -Vector3.UnitZ, Direction.Up );
-            mBottomFace = NewFace( "Bottom", -Vector3.UnitY, Vector3.UnitZ, Direction.Up );
-            mLeftFace = NewFace( "Left", -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
-            mRightFace = NewFace( "Right", Vector3.UnitX, Vector3.UnitZ, Direction.Left );
+            mFrontFace = NewFace( CubeFaceType.Front, Vector3.UnitZ, Vector3.UnitY, Direction.Up );
+            mBackFace = NewFace( CubeFaceType.Back, -Vector3.UnitZ, -Vector3.UnitY, Direction.Right );
+            mTopFace = NewFace( CubeFaceType.Top, Vector3.UnitY, -Vector3.UnitZ, Direction.Up );
+            mBottomFace = NewFace( CubeFaceType.Bottom, -Vector3.UnitY, Vector3.UnitZ, Direction.Up );
+            mLeftFace = NewFace( CubeFaceType.Left, -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
+            mRightFace = NewFace( CubeFaceType.Right, Vector3.UnitX, Vector3.UnitZ, Direction.Left );
 
             mFrontFace.BackgroundColor = Color.Red;
             mBackFace.BackgroundColor = Color.Orange;
@@ -97,14 +99,12 @@ namespace CyberCube
             mLeftFace.BackgroundColor = Color.Purple;
             mRightFace.BackgroundColor = Color.Yellow;
 
-            //ConnectFaces();
-
-            CameraDistance = 4f;
+            CameraDistance = 4;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
         }
 
-        protected abstract Face NewFace( string name, Vector3 normal, Vector3 up, Direction rotation );
+        protected abstract Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation );
 
         protected void ConnectFaces()
         {
@@ -145,16 +145,124 @@ namespace CyberCube
 			mRightFace.OppositeFace = mLeftFace;
         }
 
+        public class CubeFile
+        {
+            public CubePosition StartPosition;
+
+            public string FrontFace;
+            public string BackFace;
+            public string TopFace;
+            public string BottomFace;
+            public string LeftFace;
+            public string RightFace;
+
+            #region Serialization
+            public static void Serialize( CubeFile cube, string filename )
+            {
+                using ( StreamWriter writer = new StreamWriter( filename, false ) )
+                    new XmlSerializer( typeof( CubeFile ) ).Serialize( writer, cube );
+            }
+
+            public static CubeFile Deserialize( string filename )
+            {
+                using ( StreamReader reader = new StreamReader( filename ) )
+                    return (CubeFile) new XmlSerializer( typeof( CubeFile ) ).Deserialize( reader );
+            }
+
+            private static World StringToWorld( string str )
+            {
+                using ( MemoryStream stream = new MemoryStream( Encoding.UTF8.GetBytes( str ) ) )
+                    return WorldSerializer.Deserialize( stream );
+            }
+
+            private static string WorldToString( World world )
+            {
+                using ( MemoryStream stream = new MemoryStream() )
+                {
+                    WorldSerializer.Serialize( world, stream );
+                    stream.Seek( 0, SeekOrigin.Begin );
+                    using ( StreamReader reader = new StreamReader( stream ) )
+                        return reader.ReadToEnd();
+                }
+            }
+            #endregion
+
+            public World this[ CubeFaceType faceType ]
+            {
+                get {
+                    switch ( faceType )
+                    {
+                    case CubeFaceType.Front:
+                        return StringToWorld( FrontFace );
+                    case CubeFaceType.Back:
+                        return StringToWorld( BackFace );
+                    case CubeFaceType.Top:
+                        return StringToWorld( TopFace );
+                    case CubeFaceType.Bottom:
+                        return StringToWorld( BottomFace );
+                    case CubeFaceType.Left:
+                        return StringToWorld( LeftFace );
+                    case CubeFaceType.Right:
+                        return StringToWorld( RightFace );
+                    default:
+                        throw new ArgumentException();
+                    }
+                }
+                set {
+                    switch ( faceType )
+                    {
+                    case CubeFaceType.Front:
+                        FrontFace = WorldToString( value );
+                        break;
+                    case CubeFaceType.Back:
+                        BackFace = WorldToString( value );
+                        break;
+                    case CubeFaceType.Top:
+                        TopFace = WorldToString( value );
+                        break;
+                    case CubeFaceType.Bottom:
+                        BottomFace = WorldToString( value );
+                        break;
+                    case CubeFaceType.Left:
+                        LeftFace = WorldToString( value );
+                        break;
+                    case CubeFaceType.Right:
+                        RightFace = WorldToString( value );
+                        break;
+                    default:
+                        throw new ArgumentException();
+                    }
+                }
+            }
+        }
+
         internal void Save( string name )
         {
+            CubeFile file = new CubeFile();
+            file.StartPosition = StartPosition;
+
             foreach ( Face face in Faces )
-                WorldSerializer.Serialize( face.World, $"{name}_{face.Name.ToLower()}.ccf" );
+                file[ face.Type ] = face.World;
+
+            CubeFile.Serialize( file, $@"levels\{name}.ccf" );
         }
 
         internal void Load( string name )
         {
+            CubeFile file = CubeFile.Deserialize( $@"levels\{name}.ccf" );
+            StartPosition = file.StartPosition;
+
             foreach ( Face face in Faces )
-                face.World = WorldSerializer.Deserialize( $"{name}_{face.Name.ToLower()}.ccf" );
+                face.World = file[ face.Type ];
+        }
+
+        internal void Load2( string name )
+        {
+            using ( StreamReader reader = new StreamReader( $@"levels\{name}_cube.ccf" ) )
+                StartPosition = (CubePosition) new XmlSerializer( typeof( CubePosition ) ).Deserialize( reader );
+
+            foreach ( Face face in Faces )
+                face.World = WorldSerializer.Deserialize( $@"levels\{name}_{face.Name.ToLower()}.ccf" );
         }
 
         public const float NEAR_PLANE = 1f;

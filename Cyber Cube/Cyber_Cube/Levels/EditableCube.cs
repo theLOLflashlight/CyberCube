@@ -38,9 +38,9 @@ namespace CyberCube.Levels
         {
         }
 
-        protected override Cube.Face NewFace( string name, Vector3 normal, Vector3 up, Direction rotation )
+        protected override Cube.Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )
         {
-            return new Face( this, name, normal, up, rotation );
+            return new Face( this, type, normal, up, rotation );
         }
 
         /// <summary>
@@ -168,8 +168,8 @@ namespace CyberCube.Levels
                 }
             }
 
-            public Face( EditableCube cube, string name, Vector3 normal, Vector3 up, Direction orientation )
-                : base( cube, name, normal, up, orientation )
+            public Face( EditableCube cube, CubeFaceType type, Vector3 normal, Vector3 up, Direction orientation )
+                : base( cube, type, normal, up, orientation )
             {
             }
 
