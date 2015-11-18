@@ -245,12 +245,12 @@ namespace CyberCube
             foreach ( Face face in Faces )
                 file[ face.Type ] = face.World;
 
-            CubeFile.Serialize( file, $@"gamelevels\{name}.ccf" );
+            CubeFile.Serialize( file, $@"Levels\{name}.ccf" );
         }
 
         internal void Load( string name )
         {
-            CubeFile file = CubeFile.Deserialize( $@"gamelevels\{name}.ccf" );
+            CubeFile file = CubeFile.Deserialize( $@"Levels\{name}.ccf" );
             StartPosition = file.StartPosition;
 
             foreach ( Face face in Faces )
