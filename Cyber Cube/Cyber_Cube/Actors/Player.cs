@@ -1,5 +1,6 @@
 ﻿using CyberCube.IO;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Audio;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
@@ -42,6 +43,11 @@ namespace CyberCube.Actors
         private SkinningData mSkinData;
 
         private bool mShowRunClip;
+
+        private SoundEffect sfxJump;
+        private SoundEffect sfxLand;
+
+        private bool hasLanded;
 
         public new PlayScreen Screen
         {
@@ -89,6 +95,9 @@ namespace CyberCube.Actors
             mIdlePlayer.StartClip(mIdleClip);
 
             mShowRunClip = false;
+
+            sfxJump = Game.Content.Load<SoundEffect>("Audio\\jump");
+            sfxLand = Game.Content.Load<SoundEffect>("Audio\\land");
         }
 
         protected override void ApplyRotation( CompassDirection dir )
@@ -154,6 +163,8 @@ namespace CyberCube.Actors
             Body.CollisionCategories = Constants.Categories.PLAYER;
             Body.CollidesWith = Category.All ^ Constants.Categories.PLAYER;
             Body.Mass = 68;
+
+            hasLanded = true;
         }
 
         protected override void Dispose( bool disposing )
@@ -205,7 +216,10 @@ namespace CyberCube.Actors
                 return;
 
             IsJumping = true;
+            hasLanded = false;
+
             velocity.Y = JUMP_VELOCITY;
+            sfxJump.Play();
         }
 
         private void JumpStop( ref Vector2 velocity )
@@ -272,6 +286,14 @@ namespace CyberCube.Actors
 
             if ( velocity.Y >= 0 && !FreeFall )
                 IsJumping = false;
+            #endregion
+
+            #region Landing
+            if (velocity.Y == 0 && !hasLanded)
+            {
+                sfxLand.Play();
+                hasLanded = true;
+            }
             #endregion
 
             Velocity = velocity.Rotate( Rotation );

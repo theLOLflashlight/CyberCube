@@ -60,7 +60,7 @@ namespace CyberCube.Screens
 
             mSong = content.Load<Song>("Audio\\GameplayTrack");
 
-            MediaPlayer.Volume = 0.1f;
+            MediaPlayer.Volume = 0.2f;
             MediaPlayer.Play(mSong);
             MediaPlayer.IsRepeating = true;
         }
