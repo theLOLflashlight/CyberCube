@@ -223,6 +223,7 @@ namespace CyberCube
             PlayScreen.LoadContent( Content );
             MenuScreen.LoadContent( Content );
             PauseScreen.LoadContent( Content );
+            PlayScreen.LoadContent( Content );
 
             // TODO: use this.Content to load your game content here
         }

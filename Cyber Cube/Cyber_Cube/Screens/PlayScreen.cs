@@ -3,6 +3,7 @@ using CyberCube.Levels;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
+using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 using System;
 
@@ -15,9 +16,16 @@ namespace CyberCube.Screens
     {
         private static SpriteFont sFont;
 
+        private static Song mSong;
+
+        private float mVolume = 0.1f;
+
+
         public static void LoadContent( ContentManager content )
         {
             sFont = content.Load<SpriteFont>( "MessageFont" );
+            
+            mSong = content.Load<Song>("Audio\\GameplayTrack");
         }
 
         public delegate void CloneChangedHandler( Player player );
@@ -130,6 +138,9 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game )
             : this( game, new PlayableCube( game ) )
         {
+            MediaPlayer.Volume = mVolume;
+            MediaPlayer.Play(mSong);
+            MediaPlayer.IsRepeating = true;
         }
 
         /// <summary>
