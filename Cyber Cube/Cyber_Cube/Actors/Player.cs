@@ -35,9 +35,13 @@ namespace CyberCube.Actors
         private Fixture mFeet;
         private AnimatedVariable<float, float> mModelRotation;
 
-        private AnimationPlayer mAnimationPlayer;
-        private AnimationClip mCurrentClip;
+        private AnimationPlayer mIdlePlayer;
+        private AnimationPlayer mRunPlayer;
+        private AnimationClip mIdleClip;
+        private AnimationClip mRunClip;
         private SkinningData mSkinData;
+
+        private bool mShowRunClip;
 
         public new PlayScreen Screen
         {
@@ -65,24 +69,26 @@ namespace CyberCube.Actors
         protected override void LoadContent()
         {
             base.LoadContent();
-            model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
+            //model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
+            model3D = Game.Content.Load<Model>("Models\\playerBeta");
 
+            mSkinData = model3D.Tag as SkinningData;
 
-            //model3D = Game.Content.Load<Model>("Models\\playerBeta");
-
-            //mSkinData = model3D.Tag as SkinningData;
-
-            //if (mSkinData == null)
-            //    throw new InvalidOperationException
-            //        ("This model does not contain a SkinningData tag.");
+            if (mSkinData == null)
+                throw new InvalidOperationException
+                    ("This model does not contain a SkinningData tag.");
 
             // Create an animation player, and start decoding an animation clip.
-            //mAnimationPlayer = new AnimationPlayer(mSkinData);
+            mIdlePlayer = new AnimationPlayer(mSkinData);
+            mRunPlayer = new AnimationPlayer(mSkinData);
 
-            // Default animation clip
-            //mCurrentClip = mSkinData.AnimationClips["Armature|idle.001"];
+            mIdleClip = mSkinData.AnimationClips["idle"];
+            mRunClip = mSkinData.AnimationClips["run"];
 
-            //mAnimationPlayer.StartClip(mCurrentClip);
+            mRunPlayer.StartClip(mRunClip);
+            mIdlePlayer.StartClip(mIdleClip);
+
+            mShowRunClip = false;
         }
 
         protected override void ApplyRotation( CompassDirection dir )
@@ -242,8 +248,15 @@ namespace CyberCube.Actors
             var actionRight = GetPlayerAction( Action.MoveRight );
             var actionLeft = GetPlayerAction( Action.MoveLeft );
 
-            if ( !(actionRight || actionLeft) )
-                velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
+            if ( !( actionRight || actionLeft ) )
+            {
+                velocity.X = velocity.X.Lerp(0, movementScale * seconds);
+                mShowRunClip = false;
+            }
+            else
+            {
+                mShowRunClip = true;
+            }
 
             velocity.X += actionRight * (movementScale + 1) * seconds;
             velocity.X -= actionLeft * (movementScale + 1) * seconds;
@@ -269,7 +282,8 @@ namespace CyberCube.Actors
             mModelRotation.AnimateValue( Rotation );
             mModelRotation.Update( MathHelper.TwoPi * seconds );
 
-            //mAnimationPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+            mIdlePlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+            mRunPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
 
             if ( GetPlayerAction( Action.PlaceClone ) )
                 ClonePlayer();
@@ -285,10 +299,19 @@ namespace CyberCube.Actors
         {
 			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
 
-			Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
-			model3D.CopyAbsoluteBoneTransformsTo( transforms );
+			//Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
+			//model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
-            //Matrix[] transforms = mAnimationPlayer.GetSkinTransforms();
+            Matrix[] transforms;
+
+            if (mShowRunClip)
+            {
+                transforms = mRunPlayer.GetSkinTransforms();
+            }
+            else
+            {
+                transforms = mIdlePlayer.GetSkinTransforms();
+            }
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )
@@ -296,12 +319,12 @@ namespace CyberCube.Actors
 				// This is where the mesh orientation is set, as well 
 				// as our camera and projection.
 				//foreach ( SkinnedEffect effect in mesh.Effects )
-                foreach (BasicEffect effect in mesh.Effects)
+                foreach (SkinnedEffect effect in mesh.Effects)
                 {
 					effect.EnableDefaultLighting();
-                    //effect.Parameters["Bones"].SetValue(transforms);
+                    effect.Parameters["Bones"].SetValue(transforms);
 					effect.World = transforms[ mesh.ParentBone.Index ]
-                        * Matrix.CreateScale( 0.0006f )
+                        * Matrix.CreateScale( 0.06f )
                         * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
                         * Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
                         * Matrix.CreateFromAxisAngle( CubeFace.Normal, -mModelRotation )
