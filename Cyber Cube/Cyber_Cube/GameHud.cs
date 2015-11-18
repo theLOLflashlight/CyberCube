@@ -59,8 +59,8 @@ namespace CyberCube
             mSpriteBatch.DrawString( mFont, strUpdateRate,
                 new Vector2( GraphicsDevice.Viewport.Width - posUpdateRate.X, posDrawRate.Y ), Color.White );
 
-            mSpriteBatch.DrawString( mFont, Screen.Camera.Position.ToString(), Vector2.Zero, Color.White );
-            mSpriteBatch.DrawString( mFont, Screen.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
+            //mSpriteBatch.DrawString( mFont, Screen.Camera.Position.ToString(), Vector2.Zero, Color.White );
+            //mSpriteBatch.DrawString( mFont, Screen.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
 
             //mSpriteBatch.DrawString( mFont, "X: " + Screen.Player.WorldPosition.X.ToString( "F6" ), new Vector2( 0, 60 ), Color.White );
             //mSpriteBatch.DrawString( mFont, "Y: " + Screen.Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );

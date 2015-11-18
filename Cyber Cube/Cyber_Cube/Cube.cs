@@ -160,7 +160,7 @@ namespace CyberCube
             #region Serialization
             public static void Serialize( CubeFile cube, string filename )
             {
-                using ( StreamWriter writer = new StreamWriter( TitleContainer.OpenStream( filename ) ) )
+                using ( StreamWriter writer = new StreamWriter( $@"..\..\..\{filename}" ) )
                     new XmlSerializer( typeof( CubeFile ) ).Serialize( writer, cube );
             }
 

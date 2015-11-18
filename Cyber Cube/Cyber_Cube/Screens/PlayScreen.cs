@@ -217,7 +217,7 @@ namespace CyberCube.Screens
             mSpriteBatch.Begin();
             
 #if DEBUG
-            mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
+            //mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
 #endif
             mSpriteBatch.End();
         }
