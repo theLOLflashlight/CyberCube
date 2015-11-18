@@ -104,6 +104,7 @@ namespace CyberCube.Actors
         {
             base.ApplyRotation( dir );
             mModelRotation.Value = Rotation;
+            mNumFootContacts = 0;
             Cube.Rotate( dir );
         }
 
