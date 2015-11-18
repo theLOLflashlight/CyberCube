@@ -135,6 +135,15 @@
     <Content Include="Game.ico" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="gamelevels\andrew1.ccf" />
+    <None Include="gamelevels\andrew2.ccf" />
+    <None Include="gamelevels\blank.ccf" />
+    <None Include="gamelevels\level1.ccf" />
+    <None Include="gamelevels\level2.ccf" />
+    <None Include="gamelevels\level3.ccf" />
+    <None Include="gamelevels\level4.ccf" />
+    <None Include="gamelevels\level5.ccf" />
+    <None Include="gamelevels\level6.ccf" />
     <None Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
     </None>

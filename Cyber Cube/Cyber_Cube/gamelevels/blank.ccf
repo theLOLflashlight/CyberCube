@@ -1,0 +1,53 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CubeFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <StartPosition>
+    <Position>
+      <X>0</X>
+      <Y>0</Y>
+      <Z>1</Z>
+    </Position>
+    <Rotation>0</Rotation>
+  </StartPosition>
+  <FrontFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</FrontFace>
+  <BackFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</BackFace>
+  <TopFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</TopFace>
+  <BottomFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</BottomFace>
+  <LeftFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</LeftFace>
+  <RightFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</RightFace>
+</CubeFile>
