@@ -8,6 +8,8 @@ using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
+using CyberCube.IO;
+
 using System.IO;
 
 namespace CyberCube.Screens
@@ -30,6 +32,9 @@ namespace CyberCube.Screens
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
+
+            if(Keyboard.GetState().IsKeyDown(Keys.Enter))
+                this.Back();
         }
 
         public override void Draw(GameTime gameTime)
