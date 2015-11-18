@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 using CyberCube.IO;
 using System.Reflection;
 using CyberCube.Levels;
+using CyberCube.Physics;
 using CyberCube.Screens;
 using System.ComponentModel;
 
@@ -225,6 +226,8 @@ namespace CyberCube
             PlayScreen.LoadContent( Content );
 
             Cube.LoadContent( Content );
+
+            Box.LoadContent( Content );
 
 
             // TODO: use this.Content to load your game content here
