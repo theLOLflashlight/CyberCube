@@ -61,7 +61,6 @@
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
-  
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -102,6 +101,7 @@
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
     <Compile Include="Brushes\EndDoorBrush.cs" />
+    <Compile Include="Screens\EndLevelScreen.cs" />
     <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />
