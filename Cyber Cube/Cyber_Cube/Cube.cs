@@ -3,6 +3,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Graphics;
 using CyberCube.Physics;
@@ -20,6 +21,8 @@ namespace CyberCube
     /// </summary>
     public abstract partial class Cube : DrawableCubeScreenGameComponent
     {
+        private static Texture2D mBG;
+
         public readonly BoundingBox BoundingBox = new BoundingBox( -Vector3.One, Vector3.One );
 
         protected Face mFrontFace;
@@ -79,6 +82,11 @@ namespace CyberCube
         The adjacent faces are labeled with respect to this diagram, noting the orientation of each 
         letter (face) when folded into a cube.
         */
+
+        public static void LoadContent(ContentManager content)
+        {
+            mBG = content.Load<Texture2D>("Textures\\Background");
+        }
 
         public Cube( CubeGame game, CubeScreen screen )
             : base( game, screen )
@@ -325,6 +333,10 @@ namespace CyberCube
 
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
+
+            mSpriteBatch.Begin();
+            mSpriteBatch.Draw(mBG, Vector2.Zero, Color.White);
+            mSpriteBatch.End();
 
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.CullClockwiseFace;

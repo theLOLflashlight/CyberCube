@@ -44,7 +44,6 @@ namespace CyberCube
 #if WINDOWS
             public bool DebugView { get; set; } = false;
 #endif
-
             public bool AllowMultipleJumping { get; set; } = false;
 
             public bool AllowManualGravity { get; set; } = false;
@@ -224,6 +223,9 @@ namespace CyberCube
             MenuScreen.LoadContent( Content );
             PauseScreen.LoadContent( Content );
             PlayScreen.LoadContent( Content );
+
+            Cube.LoadContent( Content );
+
 
             // TODO: use this.Content to load your game content here
         }

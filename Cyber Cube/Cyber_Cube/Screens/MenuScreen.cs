@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
+using Microsoft.Xna.Framework.Media;
 
 using System.IO;
 
@@ -23,6 +24,8 @@ namespace CyberCube.Screens
         private static SpriteFont sVersionFont;
 
         private string verString;
+
+        private static Song mSong;
 
         enum Highlight
         {
@@ -54,12 +57,18 @@ namespace CyberCube.Screens
             sExit = content.Load<Texture2D>("NavigationItems\\menuExit");
 
             sVersionFont = content.Load<SpriteFont>("ConsoleFont");
+
+            mSong = content.Load<Song>("Audio\\GameplayTrack");
+
+            MediaPlayer.Volume = 0.1f;
+            MediaPlayer.Play(mSong);
+            MediaPlayer.IsRepeating = true;
         }
 
         public MenuScreen( CubeGame game )
             : base( game )
         {
-            verString = "v0.1 alpha";
+            verString = "v0.9 beta";
 
             currentHighlight = Highlight.NewGame;
 

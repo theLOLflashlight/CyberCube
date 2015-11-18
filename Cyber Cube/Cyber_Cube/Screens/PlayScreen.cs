@@ -16,16 +16,16 @@ namespace CyberCube.Screens
     {
         private static SpriteFont sFont;
 
-        private static Song mSong;
+        //private static Song mSong;
 
-        private float mVolume = 0.1f;
+        //private float mVolume = 0.1f;
 
 
         public static void LoadContent( ContentManager content )
         {
             sFont = content.Load<SpriteFont>( "MessageFont" );
-            
-            mSong = content.Load<Song>("Audio\\GameplayTrack");
+
+            //mSong = content.Load<Song>("Audio\\GameplayTrack");
         }
 
         public delegate void CloneChangedHandler( Player player );
@@ -138,9 +138,9 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game )
             : this( game, new PlayableCube( game ) )
         {
-            MediaPlayer.Volume = mVolume;
-            MediaPlayer.Play(mSong);
-            MediaPlayer.IsRepeating = true;
+            //MediaPlayer.Volume = mVolume;
+            //MediaPlayer.Play(mSong);
+            //MediaPlayer.IsRepeating = true;
         }
 
         /// <summary>
@@ -215,6 +215,7 @@ namespace CyberCube.Screens
             base.Draw( gameTime );
 
             mSpriteBatch.Begin();
+            
 #if DEBUG
             mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
 #endif
