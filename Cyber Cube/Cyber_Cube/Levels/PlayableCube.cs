@@ -3,11 +3,14 @@ using CyberCube.Screens;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.Graphics;
 
 namespace CyberCube.Levels
 {
     public class PlayableCube : Cube
     {
+        private static Texture2D mBGtexture;
+
         public static void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
@@ -63,6 +66,7 @@ namespace CyberCube.Levels
         {
             internal static void LoadContent( ContentManager content )
             {
+                mBGtexture = content.Load<Texture2D>("Textures\\cubeFace");
             }
 
             public new PlayableCube Cube
@@ -84,6 +88,14 @@ namespace CyberCube.Levels
                 World.Step( (float) gameTime.ElapsedGameTime.TotalSeconds );
             }
 
+            public override void Draw(GameTime gameTime)
+            {
+                mSpriteBatch.Begin();
+                mSpriteBatch.Draw(mBGtexture, Vector2.Zero, Color.White);
+                mSpriteBatch.End();
+
+                base.Draw(gameTime);
+            }
         }
 
     }
