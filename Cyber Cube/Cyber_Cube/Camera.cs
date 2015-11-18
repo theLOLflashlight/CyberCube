@@ -311,6 +311,13 @@ namespace CyberCube
                        || mUpVector.IsAnimating;
             }
         }
+
+        public bool IsTargetAnimating
+        {
+            get {
+                return mTarget.IsAnimating;
+            }
+        }
         #endregion
     }
 }

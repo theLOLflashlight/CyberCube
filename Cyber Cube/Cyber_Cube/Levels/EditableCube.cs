@@ -36,6 +36,12 @@ namespace CyberCube.Levels
         public EditableCube( CubeGame game, EditScreen screen = null )
             : base( game, screen )
         {
+            mFrontFace.BackgroundColor = Color.Red;
+            mBackFace.BackgroundColor = Color.Orange;
+            mTopFace.BackgroundColor = Color.Blue;
+            mBottomFace.BackgroundColor = Color.Green;
+            mLeftFace.BackgroundColor = Color.Purple;
+            mRightFace.BackgroundColor = Color.Yellow;
         }
 
         protected override Cube.Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )
@@ -186,7 +192,7 @@ namespace CyberCube.Levels
                 mSpriteBatch.DrawString( sFont,
                                          Name,
                                          new Vector2( WIDTH, HEIGHT ) / 2,
-                                         new Color( 0, 0, 0, 128 ),
+                                         new Color( 16, 16, 16, 128 ),
                                          0,
                                          sFont.MeasureString( Name ) / 2,
                                          5,

@@ -11,8 +11,9 @@ namespace CyberCube.Screens
     /// </summary>
     public class EditScreen : CubeScreen
     {
+        public const float SNAP_SIZE = 25;
 
-        public static Vector2 SnapVector( Vector2 vec, float snapSize )
+        public static Vector2 SnapVector( Vector2 vec, float snapSize = SNAP_SIZE )
         {
             vec /= snapSize;
             vec = vec.Rounded();
@@ -136,11 +137,11 @@ namespace CyberCube.Screens
                 case "box":
                     return new BoxBrush( mScreen.Game );
 
+                case "hazard":
+                    return new HazardBrush( mScreen.Game );
+
                 case "line":
                     return new PlatformBrush( mScreen.Game );
-
-                case "door":
-                    return new EndDoorBrush( mScreen.Game );
 
                 case "start":
                     return new StartPositionBrush( mScreen.Game );
@@ -154,6 +155,18 @@ namespace CyberCube.Screens
                 case "qpipe":
                 case "quarterpipe":
                     return new QuarterpipeBrush( mScreen.Game );
+
+                default:
+                    string[] tokens = value.Split( ' ' );
+                    if ( tokens.Length != 2 )
+                        break;
+
+                    switch ( tokens[ 0 ].ToLower() )
+                    {
+                    case "door":
+                        return new EndDoorBrush( mScreen.Game, tokens[ 1 ] );
+                    }
+                    break;
                 }
                 throw new FormatException();
             }

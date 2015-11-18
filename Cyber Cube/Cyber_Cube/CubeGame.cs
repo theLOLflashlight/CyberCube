@@ -206,7 +206,7 @@ namespace CyberCube
             IsMouseVisible = true;
             BackgroundColor = Color.CornflowerBlue;
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
-            
+
             mScreenManager.PushScreen( new MenuScreen( this ) );
         }
 

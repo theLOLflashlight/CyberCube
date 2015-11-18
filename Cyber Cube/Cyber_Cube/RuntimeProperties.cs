@@ -43,12 +43,16 @@ namespace CyberCube
                     {
                         return new EvaluateResult( property.GetValue( this, null ) );
                     }
-                    else if ( tokens.Length == 3 && tokens[ 1 ] == "=" )
+                    else if ( tokens.Length >= 3 && tokens[ 1 ] == "=" )
                     {
                         try {
+                            string subExpression = "";
+                            for ( int i = 2; i < tokens.Length; ++i )
+                                subExpression += tokens[ i ] + " ";
+
                             property.SetValue(
                                 this,
-                                Parse( tokens[ 2 ], property.PropertyType ),
+                                Parse( subExpression.TrimEnd(), property.PropertyType ),
                                 null );
 
                             return new EvaluateResult( null );
@@ -69,10 +73,10 @@ namespace CyberCube
         protected virtual object Parse( string value, Type type )
         {
             if ( value == null )
-                throw new ArgumentNullException( nameof( value ), "String cannot be null." );
+                throw new ArgumentNullException( nameof( value ) );
 
             if ( type == null )
-                throw new ArgumentNullException( nameof( type ), "Type cannot be null." );
+                throw new ArgumentNullException( nameof( type ) );
 
 
             if ( type == typeof( string ) )

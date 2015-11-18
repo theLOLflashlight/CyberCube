@@ -10,14 +10,14 @@ using System.Text;
 
 namespace CyberCube.Physics
 {
-    public class Box : Solid
+    public class HazardBox : Solid
     {
-        public struct BoxMaker : ISolidMaker
+        public struct HazardBoxMaker : ISolidMaker
         {
             public float Width;
             public float Height;
 
-            public BoxMaker( float width, float height )
+            public HazardBoxMaker( float width, float height )
             {
                 Width = width;
                 Height = height;
@@ -25,11 +25,11 @@ namespace CyberCube.Physics
 
             public Solid MakeSolid( CubeGame game, World world, Body body )
             {
-                return new Box( game, world, body, Width, Height );
+                return new HazardBox( game, world, body, Width, Height );
             }
         }
 
-        public Box( CubeGame game, World world, Body body, float width, float height )
+        public HazardBox( CubeGame game, World world, Body body, float width, float height )
             : base( game, world, body )
         {
             mWidth = width;
@@ -39,18 +39,19 @@ namespace CyberCube.Physics
         private float mWidth;
         private float mHeight;
 
-        public Box( CubeGame game,
-                    World world,
-                    RectangleF rec,
-                    BodyType bodyType = BodyType.Static,
-                    float density = 1,
-                    Category categories = Constants.Categories.DEFAULT )
-            : base( game, world, rec.Center.ToUnits(), 0, new BoxMaker( rec.Width, rec.Height ) )
+        public HazardBox( CubeGame game,
+                          World world,
+                          RectangleF rec,
+                          BodyType bodyType = BodyType.Static,
+                          float density = 1,
+                          Category categories = Constants.Categories.DEFAULT,
+                          Category killCategories = Constants.Categories.ACTORS )
+            : base( game, world, rec.Center.ToUnits(), 0, new HazardBoxMaker( rec.Width, rec.Height ) )
         {
             mWidth = rec.Width;
             mHeight = rec.Height;
 
-            FixtureFactory.AttachRectangle(
+            Fixture box = FixtureFactory.AttachRectangle(
                     mWidth.ToUnits(),
                     mHeight.ToUnits(),
                     density,
@@ -58,8 +59,15 @@ namespace CyberCube.Physics
                     Body,
                     new Flat() );
 
+            Fixture killBox = box.CloneOnto( Body );
+            killBox.IsSensor = true;
+            killBox.UserData = new Hazard( "killbox" );
+
             Body.BodyType = bodyType;
             Body.CollisionCategories = categories;
+
+            killBox.CollidesWith = killCategories;
+            box.CollidesWith ^= killCategories;
         }
 
         public override void Draw( GameTime gameTime )
@@ -75,7 +83,7 @@ namespace CyberCube.Physics
                 Texture,
                 position,
                 null,
-                BodyType == BodyType.Static ? Color.Black : Color.White,
+                new Color( 255, 0, 0, 128 ),
                 Body.Rotation,
                 new Vector2(
                     Texture.Width / 2.0f,

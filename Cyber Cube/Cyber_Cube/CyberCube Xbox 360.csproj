@@ -72,11 +72,13 @@
     <Compile Include="Brushes\CornerBrush.cs" />
     <Compile Include="Brushes\EndDoorBrush.cs" />
     <Compile Include="Brushes\HandBrush.cs" />
+    <Compile Include="Brushes\HazardBrush.cs" />
     <Compile Include="Brushes\IEditBrush.cs" />
     <Compile Include="Brushes\PlatformBrush.cs" />
     <Compile Include="Brushes\QuarterpipeBrush.cs" />
     <Compile Include="Brushes\StartPositionBrush.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="CubeEffect.cs" />
     <Compile Include="CubeFacePhysics.cs" />
     <Compile Include="CubeGameObjects.cs" />
     <Compile Include="CubeUtils.cs" />
@@ -102,6 +104,7 @@
     <Compile Include="Physics\Box.cs" />
     <Compile Include="Physics\Constants.cs" />
     <Compile Include="Physics\Corner.cs" />
+    <Compile Include="Physics\HazardBox.cs" />
     <Compile Include="Physics\OneWayPlatform.cs" />
     <Compile Include="Physics\Quaterpipe.cs" />
     <Compile Include="Physics\Solid.cs" />
@@ -125,6 +128,7 @@
     <Compile Include="Tools\MathUtils.cs" />
     <Compile Include="Tools\Rectanglef.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

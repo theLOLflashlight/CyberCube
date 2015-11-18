@@ -52,7 +52,7 @@ namespace CyberCube.Brushes
 
             mFace = face;
             Started = true;
-            mLine.P0 = EditScreen.SnapVector( mousePos, 25 );
+            mLine.P0 = EditScreen.SnapVector( mousePos );
         }
 
         public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
@@ -60,7 +60,7 @@ namespace CyberCube.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mLine.P1 = EditScreen.SnapVector( mousePos, 25 );
+            mLine.P1 = EditScreen.SnapVector( mousePos );
 
             if ( !ValidLine )
                 mLine.P1 = mousePos;

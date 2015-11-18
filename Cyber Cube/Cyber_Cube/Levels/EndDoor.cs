@@ -29,8 +29,14 @@ namespace CyberCube.Levels
         public const float WIDTH = 70f;
         public const float HEIGHT = 100f;
 
+        public string NextLevel
+        {
+            get; set;
+        }
+
         public EndDoor( CubeGame game,
                         World world,
+                        string nextLevel,
                         Vector2 pos,
                         BodyType bodyType = BodyType.Static,
                         float density = 1,
@@ -43,7 +49,7 @@ namespace CyberCube.Levels
                     density,
                     Vector2.Zero,
                     Body,
-                    new SolidDescriptor( "end_door" ) );
+                    new Door( nextLevel ) );
 
             door.IsSensor = true;
 

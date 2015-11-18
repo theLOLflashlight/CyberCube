@@ -53,8 +53,8 @@ namespace CyberCube.Physics
                                Line2 line,
                                BodyType bodyType = BodyType.Static,
                                float density = 1,
-                               Category categories = Category.Cat1,
-                               Category oneWayCategories = Category.Cat2 | Category.Cat3 )
+                               Category categories = Constants.Categories.DEFAULT,
+                               Category oneWayCategories = Constants.Categories.ACTORS )
             : base( game, world, line.Center.ToUnits(), 0, new OneWayPlatformMaker( line ) )
         {
             if ( !line.IsHorizontal && !line.IsVertical )
@@ -166,7 +166,7 @@ namespace CyberCube.Physics
 
         public override void Draw( GameTime gameTime )
         {
-            mSpriteBatch.Begin( /*SpriteSortMode.Deferred, BlendState.NonPremultiplied*/ );
+            mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
 
             //if ( mExclusionCount > 0 )
             //    mShadowTexture.SetData( new Color[] { new Color( 255, 255, 255, 64 ) } );

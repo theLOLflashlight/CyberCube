@@ -95,7 +95,7 @@ namespace CyberCube.Physics
                             Type type,
                             BodyType bodyType = BodyType.Static,
                             float density = 1,
-                            Category categories = Category.Cat1 )
+                            Category categories = Constants.Categories.DEFAULT )
             : base( game, world, position.ToUnits(), AngleFromType( type ), new QuarterpipeMaker( radius ) )
         {
             mRadius = radius;
@@ -170,7 +170,7 @@ namespace CyberCube.Physics
                 mQuarterpipeTex.Width,
                 mQuarterpipeTex.Height ) / 2;
 
-            mSpriteBatch.Begin();
+            mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
 
             mSpriteBatch.Draw(
                 mQuarterpipeTex,

@@ -51,7 +51,7 @@ namespace CyberCube.Brushes
 
             mFace = face;
             Started = true;
-            mStartPos = EditScreen.SnapVector( mousePos, 25 );
+            mStartPos = EditScreen.SnapVector( mousePos );
         }
 
         public void Update( EditableCube.Face face, Vector2 mousePos, GameTime gameTime )
@@ -59,7 +59,7 @@ namespace CyberCube.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mousePos = EditScreen.SnapVector( mousePos, 25 );
+            mousePos = EditScreen.SnapVector( mousePos );
 
             mRec.X = Math.Min( mStartPos.X, mousePos.X );
             mRec.Y = Math.Min( mStartPos.Y, mousePos.Y );

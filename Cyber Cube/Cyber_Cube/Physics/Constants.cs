@@ -13,6 +13,15 @@ namespace CyberCube.Physics
         public const float UNIT_TO_PIXEL = 100;
         public const float PIXEL_TO_UNIT = 1 / UNIT_TO_PIXEL;
 
+        public static class Categories
+        {
+            public const Category DEFAULT = Category.Cat1;
+            public const Category PLAYER = Category.Cat2;
+            public const Category ENEMY = Category.Cat3;
+            public const Category NPC = Category.Cat4;
+            public const Category ACTORS = PLAYER | ENEMY | NPC;
+        }
+
 
         /// <summary>
         /// Finds the first fixture attached to the body whose UserData matches the supplied value.

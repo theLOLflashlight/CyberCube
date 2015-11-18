@@ -4,6 +4,7 @@ using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System.Collections.Generic;
+using System;
 
 namespace CyberCube.Screens
 {
@@ -19,7 +20,16 @@ namespace CyberCube.Screens
             sFont = content.Load<SpriteFont>( "MessageFont" );
         }
 
+        public delegate void CloneChangedHandler( Player player );
+
+        public event CloneChangedHandler CloneChanged;
+
         public Player Player
+        {
+            get; private set;
+        }
+
+        public Player PendingPlayer
         {
             get {
                 return mPlayerClones.Count > 0
@@ -50,21 +60,48 @@ namespace CyberCube.Screens
             player.Dispose();
 
             if ( mPlayerClones.Count == 0 )
-                EndLevel();
+            {
+                ResetLevel();
+            }
             else
+            {
                 mActivePlayerIndex %= mPlayerClones.Count;
+                OnCloneChanged( PendingPlayer );
+            }
+        }
+
+        public void ResetLevel()
+        {
+            mPlayerClones.Clear();
+            mActivePlayerIndex = 0;
+            CubePosition start = Cube.StartPosition;
+            AddPlayer( start.Position, start.Rotation );
+        }
+
+        private void OnCloneChanged( Player player )
+        {
+            Camera.AnimateTarget( player.WorldPosition, 10 );
+            CloneChanged?.Invoke( player );
         }
 
         public void NextClone()
         {
-            mActivePlayerIndex += 1;
-            mActivePlayerIndex %= mPlayerClones.Count;
+            if ( mPlayerClones.Count > 1 )
+            {
+                mActivePlayerIndex += 1;
+                mActivePlayerIndex %= mPlayerClones.Count;
+                OnCloneChanged( PendingPlayer );
+            }
         }
 
         public void PreviousClone()
         {
-            mActivePlayerIndex += mPlayerClones.Count - 1;
-            mActivePlayerIndex %= mPlayerClones.Count;
+            if ( mPlayerClones.Count > 1 )
+            {
+                mActivePlayerIndex += mPlayerClones.Count - 1;
+                mActivePlayerIndex %= mPlayerClones.Count;
+                OnCloneChanged( PendingPlayer );
+            }
         }
 
         public List<Enemy> Enemies
@@ -104,14 +141,11 @@ namespace CyberCube.Screens
             : base( game, playCube )
         {
             Enemies = new List<Enemy>();
-            Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
-            Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
+            //Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
+            //Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
 
-            //Components.Add( Player );
-            foreach( Enemy enemy in Enemies ) 
-            {
-                Components.Add( enemy );
-            }
+            //foreach( Enemy enemy in Enemies ) 
+            //    Components.Add( enemy );
         }
         #endregion
 
@@ -124,6 +158,16 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
+        public void NextLevel( string filename )
+        {
+            EndLevel();
+
+            PlayableCube playCube = new PlayableCube( Game );
+            playCube.Load( filename );
+            PlayScreen playScreen = new PlayScreen( Game, playCube );
+            ScreenManager.PushScreen( playScreen );
+        }
+
         public override void Initialize()
         {
             base.Initialize();
@@ -134,23 +178,23 @@ namespace CyberCube.Screens
 
         public override void Update( GameTime gameTime )
         {
-            var input = Game.Input;
-
-            if ( !input.HasFocus || input.CheckFocusType<Player>() )
-                input.Focus = Player;
-
+            Player = PendingPlayer;
             base.Update( gameTime );
 
             if ( mEndLevel )
                 return;
 
-            Player p = Player;
+            Player p = PendingPlayer;
 
             Vector3 pos = p.Normal * Cube.CameraDistance;
             pos += p.WorldPosition * 2;
             pos.Normalize();
 
-            Camera.Target = p.WorldPosition;
+            if ( Camera.IsTargetAnimating )
+                Camera.AnimateTarget( p.WorldPosition );
+            else
+                Camera.Target = p.WorldPosition;
+
             Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
             Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
         }

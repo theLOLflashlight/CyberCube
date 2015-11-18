@@ -52,6 +52,32 @@ namespace CyberCube.Physics
         }
     }
 
+    public class Hazard : SolidDescriptor
+    {
+        public Hazard()
+            : this( null )
+        {
+        }
+
+        public Hazard( string userData )
+            : base( userData )
+        {
+        }
+    }
+
+    public class Door : SolidDescriptor
+    {
+        public Door()
+            : this( null )
+        {
+        }
+
+        public Door( string userData )
+            : base( userData )
+        {
+        }
+    }
+
     public class Flat : SolidDescriptor
     {
         public Flat()

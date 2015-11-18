@@ -41,11 +41,19 @@ namespace CyberCube.Actors
 
         private bool Torso_OnDoorCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
         {
-            if ( fixtureB.UserData as SolidDescriptor == new SolidDescriptor( "end_door" )
-                 && MathTools.AnglesWithinRange( Rotation, fixtureB.Body.Rotation, 0 ) )
+            if ( fixtureB.UserData is Door
+                && (Direction) Rotation == (Direction) fixtureB.Body.Rotation )
             {
-                this.Screen.EndLevel();
+                this.Screen.NextLevel( ((Door) fixtureB.UserData).UserData );
             }
+
+            return contact.IsTouching;
+        }
+
+        private bool Torso_OnHazardCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        {
+            if ( fixtureB.UserData is Hazard )
+                KillPlayer();
 
             return contact.IsTouching;
         }
@@ -61,21 +69,15 @@ namespace CyberCube.Actors
 
         private bool BeginFeetContact( Contact contact )
         {
-            if ( contact.FixtureA.UserData as string == "feet"
-                 || contact.FixtureB.UserData as string == "feet" )
-            {
+            if ( contact.FixtureA == mFeet || contact.FixtureB == mFeet )
                 ++mNumFootContacts;
-            }
             return true;
         }
 
         private void EndFeetContact( Contact contact )
         {
-            if ( contact.FixtureA.UserData as string == "feet"
-                 || contact.FixtureB.UserData as string == "feet" )
-            {
+            if ( contact.FixtureA == mFeet || contact.FixtureB == mFeet )
                 --mNumFootContacts;
-            }
         }
 
         private void Feet_OnSeparation( Fixture fixtureA, Fixture fixtureB )

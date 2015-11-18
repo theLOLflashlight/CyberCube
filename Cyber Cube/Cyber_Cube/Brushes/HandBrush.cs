@@ -101,8 +101,7 @@ namespace CyberCube.Brushes
 
             if ( !input.IsShiftDown() )
             {
-                mSelectedSolid.Position = EditScreen.SnapVector(
-                    mSelectedSolid.Position.ToPixels(), 25 ).ToUnits();
+                mSelectedSolid.Position = EditScreen.SnapVector( mSelectedSolid.Position.ToPixels(), EditScreen.SNAP_SIZE / 2 ).ToUnits();
             }
             else
             {

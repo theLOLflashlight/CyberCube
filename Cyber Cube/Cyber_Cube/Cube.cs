@@ -29,7 +29,7 @@ namespace CyberCube
         protected Face mLeftFace;
         protected Face mRightFace;
 
-        public BasicEffect Effect
+        public CubeEffect Effect
         {
             get; protected set;
         }
@@ -91,13 +91,6 @@ namespace CyberCube
             mBottomFace = NewFace( CubeFaceType.Bottom, -Vector3.UnitY, Vector3.UnitZ, Direction.Up );
             mLeftFace = NewFace( CubeFaceType.Left, -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
             mRightFace = NewFace( CubeFaceType.Right, Vector3.UnitX, Vector3.UnitZ, Direction.Left );
-
-            mFrontFace.BackgroundColor = Color.Red;
-            mBackFace.BackgroundColor = Color.Orange;
-            mTopFace.BackgroundColor = Color.Blue;
-            mBottomFace.BackgroundColor = Color.Green;
-            mLeftFace.BackgroundColor = Color.Purple;
-            mRightFace.BackgroundColor = Color.Yellow;
 
             CameraDistance = 4;
             CurrentFace = mFrontFace;
@@ -274,13 +267,6 @@ namespace CyberCube
 
             ConnectFaces();
 
-            Effect = new BasicEffect( GraphicsDevice );
-            Effect.AmbientLightColor = new Vector3( 1.0f, 1.0f, 1.0f );
-            Effect.DirectionalLight0.Enabled = true;
-            Effect.DirectionalLight0.DiffuseColor = Vector3.One;
-            Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
-            Effect.LightingEnabled = true;
-
             Screen.Camera.Fov = MathHelper.PiOver4;
             Screen.Camera.AspectRatio = GraphicsDevice.Viewport.AspectRatio;
             Screen.Camera.NearPlaneDistance = NEAR_PLANE;
@@ -290,7 +276,21 @@ namespace CyberCube
             Screen.Camera.Target = mPosition;
             Screen.Camera.UpVector = ComputeUpVector();
 
+            //Effect = new BasicEffect( GraphicsDevice );
+            //Effect.AmbientLightColor = new Vector3( 1.0f, 1.0f, 1.0f );
+            //Effect.DirectionalLight0.Enabled = true;
+            //Effect.DirectionalLight0.DiffuseColor = Vector3.One;
+            //Effect.DirectionalLight0.Direction = Vector3.Normalize( Vector3.One );
+            //Effect.LightingEnabled = true;
+
+            Effect = new CubeEffect( Game.Content );
+            Effect.LightColor = Color.White.ToVector4();
+            Effect.LightDirection = Vector3.Normalize( -Vector3.One );
+            Effect.AmbientColor = Color.Gray.ToVector4();
+
+            Effect.World = Matrix.Identity;
             Effect.View = Screen.Camera.View;
+            Effect.Projection = Screen.Camera.Projection;
 
             foreach ( Face face in Faces )
                 face.Initialize();
@@ -312,12 +312,19 @@ namespace CyberCube
             Matrix T = Matrix.CreateTranslation( mPosition );
             Effect.World = S * R * T;
 
-            Screen.Camera.Apply( Effect );
+            Vector3 cameraPos = Screen.Camera.Position;
+            Vector3 cameraTgt = Screen.Camera.Target;
+            Effect.LightDirection = Vector3.Normalize( cameraTgt - cameraPos );
+
+            Effect.View = Screen.Camera.View;
+            Effect.Projection = Screen.Camera.Projection;
+
+            //Screen.Camera.Apply( Effect );
+
+            GraphicsDevice.BlendState = BlendState.AlphaBlend;
 
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
-
-            Effect.TextureEnabled = true;
 
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.CullClockwiseFace;
@@ -325,6 +332,8 @@ namespace CyberCube
 
             foreach ( Face face in Faces )
                 face.Render3D( Effect );
+
+            //CurrentFace.Render3D( Effect );
         }
 
     }

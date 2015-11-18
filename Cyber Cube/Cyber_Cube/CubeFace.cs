@@ -34,7 +34,7 @@ namespace CyberCube
             /// <summary>
             /// The face's VertexPositionNormalTexture
             /// </summary>
-            private VertexPositionNormalTexture[] mVertexData = new VertexPositionNormalTexture[ 6 ];
+            private VertexPositionNormalTextureColor[] mVertexData = new VertexPositionNormalTextureColor[ 6 ];
 
             protected Texture2D pixel;
 
@@ -95,7 +95,7 @@ namespace CyberCube
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
                 Rotation = -rotation.Angle;
-                BackgroundColor = Color.Transparent;
+                BackgroundColor = Color.Gray;
 
                 SetUpVertices();
                 SetUpWorld();
@@ -125,27 +125,27 @@ namespace CyberCube
                 Matrix rotation = Vector3.UnitZ.RotateOntoM( Normal )
                                   * Matrix.CreateFromAxisAngle( Normal, Rotation );
 
-                mVertexData[ 0 ] = new VertexPositionNormalTexture(
+                mVertexData[ 0 ] = new VertexPositionNormalTextureColor(
                     vertex[ 0 ].Transform( rotation ) + Normal,
                     Normal, textureTopLeft );
 
-                mVertexData[ 1 ] = new VertexPositionNormalTexture(
+                mVertexData[ 1 ] = new VertexPositionNormalTextureColor(
                     vertex[ 1 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
-                mVertexData[ 2 ] = new VertexPositionNormalTexture(
+                mVertexData[ 2 ] = new VertexPositionNormalTextureColor(
                     vertex[ 2 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
 
-                mVertexData[ 3 ] = new VertexPositionNormalTexture(
+                mVertexData[ 3 ] = new VertexPositionNormalTextureColor(
                     vertex[ 3 ].Transform( rotation ) + Normal,
                     Normal, textureBottomLeft );
 
-                mVertexData[ 4 ] = new VertexPositionNormalTexture(
+                mVertexData[ 4 ] = new VertexPositionNormalTextureColor(
                     vertex[ 4 ].Transform( rotation ) + Normal,
                     Normal, textureBottomRight );
 
-                mVertexData[ 5 ] = new VertexPositionNormalTexture(
+                mVertexData[ 5 ] = new VertexPositionNormalTextureColor(
                     vertex[ 5 ].Transform( rotation ) + Normal,
                     Normal, textureTopRight );
             }
@@ -189,13 +189,15 @@ namespace CyberCube
 #endif
             }
 
-            public void Render2D( GameTime gameTime )
+            public void Render2D( GameTime gameTime, byte backgroundAlpha = 255 )
             {
                 var tmp = GraphicsDevice.GetRenderTargets();
 
                 // Set the current graphics device to the render target and clear it
                 GraphicsDevice.SetRenderTarget( RenderTarget );
-                GraphicsDevice.Clear( BackgroundColor );
+                Color color = BackgroundColor;
+                color.A = backgroundAlpha;
+                GraphicsDevice.Clear( color );
 
                 // Draw our face on the RenderTarget
                 this.Draw( gameTime );
@@ -205,9 +207,9 @@ namespace CyberCube
                 GraphicsDevice.Clear( Game.BackgroundColor );
             }
 
-            public void Render3D( Effect effect )
+            public void Render3D( CubeEffect effect )
             {
-                effect.Parameters[ "Texture" ].SetValue( RenderTarget );
+                effect.Texture = RenderTarget;
 
                 foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
                 {

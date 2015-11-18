@@ -61,18 +61,7 @@
     <PlatformTarget>x86</PlatformTarget>
     <XnaCompressContent>true</XnaCompressContent>
   </PropertyGroup>
-  <PropertyGroup>
-    <ManifestCertificateThumbprint>190DC2D0843644E6297571BB273DE332373EB67B</ManifestCertificateThumbprint>
-  </PropertyGroup>
-  <PropertyGroup>
-    <ManifestKeyFile>CyberCube Windows_TemporaryKey.pfx</ManifestKeyFile>
-  </PropertyGroup>
-  <PropertyGroup>
-    <GenerateManifests>true</GenerateManifests>
-  </PropertyGroup>
-  <PropertyGroup>
-    <SignManifests>true</SignManifests>
-  </PropertyGroup>
+  
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
     <Reference Include="Microsoft.Xna.Framework.Game, Version=4.0.0.0, Culture=neutral, PublicKeyToken=842cf8be1de50553, processorArchitecture=x86" />
@@ -92,8 +81,10 @@
     <Compile Include="Actors\Actor.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />
     <Compile Include="Actors\PlayerPhysicsHandlers.cs" />
+    <Compile Include="Brushes\HazardBrush.cs" />
     <Compile Include="Brushes\StartPositionBrush.cs" />
     <Compile Include="Camera.cs" />
+    <Compile Include="CubeEffect.cs" />
     <Compile Include="CubeGameObjects.cs" />
     <Compile Include="CubeUtils.cs" />
     <Compile Include="CubeFacePhysics.cs" />
@@ -106,6 +97,7 @@
     <Compile Include="GameHud.cs" />
     <Compile Include="Levels\EndDoor.cs" />
     <Compile Include="Levels\StartPosition.cs" />
+    <Compile Include="Physics\HazardBox.cs" />
     <Compile Include="Physics\Corner.cs" />
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
@@ -151,6 +143,7 @@
     <Compile Include="Tools\MathUtils.cs" />
     <Compile Include="Tools\RectangleF.cs" />
     <Compile Include="Utils.cs" />
+    <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
   <ItemGroup>
     <Content Include="Game.ico" />

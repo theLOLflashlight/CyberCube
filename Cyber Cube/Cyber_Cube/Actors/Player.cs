@@ -22,11 +22,12 @@ namespace CyberCube.Actors
 {
     public partial class Player : Actor
     {
-        public const float JUMP_VELOCITY = -10f;
+        public const float JUMP_VELOCITY = -6f;
         public const float JUMP_STOP_FACTOR = 0.6f;
-        public const float MAX_RUN_SPEED = 5;
+        public const float MAX_RUN_SPEED = 4;
         public const float AIR_MOVEMENT_SCALE = 10;
         public const float GROUND_MOVEMENT_SCALE = 20;
+        public const float PLAYER_GRAVITY = 15f;
 
         private Model model3D;
 
@@ -121,8 +122,9 @@ namespace CyberCube.Actors
 
             mTorso = Body.FindFixture( "torso" );
             mFeet = Body.FindFixture( "feet" );
-
+            
             mTorso.OnCollision += Torso_OnCollision;
+            mTorso.OnCollision += Torso_OnHazardCollision;
             mTorso.OnCollision += Torso_OnDoorCollision;
 
             mFeet.OnSeparation += Feet_OnSeparation;
@@ -140,12 +142,25 @@ namespace CyberCube.Actors
             }
 
             Body.FixedRotation = true;
-            Body.GravityScale = 20f;
+            Body.GravityScale = PLAYER_GRAVITY;
             Body.UseAdHocGravity = true;
             Body.AdHocGravity = Vector2.UnitY;
-            Body.CollisionCategories = Category.Cat2;
-            Body.CollidesWith = Category.All ^ Category.Cat2;
+            Body.CollisionCategories = Constants.Categories.PLAYER;
+            Body.CollidesWith = Category.All ^ Constants.Categories.PLAYER;
             Body.Mass = 68;
+        }
+
+        protected override void Dispose( bool disposing )
+        {
+            base.Dispose( disposing );
+            if ( disposing )
+            {
+                foreach ( Cube.Face face in Cube.Faces )
+                {
+                    face.World.ContactManager.BeginContact -= BeginFeetContact;
+                    face.World.ContactManager.EndContact -= EndFeetContact;
+                }
+            }
         }
 
         public void ApplyAngularImpulse( float impulse )
@@ -168,6 +183,16 @@ namespace CyberCube.Actors
             get; private set;
         }
 
+        public void KillPlayer()
+        {
+            Screen.RemovePlayer( this );
+        }
+
+        public void ClonePlayer()
+        {
+            Screen.AddPlayer( WorldPosition, Rotation );
+        }
+
         private void Jump( ref Vector2 velocity )
         {
             if ( FreeFall && !Game.GameProperties.AllowMultipleJumping )
@@ -183,9 +208,16 @@ namespace CyberCube.Actors
                 velocity.Y *= JUMP_STOP_FACTOR;
         }
 
+        private InputState<Action>.ActionState GetPlayerAction( Action action )
+        {
+            return Screen.Player == this
+                ? Game.Input.GetAction( action, this )
+                : default( InputState<Action>.ActionState );
+        }
+
         public override void Update( GameTime gameTime )
         {
-            var input = Game.Input;
+            //var input = Game.Input;
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
             #region Rotation
@@ -194,10 +226,10 @@ namespace CyberCube.Actors
 
             if ( Game.GameProperties.AllowManualGravity )
             {
-                if ( input.GetAction( Action.RotateClockwise, this ) )
+                if ( GetPlayerAction( Action.RotateClockwise ) )
                     UpDir = Direction.FromAngle( Rotation - (MathHelper.PiOver4 + 0.0001f) );
 
-                if ( input.GetAction( Action.RotateAntiClockwise, this ) )
+                if ( GetPlayerAction( Action.RotateAntiClockwise ) )
                     UpDir = Direction.FromAngle( Rotation + (MathHelper.PiOver4 + 0.0001f) );
             }
             #endregion
@@ -207,8 +239,8 @@ namespace CyberCube.Actors
 
             #region Running
             float movementScale = FreeFall ? AIR_MOVEMENT_SCALE : GROUND_MOVEMENT_SCALE;
-            var actionRight = input.GetAction( Action.MoveRight, this );
-            var actionLeft = input.GetAction( Action.MoveLeft, this );
+            var actionRight = GetPlayerAction( Action.MoveRight );
+            var actionLeft = GetPlayerAction( Action.MoveLeft );
 
             if ( !(actionRight || actionLeft) )
                 velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
@@ -219,10 +251,10 @@ namespace CyberCube.Actors
             #endregion
 
             #region Jumping
-            if ( input.GetAction( Action.Jump, this ) )
+            if ( GetPlayerAction( Action.Jump ) )
                 Jump( ref velocity );
 
-            if ( input.GetAction( Action.JumpStop, this ) )
+            if ( GetPlayerAction( Action.JumpStop ) )
                 JumpStop( ref velocity );
 
             if ( velocity.Y >= 0 && !FreeFall )
@@ -239,14 +271,14 @@ namespace CyberCube.Actors
 
             //mAnimationPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
 
-            if ( input.GetAction( Action.PlaceClone, this ) )
-                Screen.AddPlayer( WorldPosition, Rotation );
+            if ( GetPlayerAction( Action.PlaceClone ) )
+                ClonePlayer();
 
-            if ( input.GetAction( Action.CycleClone, this ) )
+            if ( GetPlayerAction( Action.CycleClone ) )
                 Screen.NextClone();
 
-            if ( input.GetAction( Action.DeleteClone, this ) )
-                Screen.RemovePlayer( this );
+            if ( GetPlayerAction( Action.DeleteClone ) )
+                KillPlayer();
         }
 
         public override void Draw( GameTime gameTime )

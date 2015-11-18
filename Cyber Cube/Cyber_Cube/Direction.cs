@@ -69,6 +69,11 @@ namespace CyberCube
             return src.value;
         }
 
+        public static explicit operator Direction( float angle )
+        {
+            return Direction.FromAngle( angle );
+        }
+
         public static Direction FromAngle( float angle )
         {
             angle = MathHelper.WrapAngle( angle );
