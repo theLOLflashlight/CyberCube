@@ -19,7 +19,7 @@
     <ApplicationIcon>Game.ico</ApplicationIcon>
     <Thumbnail>GameThumbnail.png</Thumbnail>
     <IsWebBootstrapper>false</IsWebBootstrapper>
-    <PublishUrl>publish\</PublishUrl>
+    <PublishUrl>C:\Users\armorproof\Desktop\</PublishUrl>
     <Install>true</Install>
     <InstallFrom>Disk</InstallFrom>
     <UpdateEnabled>false</UpdateEnabled>
@@ -29,7 +29,7 @@
     <UpdatePeriodically>false</UpdatePeriodically>
     <UpdateRequired>false</UpdateRequired>
     <MapFileExtensions>true</MapFileExtensions>
-    <ApplicationRevision>1</ApplicationRevision>
+    <ApplicationRevision>2</ApplicationRevision>
     <ApplicationVersion>1.0.0.%2a</ApplicationVersion>
     <UseApplicationTrust>false</UseApplicationTrust>
     <PublishWizardCompleted>true</PublishWizardCompleted>
@@ -101,6 +101,7 @@
     <Compile Include="Physics\SolidDescriptor.cs" />
     <Compile Include="RuntimeProperties.cs" />
     <Compile Include="Brushes\EndDoorBrush.cs" />
+    <Compile Include="AchievementManager.cs" />
     <Compile Include="Screens\EndLevelScreen.cs" />
     <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
@@ -147,6 +148,10 @@
     <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <None Include="Achievements.xml">
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <SubType>Designer</SubType>
+    </None>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>

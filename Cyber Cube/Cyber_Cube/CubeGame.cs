@@ -208,6 +208,8 @@ namespace CyberCube
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             mScreenManager.PushScreen( new MenuScreen( this ) );
+
+            AchievementManager.Instance.Initialize();
         }
 
         /// <summary>
@@ -224,6 +226,7 @@ namespace CyberCube
             MenuScreen.LoadContent( Content );
             PauseScreen.LoadContent( Content );
             PlayScreen.LoadContent( Content );
+            EndLevelScreen.LoadContent( Content );
 
             Cube.LoadContent( Content );
 

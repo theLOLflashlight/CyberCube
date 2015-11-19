@@ -20,11 +20,11 @@ namespace CyberCube.Screens
 
         public static void LoadContent(ContentManager content)
         {
-
+            sFont = content.Load<SpriteFont>("MessageFontLarge");
         }
 
-        public EndLevelScreen( CubeGame game )
-            :base (game)
+        public EndLevelScreen(CubeGame game)
+            : base(game)
         {
 
         }
@@ -33,13 +33,27 @@ namespace CyberCube.Screens
         {
             base.Update(gameTime);
 
-            if(Keyboard.GetState().IsKeyDown(Keys.Enter))
+            if (Keyboard.GetState().IsKeyDown(Keys.Enter))
                 this.Back();
         }
 
         public override void Draw(GameTime gameTime)
         {
             GraphicsDevice.Clear(Color.Black);
+
+            mSpriteBatch.Begin();
+            mSpriteBatch.DrawString(sFont,
+                                    "Level Clear, woohoo",
+                                    new Vector2(GraphicsDevice.Viewport.Width / 3,
+                                                GraphicsDevice.Viewport.Height / 3),
+                                    Color.White);
+
+            mSpriteBatch.DrawString(sFont,
+                                    "Press Enter to continue",
+                                    new Vector2(GraphicsDevice.Viewport.Width / 3,
+                                                GraphicsDevice.Viewport.Height * 2 / 3),
+                                    Color.White);
+            mSpriteBatch.End();
         }
     }
 }
