@@ -7,6 +7,7 @@ using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using CyberCube.Screens;
 using CyberCube.Physics;
+using CyberCube.Tools;
 
 namespace CyberCube.Actors
 {
@@ -252,7 +253,7 @@ namespace CyberCube.Actors
         public Vector3 Transform2dTo3d( Vector2 vec2d )
         {
             return new Vector3( vec2d.X, -vec2d.Y, 0 )
-                       .Transform( Utils.RotateOntoQ( Vector3.UnitZ, Normal ) )
+                       .Transform( VectorUtils.RotateOntoQ( Vector3.UnitZ, Normal ) )
                        .Rotate( Normal, CubeFace.Rotation )
                        + Normal;
         }
@@ -260,14 +261,27 @@ namespace CyberCube.Actors
         public Vector2 Transform3dTo2d( Vector3 vec3d )
         {
             vec3d = vec3d.Rotate( Normal, -CubeFace.Rotation )
-                         .Transform( Utils.RotateOntoQ( Normal, Vector3.UnitZ ) );
+                         .Transform( VectorUtils.RotateOntoQ( Normal, Vector3.UnitZ ) );
             return new Vector2( vec3d.X, -vec3d.Y );
+        }
+
+        private void WrapWorldPosition( float diff )
+        {
+            if ( Normal == Vector3.UnitX || Normal == -Vector3.UnitX )
+                mWorldPosition.X -= Math.Abs( diff ) * Normal.X;
+
+            else if ( Normal == Vector3.UnitY || Normal == -Vector3.UnitY )
+                mWorldPosition.Y -= Math.Abs( diff ) * Normal.Y;
+
+            else if ( Normal == Vector3.UnitZ || Normal == -Vector3.UnitZ )
+                mWorldPosition.Z -= Math.Abs( diff ) * Normal.Z;
         }
 
         private IEnumerable< CompassDirection > ClampWorldPosition()
         {
             if ( mWorldPosition.X > 1 )
             {
+                WrapWorldPosition( mWorldPosition.X - 1 );
                 mWorldPosition.X = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitX );
@@ -276,6 +290,7 @@ namespace CyberCube.Actors
             }
             else if ( mWorldPosition.X < -1 )
             {
+                WrapWorldPosition( mWorldPosition.X + 1 );
                 mWorldPosition.X = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitX );
@@ -285,6 +300,7 @@ namespace CyberCube.Actors
 
             if ( mWorldPosition.Y > 1 )
             {
+                WrapWorldPosition( mWorldPosition.Y - 1 );
                 mWorldPosition.Y = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitY );
@@ -293,6 +309,7 @@ namespace CyberCube.Actors
             }
             else if ( mWorldPosition.Y < -1 )
             {
+                WrapWorldPosition( mWorldPosition.Y + 1 );
                 mWorldPosition.Y = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitY );
@@ -302,6 +319,7 @@ namespace CyberCube.Actors
 
             if ( mWorldPosition.Z > 1 )
             {
+                WrapWorldPosition( mWorldPosition.Z - 1 );
                 mWorldPosition.Z = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitZ );
@@ -310,6 +328,7 @@ namespace CyberCube.Actors
             }
             else if ( mWorldPosition.Z < -1 )
             {
+                WrapWorldPosition( mWorldPosition.Z + 1 );
                 mWorldPosition.Z = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitZ );

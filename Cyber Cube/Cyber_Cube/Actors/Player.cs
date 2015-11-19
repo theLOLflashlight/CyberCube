@@ -107,7 +107,6 @@ namespace CyberCube.Actors
         {
             base.ApplyRotation( dir );
             mModelRotation.Value = Rotation;
-            mNumFootContacts = 0;
             Cube.Rotate( dir );
         }
 
@@ -148,6 +147,8 @@ namespace CyberCube.Actors
 
             mFeet.OnSeparation += Feet_OnSeparation;
             mFeet.OnCollision += Feet_OnCollision;
+
+            mNumFootContacts = 0;
         }
 
         public override void Initialize()

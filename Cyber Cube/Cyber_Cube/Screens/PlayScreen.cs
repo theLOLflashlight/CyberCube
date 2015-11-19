@@ -6,6 +6,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 using System;
+using CyberCube.Tools;
 
 namespace CyberCube.Screens
 {
@@ -196,6 +197,7 @@ namespace CyberCube.Screens
             AddPlayer( start.Position, start.Rotation );
         }
 
+
         public override void Update( GameTime gameTime )
         {
             Player = PendingPlayer;
@@ -206,16 +208,65 @@ namespace CyberCube.Screens
 
             Player p = PendingPlayer;
 
-            Vector3 pos = p.Normal * Cube.CameraDistance;
-            pos += p.WorldPosition * 2;
-            pos.Normalize();
-
             if ( Camera.IsTargetAnimating )
                 Camera.AnimateTarget( p.WorldPosition );
             else
                 Camera.Target = p.WorldPosition;
 
-            Camera.AnimatePosition( pos * Cube.CameraDistance, Cube.CameraDistance * 2 );
+
+            Vector3 defaultPos = p.WorldPosition + (p.Normal * (Cube.CameraDistance - 1));
+
+            HyperVector3 cubePos = new HyperVector3( p.WorldPosition );
+            cubePos.Cascade( p.Normal * Cube.CameraDistance );
+
+            HyperVector3 projPos = HyperVector3.Normalize( cubePos ) * Cube.CameraDistance;
+            projPos.Cascade( defaultPos );
+
+            const float sqrt2 = 1.41421356237f;
+            Vector3 bias = cubePos.Coalesce(
+                v => MathTools.TransformRange( v.Length(), .9f * sqrt2, sqrt2, 0, 1 ) );
+
+            Vector3 projPosA, projPosB;
+            float biasA, biasB;
+
+            #region Project and bias setup
+            switch ( defaultPos.LargestComponent() )
+            {
+            case Vector3Component.X:
+                projPosA = projPos.Y;
+                projPosB = projPos.Z;
+                biasA = bias.Y;
+                biasB = bias.Z;
+                break;
+
+            case Vector3Component.Y:
+                projPosA = projPos.X;
+                projPosB = projPos.Z;
+                biasA = bias.X;
+                biasB = bias.Z;
+                break;
+
+            case Vector3Component.Z:
+                projPosA = projPos.Y;
+                projPosB = projPos.X;
+                biasA = bias.Y;
+                biasB = bias.X;
+                break;
+
+            default:
+                throw new EnumException<Vector3Component>( "switch statement" );
+            }
+
+            biasA = MathHelper.Clamp( biasA, 0, 1 );
+            biasB = MathHelper.Clamp( biasB, 0, 1 );
+            #endregion
+
+            Vector3 posA = defaultPos.Slerp( projPosA, biasA );
+            Vector3 posB = defaultPos.Slerp( projPosB, biasB );
+
+            Vector3 pos = VectorUtils.Slerp( posA, posB, MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
+
+            Camera.AnimatePosition( pos, Cube.CameraDistance * 4 );
             Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
         }
 

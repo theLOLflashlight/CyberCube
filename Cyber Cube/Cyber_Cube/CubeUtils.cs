@@ -1,4 +1,5 @@
 ﻿using CyberCube.Physics;
+using CyberCube.Tools;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
@@ -73,7 +74,7 @@ namespace CyberCube
             public Vector2 Transform3dTo2d( Vector3 vec3d )
             {
                 vec3d = vec3d.Rotate( Normal, -Rotation )
-                             .Transform( Utils.RotateOntoQ( Normal, Vector3.UnitZ ) );
+                             .Transform( VectorUtils.RotateOntoQ( Normal, Vector3.UnitZ ) );
                 return new Vector2( vec3d.X, -vec3d.Y );
             }
 
@@ -146,7 +147,7 @@ namespace CyberCube
             vec2d /= adjustingFactor;
 
             return new Vector3( vec2d.X, -vec2d.Y, 0 )
-                       .Transform( Utils.RotateOntoQ( Vector3.UnitZ, face.Normal ) )
+                       .Transform( VectorUtils.RotateOntoQ( Vector3.UnitZ, face.Normal ) )
                        .Rotate( face.Normal, face.Rotation )
                        + face.Normal;
         }
@@ -162,7 +163,7 @@ namespace CyberCube
 		private Vector2 Transform3dTo2d( Vector3 vec3d, Face cubeFace )
 		{
 			vec3d = vec3d.Rotate( cubeFace.Normal, -cubeFace.Rotation )
-						 .Transform( Utils.RotateOntoQ( cubeFace.Normal, Vector3.UnitZ ) );
+						 .Transform( VectorUtils.RotateOntoQ( cubeFace.Normal, Vector3.UnitZ ) );
 			return new Vector2( vec3d.X, -vec3d.Y );
 		}
 

@@ -13,6 +13,7 @@ using FarseerPhysics.Common;
 using CyberCube.Levels;
 using System.IO;
 using System.Xml.Serialization;
+using CyberCube.Tools;
 
 namespace CyberCube
 {
@@ -60,7 +61,7 @@ namespace CyberCube
 
         public Vector3 ComputeUpVector()
         {
-            return Utils.RoundVector(
+            return VectorUtils.RoundVector(
                        CurrentFace.UpVec.Rotate(
                            CurrentFace.Normal,
                            -UpDir.Angle ) );

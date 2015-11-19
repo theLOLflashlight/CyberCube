@@ -10,7 +10,6 @@ namespace CyberCube.Tools
     /// </summary>
     public class WtfException : Exception
     {
-
         /// <summary>
         /// Initializes a new instance of the WtfException class.
         /// </summary>
@@ -28,6 +27,50 @@ namespace CyberCube.Tools
             : base( message )
         {
         }
+    }
 
+    public abstract class EnumException : ArgumentOutOfRangeException
+    {
+#if !XBOX
+        public EnumException( string paramName, object actualValue, string message )
+            : base( paramName, actualValue, message )
+        {
+        }
+#else
+        public EnumException( string paramName, object actualValue, string message )
+            : base( paramName, message )
+        {
+        }
+#endif
+
+        public EnumException( string paramName, string message )
+            : base( paramName, message )
+        {
+        }
+
+        public abstract Type EnumType
+        {
+            get;
+        }
+    }
+
+    public class EnumException<E> : EnumException
+    {
+        public EnumException( string paramName, E actualValue )
+            : base( paramName, actualValue, $"Invalid value for {nameof( E )}" )
+        {
+        }
+
+        public EnumException( string paramName )
+            : base( paramName, $"Invalid value for {nameof( E )}" )
+        {
+        }
+
+        public sealed override Type EnumType
+        {
+            get {
+                return typeof( E );
+            }
+        }
     }
 }

@@ -129,6 +129,7 @@
     <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="Tools\MathUtils.cs" />
     <Compile Include="Tools\Rectanglef.cs" />
+    <Compile Include="Tools\VectorUtils.cs" />
     <Compile Include="Utils.cs" />
     <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
@@ -139,9 +140,9 @@
     </Content>
   </ItemGroup>
   <ItemGroup>
-    <None Include="GameLevels\*.ccf">
+    <Content Include="GameLevels\*.ccf">
       <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
-    </None>
+    </Content>
   </ItemGroup>
   <ItemGroup>
     <Reference Include="Microsoft.Xna.Framework" />
