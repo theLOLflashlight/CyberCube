@@ -169,7 +169,7 @@ namespace CyberCube.Screens
         {
             if ( !mEndLevel )
             {
-                MediaPlayer.Stop();
+                //MediaPlayer.Stop();
                 this.Back();
             }
             mEndLevel = true;
