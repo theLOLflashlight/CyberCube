@@ -208,6 +208,8 @@ namespace CyberCube
             mSpriteBatch = new SpriteBatch( GraphicsDevice );
 
             mScreenManager.PushScreen( new MenuScreen( this ) );
+
+            AchievementManager.Instance.Initialize();
         }
 
         /// <summary>

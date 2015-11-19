@@ -62,6 +62,7 @@
     </ProjectReference>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="AchievementManager.cs" />
     <Compile Include="ActionEnum.cs" />
     <Compile Include="Actors\Actor.cs" />
     <Compile Include="Actors\Player.cs" />
@@ -131,6 +132,7 @@
     <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
   <ItemGroup>
+    <Content Include="Achievements.xml" />
     <Content Include="Game.ico" />
   </ItemGroup>
   <ItemGroup>

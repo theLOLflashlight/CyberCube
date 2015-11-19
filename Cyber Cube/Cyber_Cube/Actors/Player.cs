@@ -220,6 +220,8 @@ namespace CyberCube.Actors
 
             velocity.Y = JUMP_VELOCITY;
             sfxJump.Play();
+
+            AchievementManager.Instance[ Stat.Jump ]++;
         }
 
         private void JumpStop( ref Vector2 velocity )
