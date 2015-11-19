@@ -296,7 +296,7 @@ namespace CyberCube.Tools
                        v0,
                        Quaternion.Slerp(
                            Quaternion.Identity,
-                           v0.RotateOntoQ( v1 ),
+                           v0.RotateOnto_Q( v1 ),
                            amount ) );
         }
 
@@ -313,7 +313,7 @@ namespace CyberCube.Tools
         /// <summary>
         /// Computes the matrix required to rotate the vector so it is parallel with another.
         /// </summary>
-        public static Matrix RotateOntoM( this Vector3 v1, Vector3 v2 )
+        public static Matrix RotateOnto_M( this Vector3 v1, Vector3 v2 )
         {
             if ( v1 == v2 )
                 return Matrix.Identity;
@@ -338,7 +338,7 @@ namespace CyberCube.Tools
         /// <summary>
         /// Computes the quaternion required to rotate the vector so it is parallel with another.
         /// </summary>
-        public static Quaternion RotateOntoQ( this Vector3 v1, Vector3 v2 )
+        public static Quaternion RotateOnto_Q( this Vector3 v1, Vector3 v2 )
         {
             if ( v1 == v2 )
                 return Quaternion.Identity;
@@ -497,7 +497,7 @@ namespace CyberCube.Tools
 
         public Vector3 Coalesce( CoalesceFunc coalesce )
         {
-            Vector3 vec;
+            Vector3 vec = default( Vector3 );
             vec.X = coalesce( X );
             vec.Y = coalesce( Y );
             vec.Z = coalesce( Z );

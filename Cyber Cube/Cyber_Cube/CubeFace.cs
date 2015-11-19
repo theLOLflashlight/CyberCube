@@ -123,7 +123,7 @@ namespace CyberCube
                 Vector2 textureBottomLeft = Vector2.UnitY;
                 Vector2 textureBottomRight = Vector2.One;
 
-                Matrix rotation = Vector3.UnitZ.RotateOntoM( Normal )
+                Matrix rotation = Vector3.UnitZ.RotateOnto_M( Normal )
                                   * Matrix.CreateFromAxisAngle( Normal, Rotation );
 
                 mVertexData[ 0 ] = new VertexPositionNormalTextureColor(

@@ -96,7 +96,7 @@ namespace CyberCube.Actors
         public Direction UpDir
         {
             get {
-                return Direction.FromAngle( Rotation );
+                return (Direction) Rotation;
             }
             set {
                 Rotation = value.Angle;
@@ -253,7 +253,7 @@ namespace CyberCube.Actors
         public Vector3 Transform2dTo3d( Vector2 vec2d )
         {
             return new Vector3( vec2d.X, -vec2d.Y, 0 )
-                       .Transform( VectorUtils.RotateOntoQ( Vector3.UnitZ, Normal ) )
+                       .Transform( VectorUtils.RotateOnto_Q( Vector3.UnitZ, Normal ) )
                        .Rotate( Normal, CubeFace.Rotation )
                        + Normal;
         }
@@ -261,7 +261,7 @@ namespace CyberCube.Actors
         public Vector2 Transform3dTo2d( Vector3 vec3d )
         {
             vec3d = vec3d.Rotate( Normal, -CubeFace.Rotation )
-                         .Transform( VectorUtils.RotateOntoQ( Normal, Vector3.UnitZ ) );
+                         .Transform( VectorUtils.RotateOnto_Q( Normal, Vector3.UnitZ ) );
             return new Vector2( vec3d.X, -vec3d.Y );
         }
 

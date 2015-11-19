@@ -65,6 +65,7 @@ namespace CyberCube.Levels
                 playFaces.Current.CopySolids( editFaces.Current );
 
             cube.StartPosition = this.StartPosition;
+            cube.NextLevel = this.NextLevel;
             return cube;
         }
 
@@ -118,7 +119,7 @@ namespace CyberCube.Levels
                     effect.World = transforms[ mesh.ParentBone.Index ]
                         * Matrix.CreateScale( 0.0006f )
                         * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
-                        * Vector3.UnitY.RotateOntoM( face.UpVec )
+                        * Vector3.UnitY.RotateOnto_M( face.UpVec )
                         * Matrix.CreateFromAxisAngle( face.Normal, -StartPosition.Rotation )
                         * Matrix.CreateTranslation( StartPosition.Position );
 

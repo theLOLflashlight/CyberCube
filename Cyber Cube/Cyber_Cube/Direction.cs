@@ -71,11 +71,6 @@ namespace CyberCube
 
         public static explicit operator Direction( float angle )
         {
-            return Direction.FromAngle( angle );
-        }
-
-        public static Direction FromAngle( float angle )
-        {
             angle = MathHelper.WrapAngle( angle );
 
             const float _45deg = MathHelper.PiOver4;
@@ -178,6 +173,7 @@ namespace CyberCube
 
         public override bool Equals( object obj )
         {
+            //return (obj as Direction?)?.Equals( this ) ?? false;
             if ( obj is Direction )
                 return this.Equals( (Direction) obj );
 

@@ -4,6 +4,9 @@ using CyberCube.Levels;
 using CyberCube.Tools;
 using Microsoft.Xna.Framework;
 using System;
+using System.Collections.Generic;
+using System.Linq;
+using System.Text.RegularExpressions;
 
 namespace CyberCube.Screens
 {
@@ -94,7 +97,7 @@ namespace CyberCube.Screens
         {
             ScreenProperties = new EditScreenProperties( this );
             RightBrush = new HandBrush( game );
-            MiddleBrush = new BodyTypeBrush();
+            MiddleBrush = new StartPositionBrush( game );
         }
         #endregion
 
@@ -149,6 +152,9 @@ namespace CyberCube.Screens
                 case "start":
                     return new StartPositionBrush( mScreen.Game );
 
+                case "door":
+                    return new EndDoorBrush( mScreen.Game );
+
                 case "type":
                     return new BodyTypeBrush();
 
@@ -182,8 +188,42 @@ namespace CyberCube.Screens
             }
         }
 
+        /*public delegate ConsoleMessage Command( string[] @params );
+
+        public class CommandDictionary
+        {
+            private Dictionary<Regex, Command> mDictionary = new Dictionary<Regex, Command>();
+
+            public Command this[ Regex regex ]
+            {
+                get {
+                    return mDictionary[ regex ];
+                }
+                set {
+                    mDictionary[ regex ] = value;
+                }
+            }
+
+            public ConsoleMessage RunCommand( string command )
+            {
+                foreach ( var pair in mDictionary )
+                {
+                    Match match = pair.Key.Match( command );
+                    if ( match.Success )
+                        return pair.Value( match.Groups.Cast<string>().ToArray() );
+                }
+                return null;
+            }
+        }*/
+
         public override ConsoleMessage RunCommand( string command )
         {
+            //CommandDictionary commands = new CommandDictionary();
+            //commands[ new Regex( @"save (\w+)", RegexOptions.IgnoreCase ) ]
+            //    = p => {
+            //        Cube.Save( p[ 0 ] );
+            //        return null;
+            //    };
             try
             {
                 string[] tokens = command.Split( ' ' );
@@ -204,12 +244,18 @@ namespace CyberCube.Screens
                     Cube.Load( tokens[ 1 ] );
                     return null;
 
-                case "load2":
+                case "setnext":
                     if ( tokens.Length != 2 )
-                        return new ConsoleErrorMessage( "Usage: load2 [filename]" );
+                        return new ConsoleErrorMessage( "Usage: setnext [filename|?:null]" );
 
-                    Cube.Load2( tokens[ 1 ] );
+                    Cube.NextLevel = tokens[ 1 ] != "?" ? tokens[ 1 ] : null;
                     return null;
+
+                case "getnext":
+                    if ( tokens.Length != 1 )
+                        return new ConsoleErrorMessage( "Usage: getnext" );
+
+                    return Cube.NextLevel;
                 }
 
                 var ret = ScreenProperties.Evaluate( command );

@@ -44,6 +44,11 @@ namespace CyberCube
 
         public CubePosition StartPosition = new CubePosition( Vector3.UnitZ, 0 );
 
+        public string NextLevel
+        {
+            get; set;
+        }
+
         public float CameraDistance
         {
             get; protected set;
@@ -150,6 +155,7 @@ namespace CyberCube
         public class CubeFile
         {
             public CubePosition StartPosition;
+            public string NextLevel;
 
             public string FrontFace;
             public string BackFace;
@@ -242,6 +248,7 @@ namespace CyberCube
         {
             CubeFile file = new CubeFile();
             file.StartPosition = StartPosition;
+            file.NextLevel = NextLevel;
 
             foreach ( Face face in Faces )
                 file[ face.Type ] = face.World;
@@ -253,18 +260,10 @@ namespace CyberCube
         {
             CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
             StartPosition = file.StartPosition;
+            NextLevel = file.NextLevel;
 
             foreach ( Face face in Faces )
                 face.World = file[ face.Type ];
-        }
-
-        internal void Load2( string name )
-        {
-            using ( StreamReader reader = new StreamReader( $@"levels\{name}_cube.ccf" ) )
-                StartPosition = (CubePosition) new XmlSerializer( typeof( CubePosition ) ).Deserialize( reader );
-
-            foreach ( Face face in Faces )
-                face.World = WorldSerializer.Deserialize( $@"levels\{name}_{face.Name.ToLower()}.ccf" );
         }
 
         public const float NEAR_PLANE = 1f;

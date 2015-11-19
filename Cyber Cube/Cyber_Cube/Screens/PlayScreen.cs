@@ -176,12 +176,12 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
-        public void NextLevel( string filename )
+        public void NextLevel( string filename = null )
         {
             EndLevel();
 
             PlayableCube playCube = new PlayableCube( Game );
-            playCube.Load( filename );
+            playCube.Load( filename ?? Cube.NextLevel );
             PlayScreen playScreen = new PlayScreen( Game, playCube );
             ScreenManager.PushScreen( playScreen );
             EndLevelScreen endLevelScreen = new EndLevelScreen( Game );
@@ -195,6 +195,12 @@ namespace CyberCube.Screens
 
             CubePosition start = Cube.StartPosition;
             AddPlayer( start.Position, start.Rotation );
+
+            Player p = PendingPlayer;
+
+            Camera.Target = p.WorldPosition;
+            Camera.Position = ComputeCameraPosition();
+            Camera.UpVector = p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation );
         }
 
 
@@ -213,6 +219,13 @@ namespace CyberCube.Screens
             else
                 Camera.Target = p.WorldPosition;
 
+            Camera.AnimatePosition( ComputeCameraPosition(), Cube.CameraDistance * 4 );
+            Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
+        }
+
+        private Vector3 ComputeCameraPosition()
+        {
+            Player p = PendingPlayer;
 
             Vector3 defaultPos = p.WorldPosition + (p.Normal * (Cube.CameraDistance - 1));
 
@@ -264,10 +277,7 @@ namespace CyberCube.Screens
             Vector3 posA = defaultPos.Slerp( projPosA, biasA );
             Vector3 posB = defaultPos.Slerp( projPosB, biasB );
 
-            Vector3 pos = VectorUtils.Slerp( posA, posB, MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
-
-            Camera.AnimatePosition( pos, Cube.CameraDistance * 4 );
-            Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
+            return VectorUtils.Slerp( posA, posB, MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
         }
 
         public override void Draw( GameTime gameTime )

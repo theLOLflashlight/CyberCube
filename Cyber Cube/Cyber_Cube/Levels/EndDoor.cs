@@ -36,8 +36,8 @@ namespace CyberCube.Levels
 
         public EndDoor( CubeGame game,
                         World world,
-                        string nextLevel,
                         Vector2 pos,
+                        string nextLevel = null,
                         BodyType bodyType = BodyType.Static,
                         float density = 1,
                         Category categories = Category.Cat1 )

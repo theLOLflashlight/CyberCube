@@ -39,13 +39,23 @@ namespace CyberCube.Actors
         private Fixture mFeet;
         private AnimatedVariable<float, float> mModelRotation;
 
+        private AnimationPlayer PlayerAnimation
+        {
+            get {
+                return IsRunning ? mRunPlayer : mIdlePlayer;
+            }
+        }
+
         private AnimationPlayer mIdlePlayer;
         private AnimationPlayer mRunPlayer;
         private AnimationClip mIdleClip;
         private AnimationClip mRunClip;
         private SkinningData mSkinData;
 
-        private bool mShowRunClip;
+        public bool IsRunning
+        {
+            get; private set;
+        }
 
         private SoundEffect sfxJump;
         private SoundEffect sfxLand;
@@ -63,7 +73,7 @@ namespace CyberCube.Actors
         }
 
         public Player( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation )
-            : base( cube.Game, screen, cube, worldPos, Direction.FromAngle( rotation ) )
+            : base( cube.Game, screen, cube, worldPos, (Direction) rotation )
         {
             this.Visible = true;
             this.DrawOrder = 1;
@@ -97,7 +107,7 @@ namespace CyberCube.Actors
             mRunPlayer.StartClip(mRunClip);
             mIdlePlayer.StartClip(mIdleClip);
 
-            mShowRunClip = false;
+            IsRunning = false;
 
             sfxJump = Game.Content.Load<SoundEffect>("Audio\\jump");
             sfxLand = Game.Content.Load<SoundEffect>("Audio\\land");
@@ -254,10 +264,10 @@ namespace CyberCube.Actors
             if ( Game.GameProperties.AllowManualGravity )
             {
                 if ( GetPlayerAction( Action.RotateClockwise ) )
-                    UpDir = Direction.FromAngle( Rotation - (MathHelper.PiOver4 + 0.0001f) );
+                    UpDir = (Direction) (Rotation - (MathHelper.PiOver4 + 0.0001f));
 
                 if ( GetPlayerAction( Action.RotateAntiClockwise ) )
-                    UpDir = Direction.FromAngle( Rotation + (MathHelper.PiOver4 + 0.0001f) );
+                    UpDir = (Direction) (Rotation + (MathHelper.PiOver4 + 0.0001f));
             }
             #endregion
 
@@ -266,21 +276,16 @@ namespace CyberCube.Actors
 
             #region Running
             float movementScale = FreeFall ? AIR_MOVEMENT_SCALE : GROUND_MOVEMENT_SCALE;
-            var actionRight = GetPlayerAction( Action.MoveRight );
             var actionLeft = GetPlayerAction( Action.MoveLeft );
+            var actionRight = GetPlayerAction( Action.MoveRight );
 
-            if ( !( actionRight || actionLeft ) )
-            {
-                velocity.X = velocity.X.Lerp(0, movementScale * seconds);
-                mShowRunClip = false;
-            }
-            else
-            {
-                mShowRunClip = true;
-            }
+            IsRunning = (bool) actionLeft != actionRight;
 
-            velocity.X += actionRight * (movementScale + 1) * seconds;
+            if ( !IsRunning )
+                velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
+
             velocity.X -= actionLeft * (movementScale + 1) * seconds;
+            velocity.X += actionRight * (movementScale + 1) * seconds;
             velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
             #endregion
 
@@ -331,16 +336,7 @@ namespace CyberCube.Actors
 			//Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
 			//model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
-            Matrix[] transforms;
-
-            if (mShowRunClip)
-            {
-                transforms = mRunPlayer.GetSkinTransforms();
-            }
-            else
-            {
-                transforms = mIdlePlayer.GetSkinTransforms();
-            }
+            Matrix[] transforms = PlayerAnimation.GetSkinTransforms();
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )
@@ -355,7 +351,7 @@ namespace CyberCube.Actors
 					effect.World = transforms[ mesh.ParentBone.Index ]
                         * Matrix.CreateScale( 0.06f )
                         * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
-                        * Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
+                        * Vector3.UnitY.RotateOnto_M( CubeFace.UpVec )
                         * Matrix.CreateFromAxisAngle( CubeFace.Normal, -mModelRotation )
                         * Matrix.CreateTranslation( WorldPosition );
 

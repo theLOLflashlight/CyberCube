@@ -1,5 +1,6 @@
 ﻿using CyberCube.Levels;
 using CyberCube.Physics;
+using CyberCube.Screens;
 using CyberCube.Tools;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
@@ -50,7 +51,7 @@ namespace CyberCube.Brushes
             if ( !Started || face != mFace )
                 return;
 
-            mCurrentPos = mousePos;
+            mCurrentPos = EditScreen.SnapVector( mousePos, EditScreen.SNAP_SIZE / 2 );
         }
 
         public void End( EditableCube.Face face, Vector2? mousePos, GameTime gameTime )
@@ -60,7 +61,8 @@ namespace CyberCube.Brushes
 
             if ( mousePos != null )
             {
-                face.Cube.StartPosition.Position = face.ConvertFaceToCube( mousePos.Value );
+                Vector2 pos = EditScreen.SnapVector( mousePos.Value, EditScreen.SNAP_SIZE / 2 );
+                face.Cube.StartPosition.Position = face.ConvertFaceToCube( pos );
                 face.Cube.StartPosition.Rotation = face.Cube.UpDir.Angle;
             }
 

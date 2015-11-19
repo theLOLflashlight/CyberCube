@@ -26,7 +26,7 @@ namespace CyberCube.Brushes
             get; set;
         }
 
-        public EndDoorBrush( CubeGame game, string nextLevel )
+        public EndDoorBrush( CubeGame game, string nextLevel = null )
         {
             Game = game;
             mNextLevel = nextLevel;
@@ -65,8 +65,8 @@ namespace CyberCube.Brushes
                 EndDoor door = new EndDoor(
                     face.Game,
                     face.World,
-                    mNextLevel,
-                    mousePos.Value );
+                    mousePos.Value,
+                    mNextLevel );
 
                 door.Body.UseAdHocGravity = true;
                 door.Body.AdHocGravity =

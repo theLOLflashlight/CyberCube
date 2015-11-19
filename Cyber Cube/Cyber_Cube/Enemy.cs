@@ -80,7 +80,7 @@ namespace CyberCube {
 					effect.World = transforms[mesh.ParentBone.Index] * 
                         Matrix.CreateScale( 0.0008f );
 
-                    Matrix m = Vector3.UnitY.RotateOntoM( CubeFace.UpVec )
+                    Matrix m = Vector3.UnitY.RotateOnto_M( CubeFace.UpVec )
                                    * Matrix.CreateFromAxisAngle( CubeFace.Normal, -Rotation );
                     effect.World *= m;
 
