@@ -16,16 +16,15 @@ namespace CyberCube.Screens
     {
         private static SpriteFont sFont;
 
-        //private static Song mSong;
-
-        //private float mVolume = 0.1f;
+        private static Song mSong;
+        private float mVolume = 0.2f;
 
 
         public static void LoadContent( ContentManager content )
         {
             sFont = content.Load<SpriteFont>( "MessageFont" );
 
-            //mSong = content.Load<Song>("Audio\\GameplayTrack");
+            mSong = content.Load<Song>("Audio\\GameplayTrack");
         }
 
         public delegate void CloneChangedHandler( Player player );
@@ -138,9 +137,9 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game )
             : this( game, new PlayableCube( game ) )
         {
-            //MediaPlayer.Volume = mVolume;
+            MediaPlayer.Volume = mVolume;
             //MediaPlayer.Play(mSong);
-            //MediaPlayer.IsRepeating = true;
+            MediaPlayer.IsRepeating = true;
         }
 
         /// <summary>
@@ -151,6 +150,10 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game, PlayableCube playCube )
             : base( game, playCube )
         {
+            MediaPlayer.Volume = mVolume;
+            //MediaPlayer.Play(mSong);
+            MediaPlayer.IsRepeating = true;
+
             Enemies = new List<Enemy>();
             //Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
             //Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
@@ -165,7 +168,10 @@ namespace CyberCube.Screens
         public void EndLevel()
         {
             if ( !mEndLevel )
+            {
+                //MediaPlayer.Stop();
                 this.Back();
+            }
             mEndLevel = true;
         }
 
@@ -177,6 +183,9 @@ namespace CyberCube.Screens
             playCube.Load( filename );
             PlayScreen playScreen = new PlayScreen( Game, playCube );
             ScreenManager.PushScreen( playScreen );
+            EndLevelScreen endLevelScreen = new EndLevelScreen( Game );
+            // Pass information?
+            ScreenManager.PushScreen( endLevelScreen );
         }
 
         public override void Initialize()
@@ -217,7 +226,7 @@ namespace CyberCube.Screens
             mSpriteBatch.Begin();
             
 #if DEBUG
-            mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
+            //mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
 #endif
             mSpriteBatch.End();
         }

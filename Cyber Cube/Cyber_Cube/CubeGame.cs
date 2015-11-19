@@ -183,7 +183,7 @@ namespace CyberCube
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
             Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
-            //Input.AddPressedBinding( Action.PauseGame, Keys.P);
+            Input.AddPressedBinding( Action.PauseGame, Keys.P );
 
 
             Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
@@ -226,6 +226,7 @@ namespace CyberCube
             MenuScreen.LoadContent( Content );
             PauseScreen.LoadContent( Content );
             PlayScreen.LoadContent( Content );
+            EndLevelScreen.LoadContent( Content );
 
             Cube.LoadContent( Content );
 
@@ -265,7 +266,7 @@ namespace CyberCube
             if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                 Console.Close();
 
-            if ( Input.GetAction( Action.PauseGame ) )
+            if ( Input.GetAction( Action.PauseGame, this ) )
             {
                 mScreenManager.PushScreen( new PauseScreen( this ) );
             }

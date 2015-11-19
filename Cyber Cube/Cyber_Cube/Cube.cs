@@ -160,13 +160,13 @@ namespace CyberCube
             #region Serialization
             public static void Serialize( CubeFile cube, string filename )
             {
-                using ( StreamWriter writer = new StreamWriter( filename, false ) )
+                using ( StreamWriter writer = new StreamWriter( $@"..\..\..\{filename}" ) )
                     new XmlSerializer( typeof( CubeFile ) ).Serialize( writer, cube );
             }
 
             public static CubeFile Deserialize( string filename )
             {
-                using ( StreamReader reader = new StreamReader( filename ) )
+                using ( StreamReader reader = new StreamReader( TitleContainer.OpenStream( filename ) ) )
                     return (CubeFile) new XmlSerializer( typeof( CubeFile ) ).Deserialize( reader );
             }
 
@@ -245,12 +245,12 @@ namespace CyberCube
             foreach ( Face face in Faces )
                 file[ face.Type ] = face.World;
 
-            CubeFile.Serialize( file, $@"levels\{name}.ccf" );
+            CubeFile.Serialize( file, $@"GameLevels\{name}.ccf" );
         }
 
         internal void Load( string name )
         {
-            CubeFile file = CubeFile.Deserialize( $@"levels\{name}.ccf" );
+            CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
             StartPosition = file.StartPosition;
 
             foreach ( Face face in Faces )

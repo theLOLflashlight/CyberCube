@@ -11,7 +11,7 @@ namespace CyberCube.Levels
     {
         private static Texture2D mBGtexture;
 
-        public static void LoadContent( ContentManager content )
+        public new static void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
         }

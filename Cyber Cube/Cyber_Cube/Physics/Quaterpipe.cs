@@ -77,7 +77,7 @@ namespace CyberCube.Physics
             Body.DestroyFixture( curve );
 
             curve = FixtureFactory.AttachChainShape(
-                MakeArc( 100, radius.ToUnits(), 0 ),
+                MakeArc( 10 * (int) Math.Sqrt( radius ), radius.ToUnits(), 0 ),
                 Body,
                 new Concave() );
 

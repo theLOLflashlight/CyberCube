@@ -42,7 +42,7 @@ namespace CyberCube.Actors
         private bool Torso_OnDoorCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
         {
             if ( fixtureB.UserData is Door
-                && (Direction) Rotation == (Direction) fixtureB.Body.Rotation )
+                && MathTools.AnglesWithinRange( Rotation, fixtureB.Body.Rotation, 0.01f ) )
             {
                 this.Screen.NextLevel( ((Door) fixtureB.UserData).UserData );
             }

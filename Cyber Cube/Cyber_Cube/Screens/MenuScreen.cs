@@ -10,6 +10,7 @@ using Microsoft.Xna.Framework.Input;
 using Microsoft.Xna.Framework.Media;
 
 using System.IO;
+using CyberCube.Levels;
 
 namespace CyberCube.Screens
 {
@@ -156,7 +157,10 @@ namespace CyberCube.Screens
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
-                        ScreenManager.PushScreen(new PlayScreen(Game));
+                        PlayableCube playCube = new PlayableCube( Game );
+                        playCube.Load( "level1" );
+                        PlayScreen playScreen = new PlayScreen( Game, playCube );
+                        ScreenManager.PushScreen( playScreen );
                         break;
                     case Highlight.LoadGame:
                         Stream saveStream = StorageManager.Instance.OpenWriteFile("CyberCube.sav");

@@ -19,15 +19,17 @@ namespace CyberCube.Brushes
         private Vector2 mCurrentPos;
 
         private Texture2D mTexture;
+        private bool mSmall;
 
         protected CubeGame Game
         {
             get; set;
         }
 
-        public CornerBrush( CubeGame game )
+        public CornerBrush( CubeGame game, bool small = false )
         {
             Game = game;
+            mSmall = small;
         }
 
         public bool Started
@@ -39,7 +41,7 @@ namespace CyberCube.Brushes
         {
             mTexture = Corner.CreateCornerTexture(
                 Game.GraphicsDevice,
-                100,
+                mSmall ? 50 : 100,
                 new Color( 255, 255, 255, 128 ) );
 
             mFace = face;
@@ -65,7 +67,7 @@ namespace CyberCube.Brushes
                 Corner corner = new Corner(
                     face.Game,
                     face.World,
-                    100,
+                    mSmall ? 50 : 100,
                     mousePos.Value,
                     Corner.Type.SE );
 
