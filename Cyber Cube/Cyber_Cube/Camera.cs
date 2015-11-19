@@ -17,10 +17,10 @@ namespace CyberCube
         private AnimatedVariable<float, float> mNearPlaneDist;
         private AnimatedVariable<float, float> mFarPlaneDist;
 
-        public float FovSpeed { get; set; } = 1;
-        public float AspectRatioSpeed { get; set; } = 1;
-        public float NearPlaneDistSpeed { get; set; } = 1;
-        public float FarPlaneDistSpeed { get; set; } = 1;
+        public float FovSpeed = 1;
+        public float AspectRatioSpeed = 1;
+        public float NearPlaneDistSpeed = 1;
+        public float FarPlaneDistSpeed = 1;
 
 
         private Matrix mViewMatrix = default( Matrix );
@@ -29,9 +29,9 @@ namespace CyberCube
         private AnimatedVariable<Vector3, float> mTarget;
         private AnimatedVariable<Vector3, float> mUpVector;
 
-        public float PositionSpeed { get; set; } = 1;
-        public float TargetSpeed { get; set; } = 1;
-        public float UpVectorSpeed { get; set; } = 1;
+        public float PositionSpeed = 1;
+        public float TargetSpeed = 1;
+        public float UpVectorSpeed = 1;
 
 
         public Camera( CubeGame game )

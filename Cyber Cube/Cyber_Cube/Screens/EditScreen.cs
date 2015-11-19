@@ -92,6 +92,8 @@ namespace CyberCube.Screens
             : base( game, editCube )
         {
             ScreenProperties = new EditScreenProperties( this );
+            RightBrush = new HandBrush( game );
+            MiddleBrush = new BodyTypeBrush();
         }
         #endregion
 
@@ -152,9 +154,16 @@ namespace CyberCube.Screens
                 case "corner":
                     return new CornerBrush( mScreen.Game );
 
+                case "smcorner":
+                    return new CornerBrush( mScreen.Game, true );
+
                 case "qpipe":
                 case "quarterpipe":
                     return new QuarterpipeBrush( mScreen.Game );
+
+                case "smqpipe":
+                case "smquarterpipe":
+                    return new QuarterpipeBrush( mScreen.Game, true );
 
                 default:
                     string[] tokens = value.Split( ' ' );

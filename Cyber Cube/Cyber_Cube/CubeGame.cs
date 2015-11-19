@@ -263,7 +263,7 @@ namespace CyberCube
             if ( Input.Keyboard_WasKeyReleased( Keys.Escape ) )
                 Console.Close();
 
-            if ( Input.GetAction( Action.PauseGame ) )
+            if ( Input.GetAction( Action.PauseGame, this ) )
             {
                 mScreenManager.PushScreen( new PauseScreen( this ) );
             }

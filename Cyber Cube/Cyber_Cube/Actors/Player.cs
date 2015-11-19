@@ -25,10 +25,13 @@ namespace CyberCube.Actors
     {
         public const float JUMP_VELOCITY = -6f;
         public const float JUMP_STOP_FACTOR = 0.6f;
-        public const float MAX_RUN_SPEED = 4;
+        public const float MAX_RUN_SPEED = 3.5f;
         public const float AIR_MOVEMENT_SCALE = 10;
         public const float GROUND_MOVEMENT_SCALE = 20;
         public const float PLAYER_GRAVITY = 15f;
+
+        public readonly float PLAYER_WIDTH = 15.ToUnits();//0.4f;
+        public readonly float PLAYER_HEIGHT = 50.ToUnits();//1.7f;
 
         private Model model3D;
 
@@ -55,7 +58,7 @@ namespace CyberCube.Actors
                 return (PlayScreen) base.Screen;
             }
             set {
-                base.Screen = (PlayScreen) value;
+                base.Screen = value;
             }
         }
 
@@ -113,18 +116,18 @@ namespace CyberCube.Actors
             Body body = base.CreateBody( world );
 
             Vertices verts = PolygonTools.CreateRoundedRectangle(
-                25.ToUnits(),
-                50.ToUnits(),
+                PLAYER_WIDTH,
+                PLAYER_HEIGHT,
                 5.ToUnits(),
                 5.ToUnits(),
                 0 );
             FixtureFactory.AttachPolygon( verts, 1, body, "torso" );
 
             var feet = FixtureFactory.AttachRectangle(
-                20.ToUnits(),
+                PLAYER_WIDTH * 0.9f,
                 10.ToUnits(),
                 1,
-                new Vector2( 0, 25 ).ToUnits(),
+                new Vector2( 0, PLAYER_HEIGHT / 2 ),//.ToUnits(),
                 body,
                 "feet" );
             feet.IsSensor = true;
