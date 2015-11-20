@@ -227,23 +227,27 @@ namespace CyberCube.Screens
 
         private Vector3 ComputeCameraPosition( Player p )
         {
-            Vector3 defaultPos = p.WorldPosition + (p.Normal * (Cube.CameraDistance - 1));
+            Vector3 playerPos = p.WorldPosition;
+            Vector3 normal = p.Normal;
 
-            HyperVector3 cubePos = new HyperVector3( p.WorldPosition );
-            cubePos.Cascade( p.Normal );
-
-            HyperVector3 projPos = HyperVector3.Normalize( cubePos ) * Cube.CameraDistance;
-            projPos.Cascade( defaultPos );
+            HyperVector3 cubePos = new HyperVector3( playerPos );
+            cubePos.Cascade( normal );
 
             const float sqrt2 = 1.41421356237f;
             Vector3 bias = cubePos.Coalesce(
                 v => MathTools.TransformRange( (v / Cube.Scale).Length(), .9f * sqrt2, sqrt2, 0, 1, true ) );
 
+            Vector3 defaultPos = normal * (Cube.CameraDistance - 1) + playerPos;
+            //defaultPos = defaultPos.ChangeLength( Cube.CameraDistance );
+
+            HyperVector3 projPos = cubePos.ChangeLength( Cube.CameraDistance );
+            projPos.Cascade( defaultPos );
+
             Vector3 projPosA, projPosB;
             float biasA, biasB;
 
             #region Project and bias setup
-            switch ( p.Normal.LargestComponent() )
+            switch ( normal.LargestComponent() )
             {
             case Vector3Component.X:
                 projPosA = projPos.Y;
@@ -271,10 +275,10 @@ namespace CyberCube.Screens
             }
             #endregion
 
-            Vector3 posA = defaultPos.Slerp( projPosA, biasA );
-            Vector3 posB = defaultPos.Slerp( projPosB, biasB );
-
-            return VectorUtils.Slerp( posA, posB, MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
+            return VectorUtils.Slerp(
+                defaultPos.Slerp( projPosA, biasA ),
+                defaultPos.Slerp( projPosB, biasB ),
+                MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
         }
 
         public override void Draw( GameTime gameTime )

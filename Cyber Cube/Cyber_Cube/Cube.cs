@@ -115,7 +115,6 @@ namespace CyberCube
             mLeftFace = NewFace( CubeFaceType.Left, -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
             mRightFace = NewFace( CubeFaceType.Right, Vector3.UnitX, Vector3.UnitZ, Direction.Left );
 
-            CameraDistance = 3.5f;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
         }

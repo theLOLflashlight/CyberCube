@@ -18,7 +18,7 @@ namespace CyberCube.Levels
     {
         private static Model sModel3D;
 
-        public static void LoadContent( ContentManager content )
+        public static new void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
             sModel3D = content.Load<Model>( "Models\\playerAlpha3D" );
@@ -43,6 +43,8 @@ namespace CyberCube.Levels
             mBottomFace.BackgroundColor = Color.Green;
             mLeftFace.BackgroundColor = Color.Purple;
             mRightFace.BackgroundColor = Color.Yellow;
+
+            CameraDistance = 4f;
         }
 
         protected override Cube.Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )

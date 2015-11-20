@@ -129,7 +129,7 @@ namespace CyberCube.Physics
 
         private Texture2D CreateCircleTexture( float radius )
         {
-            return CreateQuarterpipeTexture( GraphicsDevice, radius, Color.White );
+            return CreateQuarterpipeTexture( GraphicsDevice, radius, SOLID_COLOR );
         }
 
         public static Texture2D CreateQuarterpipeTexture( GraphicsDevice graphicsDevice, float radiusf, Color color )

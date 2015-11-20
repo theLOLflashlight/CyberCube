@@ -94,7 +94,7 @@ namespace CyberCube.Tools
             }
         }
 
-        public void Update( Delta amount )
+        public void Step( Delta amount )
         {
             if ( !mValue0.Equals( mValue1 ) )
                 OnValueChanged( mValue0 = mInterpolator( mValue0, mValue1, amount ) );

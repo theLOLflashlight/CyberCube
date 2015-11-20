@@ -178,7 +178,7 @@ namespace CyberCube.Physics
 
             mSpriteBatch.DrawLine( line, mShadowTexture, Color.White, 30 );
             mSpriteBatch.DrawLine( line, mShadowTexture, Color.White, 20 );
-            mSpriteBatch.DrawLine( line, Texture, BodyType == BodyType.Static ? Color.Black : Color.White, 10 );
+            mSpriteBatch.DrawLine( line, Texture, BodyType == BodyType.Static ? SOLID_COLOR : Color.White, 10 );
 
             mSpriteBatch.End();
         }

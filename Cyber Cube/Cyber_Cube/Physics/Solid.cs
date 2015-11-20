@@ -19,6 +19,8 @@ namespace CyberCube.Physics
 
     public abstract class Solid : DrawableCubeGameObject
     {
+        public static readonly Color SOLID_COLOR = Color.Black;//new Color( 255, 69, 0, 200 );
+
         public abstract override void Draw( GameTime gameTime );
 
         private World mWorld;

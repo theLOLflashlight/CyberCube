@@ -285,11 +285,11 @@ namespace CyberCube.Tools
         /// </summary>
         public static Vector3 Lerp( this Vector3 v0, Vector3 v1, float amount )
         {
-            Utils.Lerp( ref v0.X, v1.X, amount );
-            Utils.Lerp( ref v0.Y, v1.Y, amount );
-            Utils.Lerp( ref v0.Z, v1.Z, amount );
-            return v0;
-            //return Vector3.Lerp( v0, v1, amount );
+            //Utils.Lerp( ref v0.X, v1.X, amount );
+            //Utils.Lerp( ref v0.Y, v1.Y, amount );
+            //Utils.Lerp( ref v0.Z, v1.Z, amount );
+            //return v0;
+            return Vector3.Lerp( v0, v1, amount );
         }
 
         /// <summary>
@@ -522,6 +522,20 @@ namespace CyberCube.Tools
             X.Normalize();
             Y.Normalize();
             Z.Normalize();
+        }
+
+        public HyperVector3 ChangeLength( Vector3 len )
+        {
+            HyperVector3 hvec = this;
+            hvec.X = hvec.X.ChangeLength( len.X );
+            hvec.Y = hvec.Y.ChangeLength( len.Y );
+            hvec.Z = hvec.Z.ChangeLength( len.Z );
+            return hvec;
+        }
+
+        public HyperVector3 ChangeLength( float len )
+        {
+            return ChangeLength( new Vector3( len ) );
         }
 
         public static HyperVector3 Normalize( HyperVector3 hvec )

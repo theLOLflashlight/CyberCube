@@ -29,6 +29,7 @@ namespace CyberCube.Levels
         public PlayableCube( CubeGame game, PlayScreen screen = null )
             : base( game, screen )
         {
+            CameraDistance = 3.5f;
         }
 
         protected override Cube.Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )

@@ -104,7 +104,7 @@ namespace CyberCube.Physics
                     mWhiteBox,
                     position,
                     null,
-                    Color.Black,
+                    SOLID_COLOR,
                     Body.Rotation,
                     new Vector2(
                         mWhiteBox.Width / 2.0f,

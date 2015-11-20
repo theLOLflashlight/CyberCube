@@ -37,7 +37,7 @@ namespace CyberCube.Actors
         Standing = 0,
         Falling = 16,
         Jumping = 32,// | Falling,
-        Mask_Aerial = 63 ^ 15,
+        Mask_Aerial = 63 ^ (Mask_Speed | Mask_Movement),
     }
 
     public partial class Player : Actor
@@ -49,15 +49,22 @@ namespace CyberCube.Actors
         public const float GROUND_MOVEMENT_SCALE = 20;
         public const float PLAYER_GRAVITY = 15;
         public const float PLAYER_FRICTION = 1;
+        
+        public const float MODEL_SCALE = 0.061f;
+        public const float RUN_ANIM_FACTOR = 0.04f / MODEL_SCALE;
 
-        public readonly float PLAYER_WIDTH = 15.ToUnits();//0.4f;
-        public readonly float PLAYER_HEIGHT = 60.ToUnits();//1.7f;
+        public readonly float PLAYER_WIDTH = 15.ToUnits();
+        public readonly float PLAYER_HEIGHT = 60.ToUnits();
+
+        public readonly Color PLAYER_COLOR = Color.OrangeRed;
 
         private Model model3D;
 
         private Fixture mTorso;
         private Fixture mFeet;
         private AnimatedVariable<float, float> mModelRotation;
+
+        private static Texture2D sTexture;
 
         public AnimationState AnimState
         {
@@ -120,7 +127,6 @@ namespace CyberCube.Actors
                 return AnimSpeedState != AnimationState.Still
                     && AnimAerialState == AnimationState.Standing
                     ? mRunPlayer : mIdlePlayer;
-                //return IsRunning && !FreeFall ? mRunPlayer : mIdlePlayer;
             }
         }
 
@@ -164,28 +170,28 @@ namespace CyberCube.Actors
         {
             base.LoadContent();
             //model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
-            model3D = Game.Content.Load<Model>("Models\\playerBeta");
+            model3D = Game.Content.Load<Model>( "Models\\playerBeta" );
 
             mSkinData = model3D.Tag as SkinningData;
-
-            if (mSkinData == null)
-                throw new InvalidOperationException
-                    ("This model does not contain a SkinningData tag.");
+            if ( mSkinData == null )
+                throw new InvalidOperationException(
+                    "This model does not contain a SkinningData tag." );
 
             // Create an animation player, and start decoding an animation clip.
-            mIdlePlayer = new AnimationPlayer(mSkinData);
-            mRunPlayer = new AnimationPlayer(mSkinData);
+            mIdlePlayer = new AnimationPlayer( mSkinData );
+            mRunPlayer = new AnimationPlayer( mSkinData );
 
-            mIdleClip = mSkinData.AnimationClips["idle"];
-            mRunClip = mSkinData.AnimationClips["run"];
+            mIdleClip = mSkinData.AnimationClips[ "idle" ];
+            mRunClip = mSkinData.AnimationClips[ "run" ];
 
-            mRunPlayer.StartClip(mRunClip);
-            mIdlePlayer.StartClip(mIdleClip);
+            mRunPlayer.StartClip( mRunClip );
+            mIdlePlayer.StartClip( mIdleClip );
 
-            //IsRunning = false;
+            sfxJump = Game.Content.Load<SoundEffect>( "Audio\\jump" );
+            sfxLand = Game.Content.Load<SoundEffect>( "Audio\\land" );
 
-            sfxJump = Game.Content.Load<SoundEffect>("Audio\\jump");
-            sfxLand = Game.Content.Load<SoundEffect>("Audio\\land");
+            sTexture = new Texture2D( GraphicsDevice, 1, 1 );
+            sTexture.SetData( new Color[] { PLAYER_COLOR } );
         }
 
         protected override void ApplyRotation( CompassDirection dir )
@@ -212,7 +218,7 @@ namespace CyberCube.Actors
                 PLAYER_WIDTH * 0.9f,
                 10.ToUnits(),
                 1,
-                new Vector2( 0, PLAYER_HEIGHT / 2 ),//.ToUnits(),
+                new Vector2( 0, PLAYER_HEIGHT / 2 ),
                 body,
                 "feet" );
             feet.IsSensor = true;
@@ -226,7 +232,7 @@ namespace CyberCube.Actors
 
             mTorso = Body.FindFixture( "torso" );
             mFeet = Body.FindFixture( "feet" );
-            
+
             mTorso.OnCollision += Torso_OnCollision;
             mTorso.OnCollision += Torso_OnHazardCollision;
             mTorso.OnCollision += Torso_OnDoorCollision;
@@ -294,11 +300,16 @@ namespace CyberCube.Actors
             }
         }
 
+        //public bool IsJumping
+        //{
+        //    get {
+        //        return (AnimState & AnimationState.Jumping) == AnimationState.Jumping;
+        //    }
+        //}
+
         public bool IsJumping
         {
-            get {
-                return (AnimState & AnimationState.Jumping) == AnimationState.Jumping;
-            }
+            get; private set;
         }
 
         public void KillPlayer()
@@ -317,6 +328,7 @@ namespace CyberCube.Actors
                 return;
 
             AnimAerialState |= AnimationState.Jumping;
+            IsJumping = true;
             hasLanded = false;
 
             velocity.Y = JUMP_VELOCITY;
@@ -387,7 +399,8 @@ namespace CyberCube.Actors
                     : speed > 0 ? AnimationState.Walking
                         : AnimationState.Still;
 
-            TimeSpan t = new TimeSpan( (long) (gameTime.ElapsedGameTime.Ticks * 0.65f * speed) );
+            long ticks = gameTime.ElapsedGameTime.Ticks;
+            TimeSpan t = new TimeSpan( (long) (ticks * RUN_ANIM_FACTOR * speed) );
             mRunPlayer.Update( t, true, Matrix.Identity );
 
             float runFactor = velocity.X * MathHelper.PiOver2 / 8 / MAX_RUN_SPEED;
@@ -400,8 +413,11 @@ namespace CyberCube.Actors
             if ( GetPlayerAction( Action.JumpStop ) )
                 JumpStop( ref velocity );
 
-            if ( velocity.Y >= 0 )
+            if ( velocity.Y >= 0 && !FreeFall )
+            {
+                IsJumping = false;
                 AnimAerialState &= ~AnimationState.Jumping;
+            }
 
             if ( FreeFall )
                 AnimAerialState |= AnimationState.Falling;
@@ -410,7 +426,7 @@ namespace CyberCube.Actors
             #endregion
 
             #region Landing
-            if ( velocity.Y == 0 && !hasLanded)
+            if ( velocity.Y == 0 && !hasLanded )
             {
                 sfxLand.Play();
                 hasLanded = true;
@@ -423,7 +439,7 @@ namespace CyberCube.Actors
             base.Update( gameTime );
 
             mModelRotation.AnimateValue( Rotation + runFactor );
-            mModelRotation.Update( MathHelper.TwoPi * seconds );
+            mModelRotation.Step( MathHelper.TwoPi * seconds );
 
             if ( GetPlayerAction( Action.PlaceClone ) )
                 ClonePlayer();
@@ -437,16 +453,14 @@ namespace CyberCube.Actors
 
         public override void Draw( GameTime gameTime )
         {
-			// Below are codes for render the 3d model, didn't quite working bug-free so commented out for now
-
-			//Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
-			//model3D.CopyAbsoluteBoneTransformsTo( transforms );
+            // Below are codes for render the 3d model, didn't quite working bug-free so commented out for 
+            //Matrix[] transforms = new Matrix[ model3D.Bones.Count ];
+            //model3D.CopyAbsoluteBoneTransformsTo( transforms );
 
             Matrix[] transforms = PlayerAnimation.GetSkinTransforms();
 
-            Matrix worldTransformation
-                = Matrix.CreateScale( 0.06f )
-                * Matrix.CreateTranslation( 0, -6.ToUnits(), 0 )
+            Matrix worldTransformation = Matrix.CreateTranslation( 0, -1, 0 )
+                * Matrix.CreateScale( MODEL_SCALE )
                 * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
                 * Vector3.UnitZ.RotateOnto_M( CubeFace.Normal )
                 * Matrix.CreateFromAxisAngle( CubeFace.Normal, CubeFace.Rotation - mModelRotation )
@@ -454,21 +468,22 @@ namespace CyberCube.Actors
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )
-			{
-				// This is where the mesh orientation is set, as well 
-				// as our camera and projection.
-				//foreach ( SkinnedEffect effect in mesh.Effects )
+            {
+                // This is where the mesh orientation is set, as well 
+                // as our camera and projection.
                 foreach ( SkinnedEffect effect in mesh.Effects )
                 {
-					effect.EnableDefaultLighting();
+                    effect.EnableDefaultLighting();
                     effect.Parameters[ "Bones" ].SetValue( transforms );
-					effect.World = transforms[ mesh.ParentBone.Index ] * worldTransformation;
+                    effect.World = transforms[ mesh.ParentBone.Index ] * worldTransformation;
+                    //effect.DiffuseColor = PLAYER_COLOR.ToVector3();
+                    effect.AmbientLightColor = PLAYER_COLOR.ToVector3();
+                    effect.Texture = sTexture;
 
                     Screen.Camera.Apply( effect );
-				}
-				// Draw the mesh, using the effects set above.
-				mesh.Draw();
-			}
+                }
+                mesh.Draw();
+            }
         }
 
     }

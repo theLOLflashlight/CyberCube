@@ -61,7 +61,17 @@ namespace CyberCube
             mPosition.ValueChanged += OnViewValueChanged;
             mTarget.ValueChanged += OnViewValueChanged;
             mUpVector.ValueChanged += OnViewValueChanged;
+
+            mPosition.ValueChanged += FixNaN;
+            mTarget.ValueChanged += FixNaN;
+            mUpVector.ValueChanged += FixNaN;
             #endregion
+        }
+
+        private void FixNaN( AnimatedVariable<Vector3, float> sender, Vector3 value )
+        {
+            if ( float.IsNaN( value.X ) || float.IsNaN( value.Y ) || float.IsNaN( value.Z ) )
+                sender.SkipAnimation();
         }
 
         private static AnimatedVariable<Vector3, float>.ValueInterpolator Orbit( Vector3 origin, float nearFactor = 1 )
@@ -77,14 +87,14 @@ namespace CyberCube
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            mFov.Update( FovSpeed * seconds );
-            mAspectRatio.Update( AspectRatioSpeed * seconds );
-            mNearPlaneDist.Update( NearPlaneDistSpeed * seconds );
-            mFarPlaneDist.Update( FarPlaneDistSpeed * seconds );
+            mFov.Step( FovSpeed * seconds );
+            mAspectRatio.Step( AspectRatioSpeed * seconds );
+            mNearPlaneDist.Step( NearPlaneDistSpeed * seconds );
+            mFarPlaneDist.Step( FarPlaneDistSpeed * seconds );
 
-            mPosition.Update( PositionSpeed * seconds );
-            mTarget.Update( TargetSpeed * seconds );
-            mUpVector.Update( UpVectorSpeed * seconds );
+            mPosition.Step( PositionSpeed * seconds );
+            mTarget.Step( TargetSpeed * seconds );
+            mUpVector.Step( UpVectorSpeed * seconds );
         }
 
         public void Apply( Effect effect )
