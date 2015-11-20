@@ -88,7 +88,9 @@ namespace CyberCube.Screens
 
         private void OnCloneChanged( Player player )
         {
-            Camera.AnimateTarget( player.WorldPosition, 10 );
+            float dist = Vector3.Distance( player.WorldPosition, Player.WorldPosition );
+
+            Camera.AnimateTarget( player.WorldPosition, dist * 4 );
             CloneChanged?.Invoke( player );
         }
 
@@ -196,54 +198,52 @@ namespace CyberCube.Screens
             CubePosition start = Cube.StartPosition;
             AddPlayer( start.Position, start.Rotation );
 
-            Player p = PendingPlayer;
+            Player = PendingPlayer;
 
-            Camera.Target = p.WorldPosition;
-            Camera.Position = ComputeCameraPosition();
-            Camera.UpVector = p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation );
+            Camera.Target = Player.WorldPosition;
+            Camera.Position = ComputeCameraPosition( Player );
+            Camera.UpVector = Player.CubeFace.UpVec.Rotate( Player.Normal, -Player.Rotation );
         }
 
 
         public override void Update( GameTime gameTime )
         {
-            Player = PendingPlayer;
             base.Update( gameTime );
+            Player = PendingPlayer;
 
             if ( mEndLevel )
                 return;
 
-            Player p = PendingPlayer;
+            Player p = Player;
 
             if ( Camera.IsTargetAnimating )
                 Camera.AnimateTarget( p.WorldPosition );
             else
                 Camera.Target = p.WorldPosition;
 
-            Camera.AnimatePosition( ComputeCameraPosition(), Cube.CameraDistance * 4 );
+            Camera.AnimatePosition( ComputeCameraPosition( p ), Cube.CameraDistance * 4 );
             Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
         }
 
-        private Vector3 ComputeCameraPosition()
+        private Vector3 ComputeCameraPosition( Player p )
         {
-            Player p = PendingPlayer;
-
             Vector3 defaultPos = p.WorldPosition + (p.Normal * (Cube.CameraDistance - 1));
 
             HyperVector3 cubePos = new HyperVector3( p.WorldPosition );
-            cubePos.Cascade( p.Normal * Cube.CameraDistance );
+            cubePos.Cascade( p.Normal );
 
             HyperVector3 projPos = HyperVector3.Normalize( cubePos ) * Cube.CameraDistance;
             projPos.Cascade( defaultPos );
 
             const float sqrt2 = 1.41421356237f;
             Vector3 bias = cubePos.Coalesce(
-                v => MathTools.TransformRange( v.Length(), .9f * sqrt2, sqrt2, 0, 1 ) );
+                v => MathTools.TransformRange( (v / Cube.Scale).Length(), .9f * sqrt2, sqrt2, 0, 1, true ) );
 
             Vector3 projPosA, projPosB;
             float biasA, biasB;
 
             #region Project and bias setup
-            switch ( defaultPos.LargestComponent() )
+            switch ( p.Normal.LargestComponent() )
             {
             case Vector3Component.X:
                 projPosA = projPos.Y;
@@ -269,9 +269,6 @@ namespace CyberCube.Screens
             default:
                 throw new EnumException<Vector3Component>( "switch statement" );
             }
-
-            biasA = MathHelper.Clamp( biasA, 0, 1 );
-            biasB = MathHelper.Clamp( biasB, 0, 1 );
             #endregion
 
             Vector3 posA = defaultPos.Slerp( projPosA, biasA );

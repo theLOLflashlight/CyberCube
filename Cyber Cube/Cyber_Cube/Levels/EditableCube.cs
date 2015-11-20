@@ -73,7 +73,7 @@ namespace CyberCube.Levels
         {
             var input = Game.Input;
 
-            Screen.Camera.Target = mPosition;
+            Screen.Camera.Target = Position;
 
             if ( !input.HasFocus )
             {

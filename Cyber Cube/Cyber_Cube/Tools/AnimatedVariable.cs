@@ -10,21 +10,17 @@ namespace CyberCube.Tools
     {
         public delegate void ValueChangedEventHandler( AnimatedVariable< T, Delta > sender, T value );
 
-        public delegate T Interpolator( T t0, T t1, Delta amount );
+        public delegate T ValueInterpolator( T t0, T t1, Delta amount );
 
 
         private T mValue0;
         private T mValue1;
-        private readonly Interpolator mInterpolator;
+        private ValueInterpolator mInterpolator;
 
         public event ValueChangedEventHandler ValueChanged;
 
-        public AnimatedVariable( Interpolator interpolator )
-            : this( new T(), interpolator )
-        {
-        }
-
-        public AnimatedVariable( T value, Interpolator interpolator )
+        #region Constructors
+        public AnimatedVariable( T value, ValueInterpolator interpolator )
         {
             if ( value == null )
                 throw new ArgumentNullException( nameof( value ) );
@@ -33,6 +29,22 @@ namespace CyberCube.Tools
 
             mValue0 = mValue1 = value;
             mInterpolator = interpolator;
+        }
+
+        public AnimatedVariable( ValueInterpolator interpolator )
+            : this( new T(), interpolator )
+        {
+        }
+        #endregion
+
+        public ValueInterpolator Interpolator
+        {
+            set {
+                if ( value == null )
+                    throw new ArgumentNullException( nameof( value ) );
+
+                mInterpolator = value;
+            }
         }
 
         private void OnValueChanged( T value )
@@ -58,7 +70,7 @@ namespace CyberCube.Tools
                 mValue0 = mValue1 = value;
 
                 if ( changed )
-                    OnValueChanged( mValue0 );
+                    OnValueChanged( value );
             }
         }
 
@@ -85,10 +97,7 @@ namespace CyberCube.Tools
         public void Update( Delta amount )
         {
             if ( !mValue0.Equals( mValue1 ) )
-            {
-                mValue0 = mInterpolator( mValue0, mValue1, amount );
-                OnValueChanged( mValue0 );
-            }
+                OnValueChanged( mValue0 = mInterpolator( mValue0, mValue1, amount ) );
         }
 
     }

@@ -33,7 +33,6 @@ namespace CyberCube
         public float TargetSpeed = 1;
         public float UpVectorSpeed = 1;
 
-
         public Camera( CubeGame game )
             : base( game )
         {
@@ -65,6 +64,15 @@ namespace CyberCube
             #endregion
         }
 
+        private static AnimatedVariable<Vector3, float>.ValueInterpolator Orbit( Vector3 origin, float nearFactor = 1 )
+        {
+            return (v0, v1, d) => {
+                return Vector3.Distance( v0, v1 ) > d * nearFactor
+                    ? (v0 - origin).Slerp( v1 - origin, d ) + origin
+                    : v1;
+            };
+        }
+
         public override void Update( GameTime gameTime )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
@@ -88,9 +96,9 @@ namespace CyberCube
                 basicEffect.Projection = Projection;
                 basicEffect.View = View;
             }
-            else if(effect is SkinnedEffect)
+            else if ( effect is SkinnedEffect )
             {
-                var skinnedEffect = (SkinnedEffect)effect;
+                var skinnedEffect = (SkinnedEffect) effect;
 
                 skinnedEffect.Projection = Projection;
                 skinnedEffect.View = View;
@@ -244,6 +252,17 @@ namespace CyberCube
         {
             if ( speed != null )
                 PositionSpeed = speed.Value;
+
+            mPosition.Interpolator = VectorUtils.Lerp;
+            mPosition.AnimateValue( position );
+        }
+
+        public void OrbitPosition( Vector3 position, Vector3 origin, float? speed = null )
+        {
+            if ( speed != null )
+                PositionSpeed = speed.Value;
+
+            mPosition.Interpolator = Orbit( origin, 0.1f );
             mPosition.AnimateValue( position );
         }
 
@@ -251,6 +270,17 @@ namespace CyberCube
         {
             if ( speed != null )
                 TargetSpeed = speed.Value;
+
+            mTarget.Interpolator = VectorUtils.Lerp;
+            mTarget.AnimateValue( target );
+        }
+
+        public void OrbitTarget( Vector3 target, Vector3 origin, float? speed = null )
+        {
+            if ( speed != null )
+                TargetSpeed = speed.Value;
+
+            mTarget.Interpolator = Orbit( origin );
             mTarget.AnimateValue( target );
         }
 

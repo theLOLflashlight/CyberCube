@@ -69,14 +69,16 @@ namespace CyberCube.Actors
 
         private bool BeginFeetContact( Contact contact )
         {
-            if ( contact.FixtureA == mFeet || contact.FixtureB == mFeet )
+            if ( contact.FixtureA == mFeet && !contact.FixtureB.IsSensor
+                 || contact.FixtureB == mFeet && !contact.FixtureA.IsSensor )
                 ++mNumFootContacts;
             return true;
         }
 
         private void EndFeetContact( Contact contact )
         {
-            if ( contact.FixtureA == mFeet || contact.FixtureB == mFeet )
+            if ( contact.FixtureA == mFeet && !contact.FixtureB.IsSensor
+                 || contact.FixtureB == mFeet && !contact.FixtureA.IsSensor )
                 --mNumFootContacts;
         }
 

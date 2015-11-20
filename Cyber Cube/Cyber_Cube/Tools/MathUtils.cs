@@ -38,7 +38,19 @@ namespace CyberCube.Tools
             return Math.Abs( MathHelper.WrapAngle( angleA - angleB ) ) <= range;
         }
 
-        public static float TransformRange( float x, float mina, float maxa, float minb, float maxb )
+        public static float TransformRange( float x, float mina, float maxa, float minb, float maxb, bool clamp = false )
+        {
+            return !clamp ? TransformRange( x, mina, maxa, minb, maxb )
+                : MathHelper.Clamp( TransformRange( x, mina, maxa, minb, maxb ), minb, maxb );
+        }
+
+        public static IEnumerable<float> TransformRange( IEnumerable<float> range, float mina, float maxa, float minb, float maxb, bool clamp = false )
+        {
+            foreach ( float x in range )
+                yield return TransformRange( x, mina, maxa, minb, maxb, clamp );
+        }
+
+        private static float TransformRange( float x, float mina, float maxa, float minb, float maxb )
         {
             return (x - mina) * ((maxb - minb) / (maxa - mina)) + minb;
         }

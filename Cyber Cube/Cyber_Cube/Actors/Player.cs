@@ -21,6 +21,25 @@ using SkinnedModel;
 
 namespace CyberCube.Actors
 {
+    public enum AnimationState
+    {
+        Idle = 0,
+        MovementRight = 1,
+        MovementLeft = 2,
+        Mask_Movement = 3,
+
+        Still = 0,
+        Walking = 4,
+        Running = 8,
+        Sprinting = Walking | Running,
+        Mask_Speed = 15 ^ Mask_Movement,
+
+        Standing = 0,
+        Falling = 16,
+        Jumping = 32,// | Falling,
+        Mask_Aerial = 63 ^ 15,
+    }
+
     public partial class Player : Actor
     {
         public const float JUMP_VELOCITY = -6f;
@@ -28,10 +47,11 @@ namespace CyberCube.Actors
         public const float MAX_RUN_SPEED = 3.5f;
         public const float AIR_MOVEMENT_SCALE = 10;
         public const float GROUND_MOVEMENT_SCALE = 20;
-        public const float PLAYER_GRAVITY = 15f;
+        public const float PLAYER_GRAVITY = 15;
+        public const float PLAYER_FRICTION = 1;
 
         public readonly float PLAYER_WIDTH = 15.ToUnits();//0.4f;
-        public readonly float PLAYER_HEIGHT = 50.ToUnits();//1.7f;
+        public readonly float PLAYER_HEIGHT = 60.ToUnits();//1.7f;
 
         private Model model3D;
 
@@ -39,23 +59,78 @@ namespace CyberCube.Actors
         private Fixture mFeet;
         private AnimatedVariable<float, float> mModelRotation;
 
+        public AnimationState AnimState
+        {
+            get; private set;
+        }
+
+        public AnimationState AnimMovementState
+        {
+            get {
+                return AnimState & AnimationState.Mask_Movement;
+            }
+            private set {
+                AnimState = (AnimState & ~AnimationState.Mask_Movement)
+                           | value & AnimationState.Mask_Movement;
+            }
+        }
+
+        public AnimationState AnimSpeedState
+        {
+            get {
+                return AnimState & AnimationState.Mask_Speed;
+            }
+            private set {
+                AnimState = (AnimState & ~AnimationState.Mask_Speed)
+                           | value & AnimationState.Mask_Speed;
+            }
+        }
+
+        public AnimationState AnimAerialState
+        {
+            get {
+                return AnimState & AnimationState.Mask_Aerial;
+            }
+            private set {
+                AnimState = (AnimState & ~AnimationState.Mask_Aerial)
+                            | value & AnimationState.Mask_Aerial;
+            }
+        }
+
+        private float MovementRotation
+        {
+            get {
+                switch ( AnimMovementState )
+                {
+                case AnimationState.MovementRight:
+                    return MathHelper.PiOver2;
+
+                case AnimationState.MovementLeft:
+                    return -MathHelper.PiOver2;
+
+                default:
+                    return 0;
+                }
+            }
+        }
+
         private AnimationPlayer PlayerAnimation
         {
             get {
-                return IsRunning ? mRunPlayer : mIdlePlayer;
+                return AnimSpeedState != AnimationState.Still
+                    && AnimAerialState == AnimationState.Standing
+                    ? mRunPlayer : mIdlePlayer;
+                //return IsRunning && !FreeFall ? mRunPlayer : mIdlePlayer;
             }
         }
 
         private AnimationPlayer mIdlePlayer;
         private AnimationPlayer mRunPlayer;
+
         private AnimationClip mIdleClip;
         private AnimationClip mRunClip;
-        private SkinningData mSkinData;
 
-        public bool IsRunning
-        {
-            get; private set;
-        }
+        private SkinningData mSkinData;
 
         private SoundEffect sfxJump;
         private SoundEffect sfxLand;
@@ -107,7 +182,7 @@ namespace CyberCube.Actors
             mRunPlayer.StartClip(mRunClip);
             mIdlePlayer.StartClip(mIdleClip);
 
-            IsRunning = false;
+            //IsRunning = false;
 
             sfxJump = Game.Content.Load<SoundEffect>("Audio\\jump");
             sfxLand = Game.Content.Load<SoundEffect>("Audio\\land");
@@ -130,7 +205,8 @@ namespace CyberCube.Actors
                 5.ToUnits(),
                 5.ToUnits(),
                 0 );
-            FixtureFactory.AttachPolygon( verts, 1, body, "torso" );
+            var torso = FixtureFactory.AttachPolygon( verts, 1, body, "torso" );
+            torso.Friction = PLAYER_FRICTION;
 
             var feet = FixtureFactory.AttachRectangle(
                 PLAYER_WIDTH * 0.9f,
@@ -210,9 +286,19 @@ namespace CyberCube.Actors
             Body.ApplyLinearImpulse( impulse.Rotate( Rotation ) );
         }
 
+        public bool IsRunning
+        {
+            get {
+                return AnimMovementState != AnimationState.Idle
+                    && AnimSpeedState != AnimationState.Still;
+            }
+        }
+
         public bool IsJumping
         {
-            get; private set;
+            get {
+                return (AnimState & AnimationState.Jumping) == AnimationState.Jumping;
+            }
         }
 
         public void KillPlayer()
@@ -230,7 +316,7 @@ namespace CyberCube.Actors
             if ( FreeFall && !Game.GameProperties.AllowMultipleJumping )
                 return;
 
-            IsJumping = true;
+            AnimAerialState |= AnimationState.Jumping;
             hasLanded = false;
 
             velocity.Y = JUMP_VELOCITY;
@@ -257,6 +343,9 @@ namespace CyberCube.Actors
             //var input = Game.Input;
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
+            mIdlePlayer.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
+            //mRunPlayer.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
+
             #region Rotation
             if ( mNumFootContacts == 1 && !IsJumping || FreeFall && !IsJumping )
                 Rotation = UpDir.Angle;
@@ -279,7 +368,10 @@ namespace CyberCube.Actors
             var actionLeft = GetPlayerAction( Action.MoveLeft );
             var actionRight = GetPlayerAction( Action.MoveRight );
 
-            IsRunning = (bool) actionLeft != actionRight;
+            //IsRunning = (bool) actionLeft != actionRight;
+
+            AnimMovementState = (actionRight ? AnimationState.MovementRight : AnimationState.Idle)
+                                | (actionLeft ? AnimationState.MovementLeft : AnimationState.Idle);
 
             if ( !IsRunning )
                 velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
@@ -287,6 +379,18 @@ namespace CyberCube.Actors
             velocity.X -= actionLeft * (movementScale + 1) * seconds;
             velocity.X += actionRight * (movementScale + 1) * seconds;
             velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
+
+            float speed = Math.Abs( velocity.X );
+
+            AnimSpeedState = speed >= MAX_RUN_SPEED ? AnimationState.Sprinting
+                : speed > MAX_RUN_SPEED / 2 ? AnimationState.Running
+                    : speed > 0 ? AnimationState.Walking
+                        : AnimationState.Still;
+
+            TimeSpan t = new TimeSpan( (long) (gameTime.ElapsedGameTime.Ticks * 0.65f * speed) );
+            mRunPlayer.Update( t, true, Matrix.Identity );
+
+            float runFactor = velocity.X * MathHelper.PiOver2 / 8 / MAX_RUN_SPEED;
             #endregion
 
             #region Jumping
@@ -296,12 +400,17 @@ namespace CyberCube.Actors
             if ( GetPlayerAction( Action.JumpStop ) )
                 JumpStop( ref velocity );
 
-            if ( velocity.Y >= 0 && !FreeFall )
-                IsJumping = false;
+            if ( velocity.Y >= 0 )
+                AnimAerialState &= ~AnimationState.Jumping;
+
+            if ( FreeFall )
+                AnimAerialState |= AnimationState.Falling;
+            else
+                AnimAerialState = AnimationState.Standing;
             #endregion
 
             #region Landing
-            if (velocity.Y == 0 && !hasLanded)
+            if ( velocity.Y == 0 && !hasLanded)
             {
                 sfxLand.Play();
                 hasLanded = true;
@@ -313,11 +422,8 @@ namespace CyberCube.Actors
             // ACTOR UPDATE \\
             base.Update( gameTime );
 
-            mModelRotation.AnimateValue( Rotation );
+            mModelRotation.AnimateValue( Rotation + runFactor );
             mModelRotation.Update( MathHelper.TwoPi * seconds );
-
-            mIdlePlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
-            mRunPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
 
             if ( GetPlayerAction( Action.PlaceClone ) )
                 ClonePlayer();
@@ -338,22 +444,25 @@ namespace CyberCube.Actors
 
             Matrix[] transforms = PlayerAnimation.GetSkinTransforms();
 
+            Matrix worldTransformation
+                = Matrix.CreateScale( 0.06f )
+                * Matrix.CreateTranslation( 0, -6.ToUnits(), 0 )
+                * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
+                * Vector3.UnitZ.RotateOnto_M( CubeFace.Normal )
+                * Matrix.CreateFromAxisAngle( CubeFace.Normal, CubeFace.Rotation - mModelRotation )
+                * Matrix.CreateTranslation( WorldPosition );
+
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )
 			{
 				// This is where the mesh orientation is set, as well 
 				// as our camera and projection.
 				//foreach ( SkinnedEffect effect in mesh.Effects )
-                foreach (SkinnedEffect effect in mesh.Effects)
+                foreach ( SkinnedEffect effect in mesh.Effects )
                 {
 					effect.EnableDefaultLighting();
-                    effect.Parameters["Bones"].SetValue(transforms);
-					effect.World = transforms[ mesh.ParentBone.Index ]
-                        * Matrix.CreateScale( 0.06f )
-                        * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
-                        * Vector3.UnitY.RotateOnto_M( CubeFace.UpVec )
-                        * Matrix.CreateFromAxisAngle( CubeFace.Normal, -mModelRotation )
-                        * Matrix.CreateTranslation( WorldPosition );
+                    effect.Parameters[ "Bones" ].SetValue( transforms );
+					effect.World = transforms[ mesh.ParentBone.Index ] * worldTransformation;
 
                     Screen.Camera.Apply( effect );
 				}

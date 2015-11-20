@@ -66,6 +66,11 @@ namespace CyberCube
                 get; private set;
             }
 
+            public Vector3 RightVec
+            {
+                get; private set;
+            }
+
             public RenderTarget2D RenderTarget
             {
                 get; private set;
@@ -95,6 +100,7 @@ namespace CyberCube
                 Type = type;
                 Normal = Vector3.Normalize( normal );
                 UpVec = Vector3.Normalize( up );
+                RightVec = Vector3.Cross( Normal, UpVec );
                 Rotation = -rotation.Angle;
                 BackgroundColor = Color.Gray;
 

@@ -48,6 +48,7 @@ namespace CyberCube
             private void SetUpWorld()
             {
                 mWorld = new World( Vector2.Zero );
+                return;
 
                 var box = new Box(
                         Game,

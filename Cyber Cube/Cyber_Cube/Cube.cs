@@ -38,9 +38,18 @@ namespace CyberCube
             get; protected set;
         }
 
-        protected Vector3 mPosition = Vector3.Zero;
-        protected Vector3 mRotation = Vector3.Zero;
-        protected Vector3 mScale = Vector3.One;
+        public Vector3 Position
+        {
+            get; protected set;
+        } = Vector3.Zero;
+        public Vector3 Rotation
+        {
+            get; protected set;
+        } = Vector3.Zero;
+        public Vector3 Scale
+        {
+            get; protected set;
+        } = Vector3.One;
 
         public CubePosition StartPosition = new CubePosition( Vector3.UnitZ, 0 );
 
@@ -100,13 +109,13 @@ namespace CyberCube
             Screen = screen;
 
             mFrontFace = NewFace( CubeFaceType.Front, Vector3.UnitZ, Vector3.UnitY, Direction.Up );
-            mBackFace = NewFace( CubeFaceType.Back, -Vector3.UnitZ, -Vector3.UnitY, Direction.Right );
+            mBackFace = NewFace( CubeFaceType.Back, -Vector3.UnitZ, -Vector3.UnitY, Direction.Down );
             mTopFace = NewFace( CubeFaceType.Top, Vector3.UnitY, -Vector3.UnitZ, Direction.Up );
             mBottomFace = NewFace( CubeFaceType.Bottom, -Vector3.UnitY, Vector3.UnitZ, Direction.Up );
             mLeftFace = NewFace( CubeFaceType.Left, -Vector3.UnitX, Vector3.UnitZ, Direction.Right );
             mRightFace = NewFace( CubeFaceType.Right, Vector3.UnitX, Vector3.UnitZ, Direction.Left );
 
-            CameraDistance = 4;
+            CameraDistance = 3.5f;
             CurrentFace = mFrontFace;
             UpDir = CompassDirection.North;
         }
@@ -281,7 +290,7 @@ namespace CyberCube
             Screen.Camera.FarPlaneDistance = FAR_PLANE;
 
             Screen.Camera.Position = CameraDistance * CurrentFace.Normal;
-            Screen.Camera.Target = mPosition;
+            Screen.Camera.Target = Position;
             Screen.Camera.UpVector = ComputeUpVector();
 
             //Effect = new BasicEffect( GraphicsDevice );
@@ -315,9 +324,9 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            Matrix S = Matrix.CreateScale( mScale );
-            Matrix R = Matrix.CreateFromYawPitchRoll( mRotation.Y, mRotation.X, mRotation.Z );
-            Matrix T = Matrix.CreateTranslation( mPosition );
+            Matrix S = Matrix.CreateScale( Scale );
+            Matrix R = Matrix.CreateFromYawPitchRoll( Rotation.Y, Rotation.X, Rotation.Z );
+            Matrix T = Matrix.CreateTranslation( Position );
             Effect.World = S * R * T;
 
             Vector3 cameraPos = Screen.Camera.Position;

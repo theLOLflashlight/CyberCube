@@ -274,6 +274,12 @@ namespace CyberCube.Tools
         }
         #endregion
 
+
+        public static Vector3 ChangeLength( this Vector3 vec, float len )
+        {
+            return vec * (len / vec.Length());
+        }
+
         /// <summary>
         /// Performs a linear interpolation between another vector.
         /// </summary>
@@ -327,9 +333,9 @@ namespace CyberCube.Tools
 
             var axis = Vector3.Cross( v1, angle != Math.PI
                                           ? v2
-                                          : v1 != Vector3.One
-                                            ? Vector3.One
-                                            : Vector3.Up );
+                                          : v1 != Vector3.UnitX
+                                            ? Vector3.UnitX
+                                            : Vector3.UnitY );
             axis.Normalize();
 
             return Matrix.CreateFromAxisAngle( axis, (float) angle );
@@ -352,9 +358,9 @@ namespace CyberCube.Tools
 
             var axis = Vector3.Cross( v1, angle != Math.PI
                                           ? v2
-                                          : v1 != Vector3.One
-                                            ? Vector3.One
-                                            : Vector3.Up );
+                                          : v1 != Vector3.UnitX
+                                            ? Vector3.UnitX
+                                            : Vector3.UnitY );
             axis.Normalize();
 
             return Quaternion.CreateFromAxisAngle( axis, (float) angle );
@@ -380,9 +386,9 @@ namespace CyberCube.Tools
 
             var axis = Vector3.Cross( v1, angle != Math.PI
                                           ? v2
-                                          : v1 != Vector3.One
-                                            ? Vector3.One
-                                            : Vector3.Up );
+                                          : v1 != Vector3.UnitX
+                                            ? Vector3.UnitX
+                                            : Vector3.UnitY );
             axis.Normalize();
 
             Matrix.CreateFromAxisAngle( ref axis, (float) angle, out result );
@@ -408,9 +414,9 @@ namespace CyberCube.Tools
 
             var axis = Vector3.Cross( v1, angle != Math.PI
                                           ? v2
-                                          : v1 != Vector3.One
-                                            ? Vector3.One
-                                            : Vector3.Up );
+                                          : v1 != Vector3.UnitX
+                                            ? Vector3.UnitX
+                                            : Vector3.UnitY );
             axis.Normalize();
 
             Quaternion.CreateFromAxisAngle( ref axis, (float) angle, out result );
@@ -486,6 +492,13 @@ namespace CyberCube.Tools
         public HyperVector3( Vector3 vec3 )
         {
             Z = Y = X = vec3;
+        }
+
+        public static HyperVector3 Diagonal( Vector3 vec3 )
+        {
+            HyperVector3 hvec = new HyperVector3();
+            hvec.Cascade( vec3 );
+            return hvec;
         }
 
         public void Cascade( Vector3 vec3 )

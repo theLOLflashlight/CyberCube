@@ -11,10 +11,11 @@ namespace CyberCube.Tools
     {
         public delegate void ValueChangedEventHandler( AnimatedProperty< T, Delta > sender, T value );
 
-        public delegate T Interpolator( T t0, T t1, Delta amount );
+        public delegate T ValueInterpolator( T t0, T t1, Delta amount );
 
         public delegate T Getter();
         public delegate void Setter( T value );
+
 
         private T mValue0
         {
@@ -26,29 +27,16 @@ namespace CyberCube.Tools
             }
         }
         private T mValue1;
-        private readonly Interpolator mInterpolator;
+        private ValueInterpolator mInterpolator;
 
         private readonly Getter mGet;
         private readonly Setter mSet;
 
         public event ValueChangedEventHandler ValueChanged;
 
-        public AnimatedProperty( Interpolator interpolator, PropertyInfo property, object obj, object[] index = null )
-            : this( interpolator,
-                    () => (T) property.GetValue( obj, index ),
-                    v => property.SetValue( obj, v, index ) )
+        #region Constructors
+        public AnimatedProperty( ValueInterpolator interpolator, Getter getter, Setter setter )
         {
-        }
-
-        public AnimatedProperty( Interpolator interpolator, Getter getter, Setter setter )
-            : this( getter(), interpolator, getter, setter )
-        {
-        }
-
-        public AnimatedProperty( T value, Interpolator interpolator, Getter getter, Setter setter )
-        {
-            if ( value == null )
-                throw new ArgumentNullException( nameof( value ) );
             if ( interpolator == null )
                 throw new ArgumentNullException( nameof( interpolator ) );
             if ( getter == null )
@@ -58,8 +46,35 @@ namespace CyberCube.Tools
 
             mGet = getter;
             mSet = setter;
-            mValue0 = mValue1 = value;
+            mValue1 = mValue0;
             mInterpolator = interpolator;
+        }
+
+        public AnimatedProperty( T value, ValueInterpolator interpolator, Getter getter, Setter setter )
+            : this( interpolator, getter, setter )
+        {
+            if ( value == null )
+                throw new ArgumentNullException( nameof( value ) );
+
+            mValue0 = mValue1 = value;
+        }
+
+        public AnimatedProperty( ValueInterpolator interpolator, PropertyInfo property, object obj, object[] index = null )
+            : this( interpolator,
+                    () => (T) property.GetValue( obj, index ),
+                    v => property.SetValue( obj, v, index ) )
+        {
+        }
+        #endregion
+
+        public ValueInterpolator Interpolator
+        {
+            set {
+                if ( value == null )
+                    throw new ArgumentNullException( nameof( value ) );
+
+                mInterpolator = value;
+            }
         }
 
         private void OnValueChanged( T value )
@@ -85,7 +100,7 @@ namespace CyberCube.Tools
                 mValue0 = mValue1 = value;
 
                 if ( changed )
-                    OnValueChanged( mValue0 );
+                    OnValueChanged( value );
             }
         }
 
@@ -109,13 +124,10 @@ namespace CyberCube.Tools
             }
         }
 
-        public void Update( Delta amount )
+        public void Step( Delta amount )
         {
             if ( !mValue0.Equals( mValue1 ) )
-            {
-                mValue0 = mInterpolator( mValue0, mValue1, amount );
-                OnValueChanged( mValue0 );
-            }
+                OnValueChanged( mValue0 = mInterpolator( mValue0, mValue1, amount ) );
         }
 
     }
