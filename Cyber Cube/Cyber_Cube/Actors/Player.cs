@@ -21,25 +21,6 @@ using SkinnedModel;
 
 namespace CyberCube.Actors
 {
-    public enum AnimationState
-    {
-        Idle = 0,
-        MovementRight = 1,
-        MovementLeft = 2,
-        Mask_Movement = 3,
-
-        Still = 0,
-        Walking = 4,
-        Running = 8,
-        Sprinting = Walking | Running,
-        Mask_Speed = 15 ^ Mask_Movement,
-
-        Standing = 0,
-        Falling = 16,
-        Jumping = 32,// | Falling,
-        Mask_Aerial = 63 ^ (Mask_Speed | Mask_Movement),
-    }
-
     public partial class Player : Actor
     {
         public const float JUMP_VELOCITY = -6f;
@@ -48,7 +29,7 @@ namespace CyberCube.Actors
         public const float AIR_MOVEMENT_SCALE = 10;
         public const float GROUND_MOVEMENT_SCALE = 20;
         public const float PLAYER_GRAVITY = 15;
-        public const float PLAYER_FRICTION = 1;
+        public const float PLAYER_FRICTION = 0;
         
         public const float MODEL_SCALE = 0.061f;
         public const float RUN_ANIM_FACTOR = 0.04f / MODEL_SCALE;
@@ -58,90 +39,13 @@ namespace CyberCube.Actors
 
         public readonly Color PLAYER_COLOR = Color.OrangeRed;
 
-        private Model model3D;
-
         private Fixture mTorso;
         private Fixture mFeet;
-        private AnimatedVariable<float, float> mModelRotation;
 
         private static Texture2D sTexture;
 
-        public AnimationState AnimState
-        {
-            get; private set;
-        }
-
-        public AnimationState AnimMovementState
-        {
-            get {
-                return AnimState & AnimationState.Mask_Movement;
-            }
-            private set {
-                AnimState = (AnimState & ~AnimationState.Mask_Movement)
-                           | value & AnimationState.Mask_Movement;
-            }
-        }
-
-        public AnimationState AnimSpeedState
-        {
-            get {
-                return AnimState & AnimationState.Mask_Speed;
-            }
-            private set {
-                AnimState = (AnimState & ~AnimationState.Mask_Speed)
-                           | value & AnimationState.Mask_Speed;
-            }
-        }
-
-        public AnimationState AnimAerialState
-        {
-            get {
-                return AnimState & AnimationState.Mask_Aerial;
-            }
-            private set {
-                AnimState = (AnimState & ~AnimationState.Mask_Aerial)
-                            | value & AnimationState.Mask_Aerial;
-            }
-        }
-
-        private float MovementRotation
-        {
-            get {
-                switch ( AnimMovementState )
-                {
-                case AnimationState.MovementRight:
-                    return MathHelper.PiOver2;
-
-                case AnimationState.MovementLeft:
-                    return -MathHelper.PiOver2;
-
-                default:
-                    return 0;
-                }
-            }
-        }
-
-        private AnimationPlayer PlayerAnimation
-        {
-            get {
-                return AnimSpeedState != AnimationState.Still
-                    && AnimAerialState == AnimationState.Standing
-                    ? mRunPlayer : mIdlePlayer;
-            }
-        }
-
-        private AnimationPlayer mIdlePlayer;
-        private AnimationPlayer mRunPlayer;
-
-        private AnimationClip mIdleClip;
-        private AnimationClip mRunClip;
-
-        private SkinningData mSkinData;
-
         private SoundEffect sfxJump;
         private SoundEffect sfxLand;
-
-        private bool hasLanded;
 
         public new PlayScreen Screen
         {
@@ -169,36 +73,36 @@ namespace CyberCube.Actors
         protected override void LoadContent()
         {
             base.LoadContent();
-            //model3D = Game.Content.Load<Model>( "Models\\playerAlpha3D" );
-            model3D = Game.Content.Load<Model>( "Models\\playerBeta" );
 
-            mSkinData = model3D.Tag as SkinningData;
-            if ( mSkinData == null )
-                throw new InvalidOperationException(
-                    "This model does not contain a SkinningData tag." );
+            LoadModels();
+            LoadAnimations();
 
-            // Create an animation player, and start decoding an animation clip.
-            mIdlePlayer = new AnimationPlayer( mSkinData );
-            mRunPlayer = new AnimationPlayer( mSkinData );
-
-            mIdleClip = mSkinData.AnimationClips[ "idle" ];
-            mRunClip = mSkinData.AnimationClips[ "run" ];
-
-            mRunPlayer.StartClip( mRunClip );
-            mIdlePlayer.StartClip( mIdleClip );
-
-            sfxJump = Game.Content.Load<SoundEffect>( "Audio\\jump" );
-            sfxLand = Game.Content.Load<SoundEffect>( "Audio\\land" );
+            sfxJump = Game.Content.Load<SoundEffect>( @"Audio\jump" );
+            sfxLand = Game.Content.Load<SoundEffect>( @"Audio\land" );
 
             sTexture = new Texture2D( GraphicsDevice, 1, 1 );
             sTexture.SetData( new Color[] { PLAYER_COLOR } );
+        }
+
+        public bool IsActive
+        {
+            get {
+                return Screen.Player == this;
+            }
+        }
+
+        private InputState<Action>.ActionState GetPlayerAction( Action action )
+        {
+            return IsActive ? Game.Input.GetAction( action, this )
+                : default( InputState<Action>.ActionState );
         }
 
         protected override void ApplyRotation( CompassDirection dir )
         {
             base.ApplyRotation( dir );
             mModelRotation.Value = Rotation;
-            Cube.Rotate( dir );
+            if ( IsActive )
+                Cube.Rotate( dir );
         }
 
         protected override Body CreateBody( World world )
@@ -256,12 +160,11 @@ namespace CyberCube.Actors
             Body.FixedRotation = true;
             Body.GravityScale = PLAYER_GRAVITY;
             Body.UseAdHocGravity = true;
-            Body.AdHocGravity = Vector2.UnitY;
+            Body.AdHocGravity = Vector2.UnitY.Rotate( Rotation );
+
             Body.CollisionCategories = Constants.Categories.PLAYER;
             Body.CollidesWith = Category.All ^ Constants.Categories.PLAYER;
             Body.Mass = 68;
-
-            hasLanded = true;
         }
 
         protected override void Dispose( bool disposing )
@@ -292,26 +195,6 @@ namespace CyberCube.Actors
             Body.ApplyLinearImpulse( impulse.Rotate( Rotation ) );
         }
 
-        public bool IsRunning
-        {
-            get {
-                return AnimMovementState != AnimationState.Idle
-                    && AnimSpeedState != AnimationState.Still;
-            }
-        }
-
-        //public bool IsJumping
-        //{
-        //    get {
-        //        return (AnimState & AnimationState.Jumping) == AnimationState.Jumping;
-        //    }
-        //}
-
-        public bool IsJumping
-        {
-            get; private set;
-        }
-
         public void KillPlayer()
         {
             Screen.RemovePlayer( this );
@@ -327,9 +210,7 @@ namespace CyberCube.Actors
             if ( FreeFall && !Game.GameProperties.AllowMultipleJumping )
                 return;
 
-            AnimAerialState |= AnimationState.Jumping;
-            IsJumping = true;
-            hasLanded = false;
+            AnimAerialState |= AnimationAerialState.Jumping;
 
             velocity.Y = JUMP_VELOCITY;
             sfxJump.Play();
@@ -343,23 +224,13 @@ namespace CyberCube.Actors
                 velocity.Y *= JUMP_STOP_FACTOR;
         }
 
-        private InputState<Action>.ActionState GetPlayerAction( Action action )
-        {
-            return Screen.Player == this
-                ? Game.Input.GetAction( action, this )
-                : default( InputState<Action>.ActionState );
-        }
-
         public override void Update( GameTime gameTime )
         {
             //var input = Game.Input;
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
 
-            mIdlePlayer.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
-            //mRunPlayer.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
-
             #region Rotation
-            if ( mNumFootContacts == 1 && !IsJumping || FreeFall && !IsJumping )
+            if ( mNumFootContacts == 1 && !IsJumping )
                 Rotation = UpDir.Angle;
 
             if ( Game.GameProperties.AllowManualGravity )
@@ -380,31 +251,18 @@ namespace CyberCube.Actors
             var actionLeft = GetPlayerAction( Action.MoveLeft );
             var actionRight = GetPlayerAction( Action.MoveRight );
 
-            //IsRunning = (bool) actionLeft != actionRight;
-
-            AnimMovementState = (actionRight ? AnimationState.MovementRight : AnimationState.Idle)
-                                | (actionLeft ? AnimationState.MovementLeft : AnimationState.Idle);
-
-            if ( !IsRunning )
+            if ( (bool) actionRight == actionLeft )
+            {
                 velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
-
-            velocity.X -= actionLeft * (movementScale + 1) * seconds;
-            velocity.X += actionRight * (movementScale + 1) * seconds;
-            velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
-
-            float speed = Math.Abs( velocity.X );
-
-            AnimSpeedState = speed >= MAX_RUN_SPEED ? AnimationState.Sprinting
-                : speed > MAX_RUN_SPEED / 2 ? AnimationState.Running
-                    : speed > 0 ? AnimationState.Walking
-                        : AnimationState.Still;
-
-            long ticks = gameTime.ElapsedGameTime.Ticks;
-            TimeSpan t = new TimeSpan( (long) (ticks * RUN_ANIM_FACTOR * speed) );
-            mRunPlayer.Update( t, true, Matrix.Identity );
-
-            float runFactor = velocity.X * MathHelper.PiOver2 / 8 / MAX_RUN_SPEED;
+            }
+            else
+            {
+                velocity.X -= actionLeft * (movementScale + 1) * seconds;
+                velocity.X += actionRight * (movementScale + 1) * seconds;
+                velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
+            }
             #endregion
+            UpdateRunningAnimations( gameTime, velocity );
 
             #region Jumping
             if ( GetPlayerAction( Action.Jump ) )
@@ -412,34 +270,14 @@ namespace CyberCube.Actors
 
             if ( GetPlayerAction( Action.JumpStop ) )
                 JumpStop( ref velocity );
-
-            if ( velocity.Y >= 0 && !FreeFall )
-            {
-                IsJumping = false;
-                AnimAerialState &= ~AnimationState.Jumping;
-            }
-
-            if ( FreeFall )
-                AnimAerialState |= AnimationState.Falling;
-            else
-                AnimAerialState = AnimationState.Standing;
             #endregion
-
-            #region Landing
-            if ( velocity.Y == 0 && !hasLanded )
-            {
-                sfxLand.Play();
-                hasLanded = true;
-            }
-            #endregion
+            UpdateJumpingAnimations( gameTime, velocity );
 
             Velocity = velocity.Rotate( Rotation );
 
             // ACTOR UPDATE \\
             base.Update( gameTime );
-
-            mModelRotation.AnimateValue( Rotation + runFactor );
-            mModelRotation.Step( MathHelper.TwoPi * seconds );
+            UpdateAnimations( gameTime );
 
             if ( GetPlayerAction( Action.PlaceClone ) )
                 ClonePlayer();

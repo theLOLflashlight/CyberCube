@@ -88,7 +88,7 @@ namespace CyberCube.Actors
                  && fixtureB.UserData is Convex
                  && !IsJumping )
             {
-                ApplyRelativeLinearImpulse( Vector2.UnitY * Velocity.Length() * 2 );
+                ApplyRelativeLinearImpulse( Vector2.UnitY * (float) Math.Sqrt( Body.Mass ) );
             }
         }
 

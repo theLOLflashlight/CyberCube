@@ -67,7 +67,9 @@
     <Compile Include="ActionEnum.cs" />
     <Compile Include="Actors\Actor.cs" />
     <Compile Include="Actors\Player.cs" />
+    <Compile Include="Actors\PlayerAnimation.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />
+    <Compile Include="Actors\PlayerModel.cs" />
     <Compile Include="Actors\PlayerPhysicsHandlers.cs" />
     <Compile Include="Brushes\BodyTypeBrush.cs" />
     <Compile Include="Brushes\BoxBrush.cs" />
