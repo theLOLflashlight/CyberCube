@@ -119,7 +119,7 @@ namespace CyberCube.Actors
         private AnimationClip mIdleClip;
         private AnimationClip mRunClip;
 
-        private AnimatedVariable<float, float> mModelRotation;
+        private AnimatedVariable<float> mModelRotation;
 
         private void LoadAnimations()
         {

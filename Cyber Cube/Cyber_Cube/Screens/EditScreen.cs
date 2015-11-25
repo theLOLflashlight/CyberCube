@@ -96,6 +96,7 @@ namespace CyberCube.Screens
             : base( game, editCube )
         {
             ScreenProperties = new EditScreenProperties( this );
+            LeftBrush = new BoxBrush( game );
             RightBrush = new HandBrush( game );
             MiddleBrush = new StartPositionBrush( game );
         }
@@ -280,7 +281,6 @@ namespace CyberCube.Screens
         public override void Initialize()
         {
             base.Initialize();
-            LeftBrush = new HandBrush( Game );
         }
 
         private void TestLevel()

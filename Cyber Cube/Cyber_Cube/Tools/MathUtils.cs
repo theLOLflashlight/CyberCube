@@ -44,6 +44,11 @@ namespace CyberCube.Tools
                 : MathHelper.Clamp( TransformRange( x, mina, maxa, minb, maxb ), minb, maxb );
         }
 
+        public static void TransformRange( ref float x, float mina, float maxa, float minb, float maxb, bool clamp = false )
+        {
+            x = TransformRange( x, mina, maxa, minb, maxb, clamp );
+        }
+
         public static IEnumerable<float> TransformRange( IEnumerable<float> range, float mina, float maxa, float minb, float maxb, bool clamp = false )
         {
             foreach ( float x in range )

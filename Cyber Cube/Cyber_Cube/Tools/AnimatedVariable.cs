@@ -5,12 +5,12 @@ using System.Text;
 
 namespace CyberCube.Tools
 {
-    public class AnimatedVariable< T, Delta >
+    public class AnimatedVariable< T >
         where T : IEquatable< T >, new()
     {
-        public delegate void ValueChangedEventHandler( AnimatedVariable< T, Delta > sender, T value );
+        public delegate void ValueChangedEventHandler( AnimatedVariable< T > sender, T value );
 
-        public delegate T ValueInterpolator( T t0, T t1, Delta amount );
+        public delegate T ValueInterpolator( T t0, T t1, float amount );
 
 
         private T mValue0;
@@ -52,7 +52,7 @@ namespace CyberCube.Tools
             ValueChanged?.Invoke( this, value );
         }
 
-        public static implicit operator T( AnimatedVariable<T, Delta> animVar )
+        public static implicit operator T( AnimatedVariable<T> animVar )
         {
             return animVar.Value;
         }
@@ -94,7 +94,7 @@ namespace CyberCube.Tools
             }
         }
 
-        public void Step( Delta amount )
+        public void Step( float amount )
         {
             if ( !mValue0.Equals( mValue1 ) )
                 OnValueChanged( mValue0 = mInterpolator( mValue0, mValue1, amount ) );

@@ -63,10 +63,10 @@ namespace CyberCube.Actors
             this.Visible = true;
             this.DrawOrder = 1;
 
-            mModelRotation = new AnimatedVariable<float, float>( rotation,
+            mModelRotation = new AnimatedVariable<float>( rotation,
                 (f0, f1, step) => {
                     var diff = MathHelper.WrapAngle( f1 - f0 );
-                    return f0.Lerp( f0 + diff, step );
+                    return f0.Tween( f0 + diff, step );
                 } );
         }
 
@@ -253,7 +253,7 @@ namespace CyberCube.Actors
 
             if ( (bool) actionRight == actionLeft )
             {
-                velocity.X = velocity.X.Lerp( 0, movementScale * seconds );
+                velocity.X = velocity.X.Tween( 0, movementScale * seconds );
             }
             else
             {

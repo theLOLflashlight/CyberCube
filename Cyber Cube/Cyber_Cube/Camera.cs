@@ -12,10 +12,10 @@ namespace CyberCube
     {
         private Matrix mProjectionMatrix = default( Matrix );
 
-        private AnimatedVariable<float, float> mFov;
-        private AnimatedVariable<float, float> mAspectRatio;
-        private AnimatedVariable<float, float> mNearPlaneDist;
-        private AnimatedVariable<float, float> mFarPlaneDist;
+        private AnimatedVariable<float> mFov;
+        private AnimatedVariable<float> mAspectRatio;
+        private AnimatedVariable<float> mNearPlaneDist;
+        private AnimatedVariable<float> mFarPlaneDist;
 
         public float FovSpeed = 1;
         public float AspectRatioSpeed = 1;
@@ -25,9 +25,9 @@ namespace CyberCube
 
         private Matrix mViewMatrix = default( Matrix );
 
-        private AnimatedVariable<Vector3, float> mPosition;
-        private AnimatedVariable<Vector3, float> mTarget;
-        private AnimatedVariable<Vector3, float> mUpVector;
+        private AnimatedVariable<Vector3> mPosition;
+        private AnimatedVariable<Vector3> mTarget;
+        private AnimatedVariable<Vector3> mUpVector;
 
         public float PositionSpeed = 1;
         public float TargetSpeed = 1;
@@ -37,10 +37,10 @@ namespace CyberCube
             : base( game )
         {
             #region Init Projection
-            mFov = new AnimatedVariable<float, float>( Utils.Lerp );
-            mAspectRatio = new AnimatedVariable<float, float>( Utils.Lerp );
-            mNearPlaneDist = new AnimatedVariable<float, float>( Utils.Lerp );
-            mFarPlaneDist = new AnimatedVariable<float, float>( Utils.Lerp );
+            mFov = new AnimatedVariable<float>( Utils.Tween );
+            mAspectRatio = new AnimatedVariable<float>( Utils.Tween );
+            mNearPlaneDist = new AnimatedVariable<float>( Utils.Tween );
+            mFarPlaneDist = new AnimatedVariable<float>( Utils.Tween );
 
             mFov.ValueChanged += OnProjectionValueChanged;
             mAspectRatio.ValueChanged += OnProjectionValueChanged;
@@ -49,13 +49,13 @@ namespace CyberCube
             #endregion
 
             #region Init View
-            mPosition = new AnimatedVariable<Vector3, float>( (v0, v1, d)
+            mPosition = new AnimatedVariable<Vector3>( (v0, v1, d)
                 => Vector3.Distance( v0, v1 ) > d / 10 ? v0.Slerp( v1, d ) : v1 );
 
-            mTarget = new AnimatedVariable<Vector3, float>( (v0, v1, d)
+            mTarget = new AnimatedVariable<Vector3>( (v0, v1, d)
                 => Vector3.Distance( v0, v1 ) > d ? v0.Slerp( v1, d ) : v1 );
 
-            mUpVector = new AnimatedVariable<Vector3, float>( Vector3.Up, (v0, v1, d)
+            mUpVector = new AnimatedVariable<Vector3>( Vector3.Up, (v0, v1, d)
                 => Vector3.Distance( v0, v1 ) > d ? v0.Slerp( v1, d * 10 ) : v1 );
 
             mPosition.ValueChanged += OnViewValueChanged;
@@ -68,18 +68,19 @@ namespace CyberCube
             #endregion
         }
 
-        private void FixNaN( AnimatedVariable<Vector3, float> sender, Vector3 value )
+        private void FixNaN( AnimatedVariable<Vector3> sender, Vector3 value )
         {
             if ( float.IsNaN( value.X ) || float.IsNaN( value.Y ) || float.IsNaN( value.Z ) )
                 sender.SkipAnimation();
         }
 
-        private static AnimatedVariable<Vector3, float>.ValueInterpolator Orbit( Vector3 origin, float nearFactor = 1 )
+        private static AnimatedVariable<Vector3>.ValueInterpolator Orbit( Vector3 origin, float nearFactor = 1 )
         {
             return (v0, v1, d) => {
                 return Vector3.Distance( v0, v1 ) > d * nearFactor
                     ? (v0 - origin).Slerp( v1 - origin, d ) + origin
                     : v1;
+                //return (v0 - origin).Slerp( v1 - origin, Utils.Cubic( 0, 1, d ) ) + origin;
             };
         }
 
@@ -141,13 +142,13 @@ namespace CyberCube
             }
         }
 
-        private void OnProjectionValueChanged( AnimatedVariable<float, float> sender, float value )
+        private void OnProjectionValueChanged( AnimatedVariable<float> sender, float value )
         {
             if ( !sender.IsAnimating )
                 mProjectionMatrix = default( Matrix );
         }
 
-        private void OnViewValueChanged( AnimatedVariable<Vector3, float> sender, Vector3 value )
+        private void OnViewValueChanged( AnimatedVariable<Vector3> sender, Vector3 value )
         {
             if ( !sender.IsAnimating )
                 mViewMatrix = default( Matrix );

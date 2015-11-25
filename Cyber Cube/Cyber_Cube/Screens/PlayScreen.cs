@@ -222,7 +222,7 @@ namespace CyberCube.Screens
                 Camera.Target = p.WorldPosition;
 
             Camera.AnimatePosition( ComputeCameraPosition( p ), Cube.CameraDistance * 4 );
-            Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ) );
+            Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ), 1.4f );
         }
 
         private Vector3 ComputeCameraPosition( Player p )

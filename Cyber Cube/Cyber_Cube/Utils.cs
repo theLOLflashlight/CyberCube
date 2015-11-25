@@ -1,4 +1,5 @@
-﻿using Microsoft.Xna.Framework;
+﻿using CyberCube.Tools;
+using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -89,7 +90,7 @@ namespace CyberCube
             return new Vector2( r, y );
         }
 
-        public static void Lerp( ref float f0, float f1, float step )
+        public static void Tween( ref float f0, float f1, float step )
         {
             if ( f0 > f1 )
                 f0 -= Math.Min( f0 - f1, step );
@@ -98,7 +99,7 @@ namespace CyberCube
                 f0 += Math.Min( f1 - f0, step );
         }
 
-        public static float Lerp( this float f0, float f1, float step )
+        public static float Tween( this float f0, float f1, float step )
         {
             if ( f0 > f1 )
                 return f0 - Math.Min( f0 - f1, step );
@@ -107,6 +108,32 @@ namespace CyberCube
                 return f0 + Math.Min( f1 - f0, step );
 
             return f0;
+        }
+
+        public static float Lerp( this float f0, float f1, float amount )
+        {
+            return MathTools.TransformRange( amount, 0, 1, f0, f1 );
+        }
+
+        public static float CubicIn( this float f0, float f1, float amount )
+        {
+            return f0 + f1 * (amount * amount * amount);
+        }
+
+        public static float CubicOut( this float f0, float f1, float amount )
+        {
+            amount -= 1;
+            return f0 + f1 * (amount * amount * amount + 1);
+        }
+
+        public static float CubicInOut( this float f0, float f1, float amount )
+        {
+            amount /= 0.5f;
+            if ( amount < 1 )
+                return f0 + f1 / 2 * (amount * amount * amount);
+
+            amount -= 2;
+            return f0 + f1 / 2 * (amount * amount * amount + 2);
         }
 
     }
