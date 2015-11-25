@@ -66,6 +66,9 @@
     <Compile Include="AchievementManager.cs" />
     <Compile Include="ActionEnum.cs" />
     <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\Enemy.cs" />
+    <Compile Include="Actors\EnemyAnimation.cs" />
+    <Compile Include="Actors\EnemyModel.cs" />
     <Compile Include="Actors\Player.cs" />
     <Compile Include="Actors\PlayerAnimation.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />
@@ -91,7 +94,6 @@
     <Compile Include="CubeFace.cs" />
     <Compile Include="CubeGameComponents.cs" />
     <Compile Include="CubeRotation.cs" />
-    <Compile Include="Enemy.cs" />
     <Compile Include="GameHud.cs" />
     <Compile Include="IO\ActionInputState.cs" />
     <Compile Include="IO\GameConsole.cs" />

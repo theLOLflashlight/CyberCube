@@ -78,6 +78,15 @@ namespace CyberCube.Screens
             }
         }
 
+        public void AddEnemy( Vector3 pos, float rotation)
+        {
+            Enemy enemy = new Enemy( this, Cube, pos, rotation );
+            Enemies.Add( enemy );
+            Components.Add( enemy );
+
+            enemy.Initialize();
+        }
+
         public void ResetLevel()
         {
             mPlayerClones.Clear();
@@ -116,7 +125,7 @@ namespace CyberCube.Screens
 
         public List<Enemy> Enemies
         {
-            get; private set;
+            get; set;
         }
 
         #region Boilerplate
@@ -156,13 +165,6 @@ namespace CyberCube.Screens
             MediaPlayer.Volume = mVolume;
             //MediaPlayer.Play(mSong);
             MediaPlayer.IsRepeating = true;
-
-            Enemies = new List<Enemy>();
-            //Enemies.Add( new Enemy( this, Cube, Vector3.UnitZ, Direction.Up ) );
-            //Enemies.Add( new Enemy( this, Cube, Vector3.UnitY, Direction.Up ) );
-
-            //foreach( Enemy enemy in Enemies ) 
-            //    Components.Add( enemy );
         }
         #endregion
 
@@ -195,7 +197,12 @@ namespace CyberCube.Screens
         {
             base.Initialize();
 
+
             CubePosition start = Cube.StartPosition;
+            
+            Enemies = new List<Enemy>();
+            AddEnemy( start.Position, start.Rotation );
+
             AddPlayer( start.Position, start.Rotation );
 
             Player = PendingPlayer;
