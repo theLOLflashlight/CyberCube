@@ -134,7 +134,7 @@ namespace CyberCube.Actors
             mFallPlayer = new AnimationPlayer( mSkinData );
 
             mIdleClip = mSkinData.AnimationClips[ "idle" ];
-            mRunClip = mSkinData.AnimationClips[ "fall" ];
+            mRunClip = mSkinData.AnimationClips[ "run" ];
             mJumpClip = mSkinData.AnimationClips[ "jump" ];
             mFallClip = mSkinData.AnimationClips[ "fall" ];
 
@@ -175,6 +175,9 @@ namespace CyberCube.Actors
 
         private void UpdateJumpingAnimations( GameTime gameTime, Vector2 velocity )
         {
+            mJumpPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+            mFallPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+
             var tmp = AnimAerialState;
 
             if ( velocity.Y >= 0 )
@@ -212,10 +215,29 @@ namespace CyberCube.Actors
 
         private AnimationPlayer PlayerAnimation
         {
-            get {
-                return AnimSpeedState != AnimationSpeedState.Still
-                    && AnimAerialState == AnimationAerialState.Standing
-                    ? mRunPlayer : mIdlePlayer;
+            get
+            {
+                //return AnimSpeedState != AnimationSpeedState.Still
+                //    && AnimAerialState == AnimationAerialState.Standing
+                //    ? mRunPlayer : mIdlePlayer;
+
+                AnimationPlayer pCurrentPlayer = mIdlePlayer;
+
+                if ( AnimAerialState == AnimationAerialState.Standing )
+                {
+                    if ( AnimSpeedState != AnimationSpeedState.Still )
+                        pCurrentPlayer = mRunPlayer;
+                }
+                else if ( AnimAerialState == AnimationAerialState.Jumping )
+                {
+                    pCurrentPlayer = mJumpPlayer;
+                }
+                else if ( AnimAerialState == AnimationAerialState.Falling )
+                {
+                    pCurrentPlayer = mFallPlayer;
+                }
+
+                return pCurrentPlayer;
             }
         }
     }
