@@ -221,23 +221,21 @@ namespace CyberCube.Actors
                 //    && AnimAerialState == AnimationAerialState.Standing
                 //    ? mRunPlayer : mIdlePlayer;
 
-                AnimationPlayer pCurrentPlayer = mIdlePlayer;
-
                 if ( AnimAerialState == AnimationAerialState.Standing )
                 {
                     if ( AnimSpeedState != AnimationSpeedState.Still )
-                        pCurrentPlayer = mRunPlayer;
+                        return mRunPlayer;
                 }
                 else if ( AnimAerialState == AnimationAerialState.Jumping )
                 {
-                    pCurrentPlayer = mJumpPlayer;
+                    return mJumpPlayer;
                 }
                 else if ( AnimAerialState == AnimationAerialState.Falling )
                 {
-                    pCurrentPlayer = mFallPlayer;
+                    return mFallPlayer;
                 }
 
-                return pCurrentPlayer;
+                return mIdlePlayer;
             }
         }
     }
