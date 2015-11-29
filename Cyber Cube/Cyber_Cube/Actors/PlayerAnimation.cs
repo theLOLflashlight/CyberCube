@@ -115,9 +115,13 @@ namespace CyberCube.Actors
 
         private AnimationPlayer mIdlePlayer;
         private AnimationPlayer mRunPlayer;
+        private AnimationPlayer mJumpPlayer;
+        private AnimationPlayer mFallPlayer;
 
         private AnimationClip mIdleClip;
         private AnimationClip mRunClip;
+        private AnimationClip mJumpClip;
+        private AnimationClip mFallClip;
 
         private AnimatedVariable<float> mModelRotation;
 
@@ -126,12 +130,18 @@ namespace CyberCube.Actors
             // Create an animation player, and start decoding an animation clip.
             mIdlePlayer = new AnimationPlayer( mSkinData );
             mRunPlayer = new AnimationPlayer( mSkinData );
+            mJumpPlayer = new AnimationPlayer( mSkinData );
+            mFallPlayer = new AnimationPlayer( mSkinData );
 
             mIdleClip = mSkinData.AnimationClips[ "idle" ];
             mRunClip = mSkinData.AnimationClips[ "run" ];
+            mJumpClip = mSkinData.AnimationClips[ "jump" ];
+            mFallClip = mSkinData.AnimationClips[ "fall" ];
 
             mRunPlayer.StartClip( mRunClip );
             mIdlePlayer.StartClip( mIdleClip );
+            mJumpPlayer.StartClip( mJumpClip );
+            mFallPlayer.StartClip( mFallClip );
         }
 
         private void UpdateAnimations( GameTime gameTime )
@@ -165,6 +175,9 @@ namespace CyberCube.Actors
 
         private void UpdateJumpingAnimations( GameTime gameTime, Vector2 velocity )
         {
+            mJumpPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+            mFallPlayer.Update(gameTime.ElapsedGameTime, true, Matrix.Identity);
+
             var tmp = AnimAerialState;
 
             if ( velocity.Y >= 0 )
@@ -202,10 +215,27 @@ namespace CyberCube.Actors
 
         private AnimationPlayer PlayerAnimation
         {
-            get {
-                return AnimSpeedState != AnimationSpeedState.Still
-                    && AnimAerialState == AnimationAerialState.Standing
-                    ? mRunPlayer : mIdlePlayer;
+            get
+            {
+                //return AnimSpeedState != AnimationSpeedState.Still
+                //    && AnimAerialState == AnimationAerialState.Standing
+                //    ? mRunPlayer : mIdlePlayer;
+
+                if ( AnimAerialState == AnimationAerialState.Standing )
+                {
+                    if ( AnimSpeedState != AnimationSpeedState.Still )
+                        return mRunPlayer;
+                }
+                else if ( (AnimAerialState & AnimationAerialState.Jumping) != 0 )
+                {
+                    return mJumpPlayer;
+                }
+                else if ( (AnimAerialState & AnimationAerialState.Falling) != 0 )
+                {
+                    return mFallPlayer;
+                }
+
+                return mIdlePlayer;
             }
         }
     }

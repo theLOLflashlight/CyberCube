@@ -71,7 +71,7 @@ namespace CyberCube
         private void FixNaN( AnimatedVariable<Vector3> sender, Vector3 value )
         {
             if ( float.IsNaN( value.X ) || float.IsNaN( value.Y ) || float.IsNaN( value.Z ) )
-                sender.SkipAnimation();
+                sender.EndAnimation();
         }
 
         private static AnimatedVariable<Vector3>.ValueInterpolator Orbit( Vector3 origin, float nearFactor = 1 )
@@ -312,17 +312,17 @@ namespace CyberCube
 
         public void SkipProjectionAnimation()
         {
-            mFov.SkipAnimation();
-            mAspectRatio.SkipAnimation();
-            mNearPlaneDist.SkipAnimation();
-            mFarPlaneDist.SkipAnimation();
+            mFov.EndAnimation();
+            mAspectRatio.EndAnimation();
+            mNearPlaneDist.EndAnimation();
+            mFarPlaneDist.EndAnimation();
         }
 
         public void SkipViewAnimation()
         {
-            mPosition.SkipAnimation();
-            mTarget.SkipAnimation();
-            mUpVector.SkipAnimation();
+            mPosition.EndAnimation();
+            mTarget.EndAnimation();
+            mUpVector.EndAnimation();
         }
         #endregion
 

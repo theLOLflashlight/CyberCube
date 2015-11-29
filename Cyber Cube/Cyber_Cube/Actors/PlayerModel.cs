@@ -15,7 +15,8 @@ namespace CyberCube.Actors
         private void LoadModels()
         {
             //model3D = Game.Content.Load<Model>( @"Models\playerAlpha3D" );
-            model3D = Game.Content.Load<Model>( @"Models\playerBeta" );
+            //model3D = Game.Content.Load<Model>( @"Models\playerBeta" );
+            model3D = Game.Content.Load<Model>( @"Models\playerFinal" );
 
             mSkinData = model3D.Tag as SkinningData;
             if ( mSkinData == null )
