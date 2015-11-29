@@ -20,13 +20,13 @@ namespace CyberCube.Actors
     {
         public const float MAX_RUN_SPEED = 3.5f;
 
-        public const float MODEL_SCALE = 0.061f;
+        public const float MODEL_SCALE = 0.04f;
         public const float RUN_ANIM_FACTOR = 0.04f / MODEL_SCALE;
         
-        public readonly float ENEMY_WIDTH = 15.ToUnits();
+        public readonly float ENEMY_WIDTH = 60.ToUnits();
         public readonly float ENEMY_HEIGHT = 60.ToUnits();
 
-        public readonly Color ENEMY_COLOR = Color.BlueViolet;
+        public readonly Color ENEMY_COLOR = Color.White;
 
         private static Texture2D sTexture;
 
@@ -43,7 +43,7 @@ namespace CyberCube.Actors
                 } );
 
             // hard code value for now
-            mWorldPosition = new Vector3(0, -0.20020324f, 1);
+            mWorldPosition = new Vector3(0, 0, 1);
         }
 
         protected override void LoadContent()
@@ -104,13 +104,10 @@ namespace CyberCube.Actors
 
         public override void Draw( GameTime gameTime )
         {
-            Matrix[] transforms = EnemyAnimation.GetSkinTransforms();
+            Matrix[] bones = EnemyAnimation.GetSkinTransforms();
 
-            Matrix worldTransformation = Matrix.CreateTranslation( 0, -1, 0 )
+            Matrix worldTransformation = Matrix.Identity
                 * Matrix.CreateScale( MODEL_SCALE )
-                * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
-                * Vector3.UnitZ.RotateOnto_M( CubeFace.Normal )
-                * Matrix.CreateFromAxisAngle( CubeFace.Normal, CubeFace.Rotation - mModelRotation )
                 * Matrix.CreateTranslation( WorldPosition );
 
             // Draw the model. A model can have multiple meshes, so loop.
@@ -121,11 +118,11 @@ namespace CyberCube.Actors
                 foreach ( SkinnedEffect effect in mesh.Effects )
                 {
                     effect.EnableDefaultLighting();
-                    effect.Parameters[ "Bones" ].SetValue( transforms );
-                    effect.World = transforms[ mesh.ParentBone.Index ] * worldTransformation;
-                    //effect.DiffuseColor = PLAYER_COLOR.ToVector3();
-                    effect.AmbientLightColor = ENEMY_COLOR.ToVector3();
+                    effect.AmbientLightColor = Color.White.ToVector3();
                     effect.Texture = sTexture;
+
+                    effect.SetBoneTransforms(bones);
+                    effect.World = bones[ mesh.ParentBone.Index ] * worldTransformation;
 
                     Screen.Camera.Apply( effect );
                 }
