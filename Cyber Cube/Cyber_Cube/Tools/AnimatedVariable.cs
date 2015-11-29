@@ -87,6 +87,11 @@ namespace CyberCube.Tools
             mValue0 = mValue1;
         }
 
+        public void EndAnimation()
+        {
+            mValue0 = mValue1;
+        }
+
         public bool IsAnimating
         {
             get {

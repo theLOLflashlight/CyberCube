@@ -226,11 +226,11 @@ namespace CyberCube.Actors
                     if ( AnimSpeedState != AnimationSpeedState.Still )
                         return mRunPlayer;
                 }
-                else if ( AnimAerialState == AnimationAerialState.Jumping )
+                else if ( (AnimAerialState & AnimationAerialState.Jumping) != 0 )
                 {
                     return mJumpPlayer;
                 }
-                else if ( AnimAerialState == AnimationAerialState.Falling )
+                else if ( (AnimAerialState & AnimationAerialState.Falling) != 0 )
                 {
                     return mFallPlayer;
                 }
