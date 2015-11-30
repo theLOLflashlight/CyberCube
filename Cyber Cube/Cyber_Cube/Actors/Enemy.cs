@@ -18,10 +18,9 @@ namespace CyberCube.Actors
 {
 	public partial class Enemy : Actor
     {
-        public const float MAX_RUN_SPEED = 3.5f;
+        public const float MOVEMENT_SCALE = 20;
 
         public const float MODEL_SCALE = 0.04f;
-        public const float RUN_ANIM_FACTOR = 0.04f / MODEL_SCALE;
         
         public readonly float ENEMY_WIDTH = 60.ToUnits();
         public readonly float ENEMY_HEIGHT = 60.ToUnits();
@@ -30,8 +29,11 @@ namespace CyberCube.Actors
 
         private static Texture2D sTexture;
 
+        private Direction mMovementDirection;
+        private float mMoveTimeDelay;
+
         public Enemy( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation ) 
-            : base ( cube.Game, screen, cube, worldPos, (Direction)  rotation )
+            : base ( cube.Game, screen, cube, worldPos, (Direction) rotation )
         {
             this.Visible = true;
             this.DrawOrder = 1;
@@ -41,6 +43,9 @@ namespace CyberCube.Actors
                     var diff = MathHelper.WrapAngle( f1 - f0 );
                     return f0.Tween( f0 + diff, step );
                 } );
+            
+            mMovementDirection = (Direction) rotation;
+            mMovementDirection--;
         }
 
         protected override void LoadContent()
@@ -86,17 +91,95 @@ namespace CyberCube.Actors
             Body.AdHocGravity = Vector2.Zero;
 
             Body.CollisionCategories = Constants.Categories.ENEMY;
-            Body.CollidesWith = FarseerPhysics.Dynamics.Category.All;
+            Body.CollidesWith = Category.All;
             Body.Mass = 1000;
         }
 
         public override void Update( GameTime gameTime )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
+            mMoveTimeDelay -= seconds;
+            if (mMoveTimeDelay < 0)
+            {
+                float movementScale = MOVEMENT_SCALE;
+                Vector2 velocityCopy = Velocity;
+                bool fallOff = PreviewFallOffCubeFace(movementScale);
+            
+                if ( fallOff )
+                {
+                    Velocity = Vector2.Zero;
+                    mMoveTimeDelay = 3;
+                    mMovementDirection = ~mMovementDirection;
+                }
+                else
+                {
+                    Vector2 velocity = velocityCopy.Rotate( -Rotation );
+                    if (mMovementDirection == Direction.Left)
+                    { 
+                        velocity.X = -movementScale * seconds;
+                    }
+                    else
+                    {
+                        velocity.X = movementScale * seconds;
+                    }
 
+                    Velocity = velocity.Rotate( Rotation );
+                }
+            }
 
             base.Update( gameTime );
             UpdateAnimations( gameTime );
+        }
+
+        private bool PreviewFallOffCubeFace(float movementScale)
+        {
+            Vector2 previewVelocity = Velocity.Rotate( -Rotation );
+            
+            // preview 3 seconds ahead
+            if (mMovementDirection == Direction.Left)
+            { 
+                previewVelocity.X = -movementScale * 3;
+            }
+            else
+            {
+                previewVelocity.X = movementScale * 3;
+            }
+
+            Velocity = previewVelocity.Rotate( Rotation );
+
+            // check if will move off the edge of the cube
+            Vector2 vec2d = Body.Position.ToPixels() + Velocity;
+            float adjustingFactor = Cube.Face.SIZE / 2;
+            vec2d -= new Vector2( adjustingFactor );
+            vec2d /= adjustingFactor;
+            Vector3 previewWorldPosition = Transform2dTo3d( vec2d );
+            
+            if ( CubeFace.Normal == Vector3.UnitZ || CubeFace.Normal == -Vector3.UnitZ )
+            {
+                if ( previewWorldPosition.X > 1 || previewWorldPosition.X < -1 ||
+                     previewWorldPosition.Y > 1 || previewWorldPosition.Y < -1 )
+                {
+                    return true;
+                }
+            }
+            else if ( CubeFace.Normal == Vector3.UnitX || CubeFace.Normal == -Vector3.UnitX )
+            {
+                if ( previewWorldPosition.Z > 1 || previewWorldPosition.Z < -1 ||
+                     previewWorldPosition.Y > 1 || previewWorldPosition.Y < -1 )
+                {
+                    return true;
+                }
+            }
+            else
+            {
+                if ( previewWorldPosition.X > 1 || previewWorldPosition.X < -1 ||
+                     previewWorldPosition.Z > 1 || previewWorldPosition.Z < -1 )
+                {
+                    return true;
+                }
+            }
+
+            return false;
         }
 
 
