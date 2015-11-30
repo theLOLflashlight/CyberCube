@@ -58,6 +58,14 @@ namespace CyberCube.Actors
             return contact.IsTouching;
         }
 
+        private bool Torso_OnEnemyCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        {
+            if ( fixtureB.UserData is string && (string) fixtureB.UserData == "enemy" )
+                KillPlayer();
+
+            return contact.IsTouching;
+        }
+
         private int mNumFootContacts;
 
         public override bool FreeFall

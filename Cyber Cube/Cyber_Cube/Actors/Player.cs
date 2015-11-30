@@ -140,6 +140,7 @@ namespace CyberCube.Actors
             mTorso.OnCollision += Torso_OnCollision;
             mTorso.OnCollision += Torso_OnHazardCollision;
             mTorso.OnCollision += Torso_OnDoorCollision;
+            mTorso.OnCollision += Torso_OnEnemyCollision;
 
             mFeet.OnSeparation += Feet_OnSeparation;
             mFeet.OnCollision += Feet_OnCollision;

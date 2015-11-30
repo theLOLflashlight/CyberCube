@@ -64,7 +64,9 @@ namespace CyberCube.Actors
                 5.ToUnits(),
                 5.ToUnits(),
                 0 );
-            var head = FixtureFactory.AttachPolygon( verts, 1, body, "head" );
+            var head = FixtureFactory.AttachPolygon( verts, 1, body, "enemy" );
+            
+           
             
             return body;
         }

@@ -227,6 +227,11 @@ namespace CyberCube.Screens
 
             Player p = Player;
 
+            foreach ( Enemy enemy in Enemies )
+            {
+                
+            }
+
             if ( Camera.IsTargetAnimating )
                 Camera.AnimateTarget( p.WorldPosition );
             else

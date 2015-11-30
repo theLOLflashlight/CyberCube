@@ -22,7 +22,7 @@ namespace CyberCube.Actors
             }
         }
 
-        protected Body Body
+        public Body Body
         {
             get; private set;
         }
