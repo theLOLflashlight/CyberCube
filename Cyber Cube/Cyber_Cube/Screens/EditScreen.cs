@@ -153,6 +153,9 @@ namespace CyberCube.Screens
                 case "start":
                     return new StartPositionBrush( mScreen.Game );
 
+                case "enemy":
+                    return new EnemyBrush( mScreen.Game );
+
                 case "door":
                     return new EndDoorBrush( mScreen.Game );
 

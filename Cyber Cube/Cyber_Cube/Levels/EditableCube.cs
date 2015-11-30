@@ -17,11 +17,13 @@ namespace CyberCube.Levels
     public class EditableCube : Cube
     {
         private static Model sModel3D;
+        private static Model sEnemyModel;
 
         public static new void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
             sModel3D = content.Load<Model>( "Models\\playerAlpha3D" );
+            sEnemyModel = content.Load<Model>( "Models\\enemyAlpha3D" );
         }
 
         public new EditScreen Screen
@@ -68,6 +70,7 @@ namespace CyberCube.Levels
 
             cube.StartPosition = this.StartPosition;
             cube.NextLevel = this.NextLevel;
+            cube.EnemyPositions = this.EnemyPositions;
             return cube;
         }
 
@@ -105,11 +108,11 @@ namespace CyberCube.Levels
         {
             base.Draw( gameTime );
 
-            Matrix[] transforms = new Matrix[ sModel3D.Bones.Count ];
-            sModel3D.CopyAbsoluteBoneTransformsTo( transforms );
-
             Cube.Face face = GetFaceFromPosition( StartPosition.Position );
 
+            Matrix[] transforms = new Matrix[ sModel3D.Bones.Count ];
+            sModel3D.CopyAbsoluteBoneTransformsTo( transforms );
+            
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in sModel3D.Meshes )
             {
@@ -129,6 +132,33 @@ namespace CyberCube.Levels
                 }
                 // Draw the mesh, using the effects set above.
                 mesh.Draw();
+            }
+            
+            Matrix[] enemyTransforms = new Matrix[ sEnemyModel.Bones.Count ];
+            sEnemyModel.CopyAbsoluteBoneTransformsTo( enemyTransforms );
+            
+            foreach ( CubePosition pos in EnemyPositions )
+            {
+                // Draw the model. A model can have multiple meshes, so loop.
+                foreach ( ModelMesh mesh in sEnemyModel.Meshes )
+                {
+                    // This is where the mesh orientation is set, as well 
+                    // as our camera and projection.
+                    foreach ( BasicEffect effect in mesh.Effects )
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.World = transforms[ mesh.ParentBone.Index ]
+                            * Matrix.CreateScale( 0.0006f )
+                            * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
+                            * Vector3.UnitY.RotateOnto_M( face.UpVec )
+                            * Matrix.CreateFromAxisAngle( face.Normal, -pos.Rotation )
+                            * Matrix.CreateTranslation( pos.Position );
+
+                        Screen.Camera.Apply( effect );
+                    }
+                    // Draw the mesh, using the effects set above.
+                    mesh.Draw();
+                }
             }
         }
 

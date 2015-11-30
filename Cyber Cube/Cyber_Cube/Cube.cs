@@ -14,6 +14,7 @@ using CyberCube.Levels;
 using System.IO;
 using System.Xml.Serialization;
 using CyberCube.Tools;
+using CyberCube.Actors;
 
 namespace CyberCube
 {
@@ -52,6 +53,8 @@ namespace CyberCube
         } = Vector3.One;
 
         public CubePosition StartPosition = new CubePosition( Vector3.UnitZ, 0 );
+
+        public List<CubePosition> EnemyPositions = new List<CubePosition>();
 
         public string NextLevel
         {

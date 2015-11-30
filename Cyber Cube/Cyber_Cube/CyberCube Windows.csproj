@@ -85,6 +85,7 @@
     <Compile Include="Actors\PlayerModel.cs" />
     <Compile Include="Actors\PlayerPhysicsHandlers.cs" />
     <Compile Include="Brushes\HazardBrush.cs" />
+    <Compile Include="Brushes\EnemyBrush.cs" />
     <Compile Include="Brushes\StartPositionBrush.cs" />
     <Compile Include="Camera.cs" />
     <Compile Include="CubeEffect.cs" />

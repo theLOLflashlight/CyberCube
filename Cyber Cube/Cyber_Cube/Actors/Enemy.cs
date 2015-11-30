@@ -41,9 +41,6 @@ namespace CyberCube.Actors
                     var diff = MathHelper.WrapAngle( f1 - f0 );
                     return f0.Tween( f0 + diff, step );
                 } );
-
-            // hard code value for now
-            mWorldPosition = new Vector3(0, 0, 1);
         }
 
         protected override void LoadContent()

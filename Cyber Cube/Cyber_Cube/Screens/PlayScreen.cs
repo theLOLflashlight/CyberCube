@@ -199,9 +199,13 @@ namespace CyberCube.Screens
 
 
             CubePosition start = Cube.StartPosition;
+            List<CubePosition> enemyPositions = Cube.EnemyPositions;
             
             Enemies = new List<Enemy>();
-            AddEnemy( start.Position, start.Rotation );
+            foreach ( CubePosition pos in enemyPositions )
+            {
+                AddEnemy( pos.Position, pos.Rotation );
+            }
 
             AddPlayer( start.Position, start.Rotation );
 

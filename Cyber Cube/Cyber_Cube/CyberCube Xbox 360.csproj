@@ -78,6 +78,7 @@
     <Compile Include="Brushes\BoxBrush.cs" />
     <Compile Include="Brushes\CornerBrush.cs" />
     <Compile Include="Brushes\EndDoorBrush.cs" />
+    <Compile Include="Brushes\EnemyBrush.cs" />
     <Compile Include="Brushes\HandBrush.cs" />
     <Compile Include="Brushes\HazardBrush.cs" />
     <Compile Include="Brushes\IEditBrush.cs" />
