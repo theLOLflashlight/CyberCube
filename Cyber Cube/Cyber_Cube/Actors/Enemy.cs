@@ -22,8 +22,8 @@ namespace CyberCube.Actors
 
         public const float MODEL_SCALE = 0.04f;
         
-        public readonly float ENEMY_WIDTH = 60.ToUnits();
-        public readonly float ENEMY_HEIGHT = 60.ToUnits();
+        public readonly float ENEMY_WIDTH = 34.ToUnits();
+        public readonly float ENEMY_HEIGHT = 34.ToUnits();
 
         public readonly Color ENEMY_COLOR = Color.White;
 
@@ -31,6 +31,7 @@ namespace CyberCube.Actors
 
         private Direction mMovementDirection;
         private float mMoveTimeDelay;
+        private float mDirectionTimeDelay;
 
         public Enemy( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation ) 
             : base ( cube.Game, screen, cube, worldPos, (Direction) rotation )
@@ -92,15 +93,22 @@ namespace CyberCube.Actors
 
             Body.CollisionCategories = Constants.Categories.ENEMY;
             Body.CollidesWith = Category.All;
-            Body.Mass = 1000;
+            Body.Mass = 1000000;
         }
 
         public override void Update( GameTime gameTime )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             mMoveTimeDelay -= seconds;
+            mDirectionTimeDelay -= seconds;
             if (mMoveTimeDelay < 0)
             {
+                if (mDirectionTimeDelay < 0)
+                {
+                    mMovementDirection = ~mMovementDirection;
+                    mDirectionTimeDelay = 10;
+                }
+
                 float movementScale = MOVEMENT_SCALE;
                 Vector2 velocityCopy = Velocity;
                 bool fallOff = PreviewFallOffCubeFace(movementScale);
@@ -109,6 +117,7 @@ namespace CyberCube.Actors
                 {
                     Velocity = Vector2.Zero;
                     mMoveTimeDelay = 3;
+                    mDirectionTimeDelay = 10;
                     mMovementDirection = ~mMovementDirection;
                 }
                 else
@@ -132,6 +141,7 @@ namespace CyberCube.Actors
                     }
 
                     Velocity = velocity.Rotate( Rotation );
+                    UpdateMovingAnimations( gameTime, velocity );
                 }
             }
 
@@ -198,6 +208,7 @@ namespace CyberCube.Actors
 
             Matrix worldTransformation = Matrix.Identity
                 * Matrix.CreateScale( MODEL_SCALE )
+                * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
                 * Matrix.CreateTranslation( WorldPosition );
 
             // Draw the model. A model can have multiple meshes, so loop.

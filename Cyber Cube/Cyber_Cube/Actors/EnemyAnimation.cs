@@ -11,7 +11,6 @@ namespace CyberCube.Actors
     public partial class Enemy
     {
         #region AnimationState
-        #region AnimationState Enums
         public enum AnimationState
         {
             Idle = 0,
@@ -73,50 +72,12 @@ namespace CyberCube.Actors
                     | (AnimationState) (value & AnimationMovementState.Mask);
             }
         }
-
-        public AnimationSpeedState AnimSpeedState
-        {
-            get {
-                return (AnimationSpeedState) AnimState & AnimationSpeedState.Mask;
-            }
-            private set {
-                AnimState = (AnimState & ~AnimationState.Mask_Speed)
-                    | (AnimationState) (value & AnimationSpeedState.Mask);
-            }
-        }
-
-        public AnimationAerialState AnimAerialState
-        {
-            get {
-                return (AnimationAerialState) AnimState & AnimationAerialState.Mask;
-            }
-            private set {
-                AnimState = (AnimState & ~AnimationState.Mask_Aerial)
-                    | (AnimationState) (value & AnimationAerialState.Mask);
-            }
-        }
         #endregion
-        #endregion
-
-        public bool IsRunning
-        {
-            get {
-                return AnimMovementState != AnimationMovementState.Idle
-                    && AnimSpeedState != AnimationSpeedState.Still;
-            }
-        }
-
-        public bool IsJumping
-        {
-            get {
-                return (AnimState & AnimationState.Jumping) == AnimationState.Jumping;
-            }
-        }
+        
 
         private AnimationPlayer mIdleEnemy;
 
         private AnimationClip mIdleClip;
-        private AnimationClip mRunClip;
 
         private AnimatedVariable<float> mModelRotation;
 
@@ -134,16 +95,25 @@ namespace CyberCube.Actors
             mIdleEnemy.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
         }
 
+        private void UpdateMovingAnimations( GameTime gameTime, Vector2 velocity )
+        {
+            float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
+
+            AnimMovementState = velocity.X > 0 ? AnimationMovementState.Right
+                : velocity.X < 0 ? AnimationMovementState.Left
+                    : AnimationMovementState.Idle;
+        }
+
         private float MovementRotation
         {
             get {
                 switch ( AnimMovementState )
                 {
                 case AnimationMovementState.Right:
-                    return MathHelper.PiOver2;
+                    return -MathHelper.PiOver2;
 
                 case AnimationMovementState.Left:
-                    return -MathHelper.PiOver2;
+                    return MathHelper.PiOver2;
 
                 default:
                     return 0;

@@ -43,7 +43,7 @@ namespace CyberCube
         public class CubeGameProperties : RuntimeProperties
         {
 #if WINDOWS
-            public bool DebugView { get; set; } = false;
+            public bool DebugView { get; set; } = true;
 #endif
             public bool AllowMultipleJumping { get; set; } = false;
 
