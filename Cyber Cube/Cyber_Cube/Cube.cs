@@ -166,6 +166,7 @@ namespace CyberCube
         public class CubeFile
         {
             public CubePosition StartPosition;
+            public List<CubePosition> EnemyPositions;
             public string NextLevel;
 
             public string FrontFace;
@@ -259,6 +260,7 @@ namespace CyberCube
         {
             CubeFile file = new CubeFile();
             file.StartPosition = StartPosition;
+            file.EnemyPositions = EnemyPositions;
             file.NextLevel = NextLevel;
 
             foreach ( Face face in Faces )
@@ -271,6 +273,7 @@ namespace CyberCube
         {
             CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
             StartPosition = file.StartPosition;
+            EnemyPositions = file.EnemyPositions;
             NextLevel = file.NextLevel;
 
             foreach ( Face face in Faces )

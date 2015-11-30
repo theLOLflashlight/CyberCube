@@ -118,9 +118,17 @@ namespace CyberCube.Actors
                     { 
                         velocity.X = -movementScale * seconds;
                     }
-                    else
+                    else if (mMovementDirection == Direction.Right)
                     {
                         velocity.X = movementScale * seconds;
+                    }
+                    else if (mMovementDirection == Direction.Up)
+                    {
+                        velocity.Y = movementScale * seconds;
+                    }
+                    else if (mMovementDirection == Direction.Down)
+                    {
+                        velocity.Y = -movementScale * seconds;
                     }
 
                     Velocity = velocity.Rotate( Rotation );
