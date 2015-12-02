@@ -3,6 +3,7 @@ using CyberCube.Tools;
 using FarseerPhysics.Common;
 using FarseerPhysics.Dynamics;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 using System;
@@ -22,6 +23,13 @@ namespace CyberCube
     {
         public abstract partial class Face : DrawableCubeGameObject
         {
+            internal static void LoadContent( ContentManager content )
+            {
+                sBgTexture = content.Load<Texture2D>( @"Textures\cubeFaceBackground" );
+            }
+
+            private static Texture2D sBgTexture;
+
 #if WINDOWS
             protected FarseerPhysics.DebugView.DebugViewXNA mDebugView;
             public static readonly Matrix DEBUG_PROJECTION = Matrix.CreateOrthographicOffCenter(
@@ -171,14 +179,16 @@ namespace CyberCube
 
             public override void Update( GameTime gameTime )
             {
-                foreach ( Solid solid in mSolids )
-                    solid.Update( gameTime );
             }
 
             public override void Draw( GameTime gameTime )
             {
+                mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
+
                 foreach ( Solid solid in mSolids )
-                    solid.Draw( gameTime );
+                    solid.Draw( gameTime, mSpriteBatch );
+
+                mSpriteBatch.End();
 
 #if WINDOWS
                 if ( Game.GameProperties.DebugView )
@@ -212,11 +222,22 @@ namespace CyberCube
                 // Now switch back to the default target (i.e., the primary display) and set it up
                 GraphicsDevice.SetRenderTargets( tmp );
                 GraphicsDevice.Clear( Game.BackgroundColor );
+
+                /*Color[] data = new Color[ WIDTH * HEIGHT ];
+                RenderTarget.GetData( data );
+
+                for ( int i = 0; i < data.Length; ++i )
+                    if ( data[ i ] == Color.Black )
+                        data[ i ] = Color.Magenta;
+
+                RenderTarget.SetData( data );*/
             }
 
             public void Render3D( CubeEffect effect )
             {
-                effect.Texture = RenderTarget;
+                effect.ForeTexture = RenderTarget;
+                effect.BackTexture = sBgTexture;
+                effect.TransparentColor = Solid.SOLID_COLOR.ToVector4();
 
                 foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
                 {

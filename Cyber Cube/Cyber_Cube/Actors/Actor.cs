@@ -13,12 +13,19 @@ namespace CyberCube.Actors
 {
     public abstract class Actor : DrawableCubeScreenGameComponent
     {
-        protected Vector3 mWorldPosition;
+        protected Vector3 mCubePosition;
+
+        public Vector3 CubePosition
+        {
+            get {
+                return mCubePosition;
+            }
+        }
 
         public Vector3 WorldPosition
         {
             get {
-                return mWorldPosition;
+                return mCubePosition + Cube.Position;
             }
         }
 
@@ -137,10 +144,10 @@ namespace CyberCube.Actors
             : this( game, screen )
         {
             Cube = cube;
-            mWorldPosition = worldPos;
+            mCubePosition = worldPos;
             UpDir = upDir;
 
-            CubeFace = Cube.GetFaceFromPosition( mWorldPosition );
+            CubeFace = Cube.GetFaceFromPosition( mCubePosition );
         }
 
         protected virtual Body CreateBody( World world )
@@ -233,7 +240,7 @@ namespace CyberCube.Actors
         protected Vector2 ComputeFacePosition()
         {
             float adjustingFactor = Cube.Face.SIZE / 2;
-            return Transform3dTo2d( WorldPosition )
+            return Transform3dTo2d( CubePosition )
                    * adjustingFactor
                    + new Vector2( adjustingFactor );
         }
@@ -244,7 +251,7 @@ namespace CyberCube.Actors
             vec2d -= new Vector2( adjustingFactor );
             vec2d /= adjustingFactor;
 
-            mWorldPosition = Transform2dTo3d( vec2d );
+            mCubePosition = Transform2dTo3d( vec2d );
 
             foreach ( var dir in ClampWorldPosition() )
                 ApplyRotation( dir );
@@ -265,71 +272,71 @@ namespace CyberCube.Actors
             return new Vector2( vec3d.X, -vec3d.Y );
         }
 
-        private void WrapWorldPosition( float diff )
+        private void WrapCubePosition( float diff )
         {
             if ( Normal == Vector3.UnitX || Normal == -Vector3.UnitX )
-                mWorldPosition.X -= Math.Abs( diff ) * Normal.X;
+                mCubePosition.X -= Math.Abs( diff ) * Normal.X;
 
             else if ( Normal == Vector3.UnitY || Normal == -Vector3.UnitY )
-                mWorldPosition.Y -= Math.Abs( diff ) * Normal.Y;
+                mCubePosition.Y -= Math.Abs( diff ) * Normal.Y;
 
             else if ( Normal == Vector3.UnitZ || Normal == -Vector3.UnitZ )
-                mWorldPosition.Z -= Math.Abs( diff ) * Normal.Z;
+                mCubePosition.Z -= Math.Abs( diff ) * Normal.Z;
         }
 
         private IEnumerable< CompassDirection > ClampWorldPosition()
         {
-            if ( mWorldPosition.X > 1 )
+            if ( mCubePosition.X > 1 )
             {
-                WrapWorldPosition( mWorldPosition.X - 1 );
-                mWorldPosition.X = 1;
+                WrapCubePosition( mCubePosition.X - 1 );
+                mCubePosition.X = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitX );
                 if ( dir != null )
                     yield return dir.Value;
             }
-            else if ( mWorldPosition.X < -1 )
+            else if ( mCubePosition.X < -1 )
             {
-                WrapWorldPosition( mWorldPosition.X + 1 );
-                mWorldPosition.X = -1;
+                WrapCubePosition( mCubePosition.X + 1 );
+                mCubePosition.X = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitX );
                 if ( dir != null )
                     yield return dir.Value;
             }
 
-            if ( mWorldPosition.Y > 1 )
+            if ( mCubePosition.Y > 1 )
             {
-                WrapWorldPosition( mWorldPosition.Y - 1 );
-                mWorldPosition.Y = 1;
+                WrapCubePosition( mCubePosition.Y - 1 );
+                mCubePosition.Y = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitY );
                 if ( dir != null )
                     yield return dir.Value;
             }
-            else if ( mWorldPosition.Y < -1 )
+            else if ( mCubePosition.Y < -1 )
             {
-                WrapWorldPosition( mWorldPosition.Y + 1 );
-                mWorldPosition.Y = -1;
+                WrapCubePosition( mCubePosition.Y + 1 );
+                mCubePosition.Y = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitY );
                 if ( dir != null )
                     yield return dir.Value;
             }
 
-            if ( mWorldPosition.Z > 1 )
+            if ( mCubePosition.Z > 1 )
             {
-                WrapWorldPosition( mWorldPosition.Z - 1 );
-                mWorldPosition.Z = 1;
+                WrapCubePosition( mCubePosition.Z - 1 );
+                mCubePosition.Z = 1;
 
                 var dir = CubeFace.VectorToDirection( Vector3.UnitZ );
                 if ( dir != null )
                     yield return dir.Value;
             }
-            else if ( mWorldPosition.Z < -1 )
+            else if ( mCubePosition.Z < -1 )
             {
-                WrapWorldPosition( mWorldPosition.Z + 1 );
-                mWorldPosition.Z = -1;
+                WrapCubePosition( mCubePosition.Z + 1 );
+                mCubePosition.Z = -1;
 
                 var dir = CubeFace.VectorToDirection( -Vector3.UnitZ );
                 if ( dir != null )

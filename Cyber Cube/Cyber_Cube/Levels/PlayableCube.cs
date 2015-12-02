@@ -9,8 +9,6 @@ namespace CyberCube.Levels
 {
     public class PlayableCube : Cube
     {
-        private static Texture2D mBGtexture;
-
         public new static void LoadContent( ContentManager content )
         {
             Face.LoadContent( content );
@@ -65,10 +63,12 @@ namespace CyberCube.Levels
 
         public new partial class Face : Cube.Face
         {
-            internal static void LoadContent( ContentManager content )
+            internal static new void LoadContent( ContentManager content )
             {
-                mBGtexture = content.Load<Texture2D>("Textures\\cubeFace");
+                sBgTexture = content.Load<Texture2D>("Textures\\cubeFace");
             }
+
+            private static Texture2D sBgTexture;
 
             public new PlayableCube Cube
             {
@@ -92,7 +92,7 @@ namespace CyberCube.Levels
             public override void Draw(GameTime gameTime)
             {
                 mSpriteBatch.Begin();
-                mSpriteBatch.Draw(mBGtexture, Vector2.Zero, Color.White);
+                mSpriteBatch.Draw(sBgTexture, Vector2.Zero, Color.White);
                 mSpriteBatch.End();
 
                 base.Draw(gameTime);

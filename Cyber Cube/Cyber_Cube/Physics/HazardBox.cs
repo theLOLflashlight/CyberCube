@@ -70,16 +70,16 @@ namespace CyberCube.Physics
             box.CollidesWith ^= killCategories;
         }
 
-        public override void Draw( GameTime gameTime )
+        public override void Draw( GameTime gameTime, SpriteBatch batch )
         {
             Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
                 mWidth / Texture.Width,
                 mHeight / Texture.Height );
 
-            mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
+            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
 
-            mSpriteBatch.Draw(
+            batch.Draw(
                 Texture,
                 position,
                 null,
@@ -92,7 +92,7 @@ namespace CyberCube.Physics
                 SpriteEffects.None,
                 0 );
 
-            mSpriteBatch.End();
+            //mSpriteBatch.End();
         }
 
     }

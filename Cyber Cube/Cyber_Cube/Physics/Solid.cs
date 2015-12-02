@@ -17,38 +17,39 @@ namespace CyberCube.Physics
         Solid MakeSolid( CubeGame game, World world, Body body );
     }
 
-    public abstract class Solid : DrawableCubeGameObject
+    public abstract class Solid
     {
         public static readonly Color SOLID_COLOR = Color.Black;//new Color( 255, 69, 0, 200 );
 
-        public abstract override void Draw( GameTime gameTime );
+        public abstract void Draw( GameTime gameTime, SpriteBatch batch );
 
         private World mWorld;
 
         public Texture2D Texture;
+
+        public CubeGame Game
+        {
+            get; private set;
+        }
 
         protected Solid( CubeGame game,
                          World world,
                          Vector2 position = default( Vector2 ),
                          float rotation = 0,
                          ISolidMaker solidMaker = null )
-            : base( game )
         {
+            Game = game;
             mWorld = world;
             Body = BodyFactory.CreateBody( World, position, rotation, solidMaker );
             Initialize();
         }
 
         public Solid( CubeGame game, World world, Body body )
-            : base( game )
         {
+            Game = game;
             mWorld = world;
             Body = body;
             Initialize();
-        }
-
-        public sealed override void Update( GameTime gameTime )
-        {
         }
 
         public Body Body
@@ -88,7 +89,7 @@ namespace CyberCube.Physics
 
         private void Initialize()
         {
-            Texture = new Texture2D( GraphicsDevice, 1, 1 );
+            Texture = new Texture2D( Game.GraphicsDevice, 1, 1 );
             Texture.SetData( new[] { Color.White } );
         }
 

@@ -11,77 +11,97 @@ namespace CyberCube
     public class CubeEffect : Effect
     {
         public CubeEffect( ContentManager content )
-            : base( content.Load<Effect>( "TexturesAndColors" ) )
+            : base( content.Load<Effect>( "CubeEffect" ) )
         {
         }
 
         public Matrix World
         {
             get {
-                return Parameters[ "world" ].GetValueMatrix();
+                return Parameters[ "World" ].GetValueMatrix();
             }
             set {
-                Parameters[ "world" ].SetValue( value );
+                Parameters[ "World" ].SetValue( value );
             }
         }
 
         public Matrix View
         {
             get {
-                return Parameters[ "view" ].GetValueMatrix();
+                return Parameters[ "View" ].GetValueMatrix();
             }
             set {
-                Parameters[ "view" ].SetValue( value );
+                Parameters[ "View" ].SetValue( value );
             }
         }
 
         public Matrix Projection
         {
             get {
-                return Parameters[ "projection" ].GetValueMatrix();
+                return Parameters[ "Projection" ].GetValueMatrix();
             }
             set {
-                Parameters[ "projection" ].SetValue( value );
+                Parameters[ "Projection" ].SetValue( value );
             }
         }
 
         public Vector4 LightColor
         {
             get {
-                return Parameters[ "lightColor" ].GetValueVector4();
+                return Parameters[ "LightColor" ].GetValueVector4();
             }
             set {
-                Parameters[ "lightColor" ].SetValue( value );
+                Parameters[ "LightColor" ].SetValue( value );
             }
         }
 
         public Vector3 LightDirection
         {
             get {
-                return Parameters[ "lightDirection" ].GetValueVector3();
+                return Parameters[ "LightDirection" ].GetValueVector3();
             }
             set {
-                Parameters[ "lightDirection" ].SetValue( value );
+                Parameters[ "LightDirection" ].SetValue( value );
             }
         }
 
         public Vector4 AmbientColor
         {
             get {
-                return Parameters[ "ambientColor" ].GetValueVector4();
+                return Parameters[ "AmbientColor" ].GetValueVector4();
             }
             set {
-                Parameters[ "ambientColor" ].SetValue( value );
+                Parameters[ "AmbientColor" ].SetValue( value );
             }
         }
 
-        public Texture2D Texture
+        public Texture2D ForeTexture
         {
             get {
-                return Parameters[ "modelTexture" ].GetValueTexture2D();
+                return Parameters[ "ForeTexture" ].GetValueTexture2D();
             }
             set {
-                Parameters[ "modelTexture" ].SetValue( value );
+                Parameters[ "ForeTexture" ].SetValue( value );
+            }
+        }
+
+        public Texture2D BackTexture
+        {
+            get {
+                return Parameters[ "BackTexture" ].GetValueTexture2D();
+            }
+            set {
+                Parameters[ "BackTexture" ].SetValue( value );
+            }
+        }
+
+        public Vector4 TransparentColor
+        {
+            get {
+                return Parameters[ "TransparentColor" ].GetValueVector4();
+            }
+            set {
+                Parameters[ "TransparentColor" ].SetValue( value );
             }
         }
 

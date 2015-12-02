@@ -23,7 +23,34 @@ namespace CyberCube
     /// </summary>
     public abstract partial class Cube : DrawableCubeScreenGameComponent
     {
+        internal static void LoadContent( ContentManager content )
+        {
+            mBG = content.Load<Texture2D>( @"Textures\Background" );
+            //sSkybox = content.Load<TextureCube>( @"Textures\cubeFaceBackground" );
+            Face.LoadContent( content );
+
+            SkySphereEffect = content.Load<Effect>( "SkySphere" );
+            TextureCube SkyboxTexture = content.Load<TextureCube>( "uffizi_cross" );
+            SkySphere = content.Load<Model>( "SphereHighPoly" );
+
+            // Set the parameters of the effect
+            SkySphereEffect.Parameters[ "SkyboxTexture" ].SetValue(
+                SkyboxTexture );
+            // Set the Skysphere Effect to each part of the Skysphere model
+            foreach ( ModelMesh mesh in SkySphere.Meshes )
+            {
+                foreach ( ModelMeshPart part in mesh.MeshParts )
+                {
+                    part.Effect = SkySphereEffect;
+                }
+            }
+        }
+
+        private static Effect SkySphereEffect;
+        private static Model SkySphere;
+
         private static Texture2D mBG;
+        //private static TextureCube sSkybox;
 
         public readonly BoundingBox BoundingBox = new BoundingBox( -Vector3.One, Vector3.One );
 
@@ -41,15 +68,15 @@ namespace CyberCube
 
         public Vector3 Position
         {
-            get; protected set;
+            get; set;
         } = Vector3.Zero;
         public Vector3 Rotation
         {
-            get; protected set;
+            get; set;
         } = Vector3.Zero;
         public Vector3 Scale
         {
-            get; protected set;
+            get; set;
         } = Vector3.One;
 
         public CubePosition StartPosition = new CubePosition( Vector3.UnitZ, 0 );
@@ -100,11 +127,6 @@ namespace CyberCube
         The adjacent faces are labeled with respect to this diagram, noting the orientation of each 
         letter (face) when folded into a cube.
         */
-
-        public static void LoadContent(ContentManager content)
-        {
-            mBG = content.Load<Texture2D>("Textures\\Background");
-        }
 
         public Cube( CubeGame game, CubeScreen screen )
             : base( game, screen )
@@ -348,9 +370,13 @@ namespace CyberCube
             foreach ( Face face in Faces )
                 face.Render2D( gameTime );
 
-            mSpriteBatch.Begin();
-            mSpriteBatch.Draw(mBG, Vector2.Zero, Color.White);
-            mSpriteBatch.End();
+            //mSpriteBatch.Begin();
+            //mSpriteBatch.Draw(mBG, Vector2.Zero, Color.White);
+            //mSpriteBatch.End();
+
+            //Effect.SkyboxTexture = sSkybox;
+
+            RenderSkybox();
 
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.CullClockwiseFace;
@@ -360,6 +386,20 @@ namespace CyberCube
                 face.Render3D( Effect );
 
             //CurrentFace.Render3D( Effect );
+        }
+
+        private void RenderSkybox()
+        {
+            // Set the View and Projection matrix for the effect
+            SkySphereEffect.Parameters[ "ViewMatrix" ].SetValue(
+                Effect.View );
+            SkySphereEffect.Parameters[ "ProjectionMatrix" ].SetValue(
+                Effect.Projection );
+            // Draw the sphere model that the effect projects onto
+            foreach ( ModelMesh mesh in SkySphere.Meshes )
+            {
+                mesh.Draw();
+            }
         }
 
     }

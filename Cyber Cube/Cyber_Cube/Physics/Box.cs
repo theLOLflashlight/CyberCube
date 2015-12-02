@@ -75,7 +75,7 @@ namespace CyberCube.Physics
             Body.CollisionCategories = categories;
         }
 
-        public override void Draw(GameTime gameTime)
+        public override void Draw(GameTime gameTime, SpriteBatch batch )
         {
             Vector2 position = Body.Position.ToPixels();
 
@@ -96,11 +96,11 @@ namespace CyberCube.Physics
             //    scale.Y = mHeight / mWhiteBox.Height;
             //}
             
-            mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
+            //mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
             if (BodyType == BodyType.Static)
             {
-                mSpriteBatch.Draw(
+                batch.Draw(
                     mWhiteBox,
                     position,
                     null,
@@ -115,7 +115,7 @@ namespace CyberCube.Physics
             }
             else
             {
-                mSpriteBatch.Draw(
+                batch.Draw(
                     mRedBox,
                     position,
                     null,
@@ -129,7 +129,7 @@ namespace CyberCube.Physics
                     0);
             }
 
-            mSpriteBatch.End();
+            //mSpriteBatch.End();
         }
 
     }

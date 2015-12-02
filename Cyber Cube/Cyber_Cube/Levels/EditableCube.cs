@@ -46,7 +46,7 @@ namespace CyberCube.Levels
             mLeftFace.BackgroundColor = Color.Purple;
             mRightFace.BackgroundColor = Color.Yellow;
 
-            CameraDistance = 4f;
+            CameraDistance = 5;
         }
 
         protected override Cube.Face NewFace( CubeFaceType type, Vector3 normal, Vector3 up, Direction rotation )
@@ -126,7 +126,7 @@ namespace CyberCube.Levels
                         * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
                         * Vector3.UnitY.RotateOnto_M( face.UpVec )
                         * Matrix.CreateFromAxisAngle( face.Normal, -StartPosition.Rotation )
-                        * Matrix.CreateTranslation( StartPosition.Position );
+                        * Matrix.CreateTranslation( StartPosition.Position + this.Position );
 
                     Screen.Camera.Apply( effect );
                 }
@@ -152,7 +152,7 @@ namespace CyberCube.Levels
                             * Matrix.CreateTranslation( 0, -5.ToUnits(), 0 )
                             * Vector3.UnitY.RotateOnto_M( face.UpVec )
                             * Matrix.CreateFromAxisAngle( face.Normal, -pos.Rotation )
-                            * Matrix.CreateTranslation( pos.Position );
+                            * Matrix.CreateTranslation( pos.Position + this.Position );
 
                         Screen.Camera.Apply( effect );
                     }

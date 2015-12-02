@@ -310,7 +310,7 @@ namespace CyberCube.Screens
 
             base.Update( gameTime );
 
-            Camera.OrbitPosition( Cube.CurrentFace.Normal * Cube.CameraDistance, Cube.Position );
+            Camera.OrbitPosition( Cube.CurrentFace.Normal * Cube.CameraDistance + Cube.Position, Cube.Position );
             Camera.AnimateUpVector( Cube.ComputeUpVector() );
         }
 

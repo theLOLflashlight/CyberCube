@@ -118,7 +118,7 @@ namespace CyberCube.Physics
 
         private Texture2D CreateCircleTexture( float radius )
         {
-            return CreateCornerTexture( GraphicsDevice, radius, SOLID_COLOR );
+            return CreateCornerTexture( Game.GraphicsDevice, radius, SOLID_COLOR );
         }
 
         public static Texture2D CreateCornerTexture( GraphicsDevice graphicsDevice, float radiusf, Color color )
@@ -152,16 +152,16 @@ namespace CyberCube.Physics
             mCornerTex = CreateCircleTexture( (int) mRadius );
         }
 
-        public override void Draw( GameTime gameTime )
+        public override void Draw( GameTime gameTime, SpriteBatch batch )
         {
             Vector2 position = Body.Position.ToPixels();
             Vector2 origin = new Vector2(
                 mCornerTex.Width,
                 mCornerTex.Height ) / 2;
 
-            mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
+            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
 
-            mSpriteBatch.Draw(
+            batch.Draw(
                 mCornerTex,
                 position,
                 null,
@@ -172,7 +172,7 @@ namespace CyberCube.Physics
                 SpriteEffects.None,
                 0 );
             
-            mSpriteBatch.End();
+            //mSpriteBatch.End();
         }
     }
 }

@@ -209,7 +209,7 @@ namespace CyberCube.Actors
             Matrix worldTransformation = Matrix.Identity
                 * Matrix.CreateScale( MODEL_SCALE )
                 * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
-                * Matrix.CreateTranslation( WorldPosition );
+                * Matrix.CreateTranslation( CubePosition );
 
             // Draw the model. A model can have multiple meshes, so loop.
             foreach ( ModelMesh mesh in model3D.Meshes )

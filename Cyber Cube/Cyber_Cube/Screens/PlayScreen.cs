@@ -149,9 +149,6 @@ namespace CyberCube.Screens
         public PlayScreen( CubeGame game )
             : this( game, new PlayableCube( game ) )
         {
-            MediaPlayer.Volume = mVolume;
-            //MediaPlayer.Play(mSong);
-            MediaPlayer.IsRepeating = true;
         }
 
         /// <summary>
@@ -165,6 +162,20 @@ namespace CyberCube.Screens
             MediaPlayer.Volume = mVolume;
             //MediaPlayer.Play(mSong);
             MediaPlayer.IsRepeating = true;
+
+            /*Random rand = new Random();
+
+            for ( int i = 0 ; i < 10 ; ++i )
+            {
+                PlayableCube cube = new PlayableCube( Game, this );
+                cube.Position = new Vector3(
+                    (float) (rand.NextDouble() - 0.5) * 10,
+                    (float) (rand.NextDouble() - 0.5) * 10,
+                    (float) (rand.NextDouble() - 0.5) * 10 );
+
+                cube.Enabled = false;
+                Components.Add( cube );
+            }*/
         }
         #endregion
 
@@ -212,7 +223,7 @@ namespace CyberCube.Screens
             Player = PendingPlayer;
 
             Camera.Target = Player.WorldPosition;
-            Camera.Position = ComputeCameraPosition( Player );
+            Camera.Position = ComputeCameraPosition( Player ) + Cube.Position;
             Camera.UpVector = Player.CubeFace.UpVec.Rotate( Player.Normal, -Player.Rotation );
         }
 
@@ -237,13 +248,16 @@ namespace CyberCube.Screens
             else
                 Camera.Target = p.WorldPosition;
 
-            Camera.AnimatePosition( ComputeCameraPosition( p ), Cube.CameraDistance * 4 );
+            //Camera.Position = ComputeCameraPosition( Player ) + Cube.Position;
+            Camera.OrbitPosition( ComputeCameraPosition( Player ) + Cube.Position,
+                Cube.Position, Cube.CameraDistance * 4 );
+            //Camera.AnimatePosition( ComputeCameraPosition( p ), Cube.CameraDistance * 4 );
             Camera.AnimateUpVector( p.CubeFace.UpVec.Rotate( p.Normal, -p.Rotation ), 1.4f );
         }
 
         private Vector3 ComputeCameraPosition( Player p )
         {
-            Vector3 playerPos = p.WorldPosition;
+            Vector3 playerPos = p.CubePosition;
             Vector3 normal = p.Normal;
 
             HyperVector3 cubePos = new HyperVector3( playerPos );
@@ -299,6 +313,7 @@ namespace CyberCube.Screens
 
         public override void Draw( GameTime gameTime )
         {
+            
             base.Draw( gameTime );
 
             mSpriteBatch.Begin();

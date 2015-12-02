@@ -203,7 +203,7 @@ namespace CyberCube.Actors
 
         public void ClonePlayer()
         {
-            Screen.AddPlayer( WorldPosition, Rotation );
+            Screen.AddPlayer( CubePosition, Rotation );
         }
 
         private void Jump( ref Vector2 velocity )

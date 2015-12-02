@@ -57,16 +57,16 @@ namespace CyberCube.Levels
             Body.CollisionCategories = categories;
         }
 
-        public override void Draw( GameTime gameTime )
+        public override void Draw( GameTime gameTime, SpriteBatch batch )
         {
-            mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.Opaque );
+            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.Opaque );
 
             Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
                 WIDTH / Texture.Width,
                 HEIGHT / Texture.Height );
 
-            mSpriteBatch.Draw(
+            batch.Draw(
                 Texture,
                 position,
                 null,
@@ -79,7 +79,7 @@ namespace CyberCube.Levels
                 SpriteEffects.None,
                 0 );
 
-            mSpriteBatch.End();
+            //mSpriteBatch.End();
         }
 
     }
