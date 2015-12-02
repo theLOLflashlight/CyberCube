@@ -32,7 +32,7 @@ namespace CyberCube.Actors
         public const float PLAYER_FRICTION = 0;
         
         public const float MODEL_SCALE = 0.061f;
-        public const float RUN_ANIM_FACTOR = 0.04f / MODEL_SCALE;
+        public const float RUN_ANIM_FACTOR = 0.035f / MODEL_SCALE;
 
         public readonly float PLAYER_WIDTH = 15.ToUnits();
         public readonly float PLAYER_HEIGHT = 60.ToUnits();
@@ -258,9 +258,12 @@ namespace CyberCube.Actors
             }
             else
             {
+                float maxSpeed = Math.Max( actionLeft, actionRight ) * MAX_RUN_SPEED;
+
                 velocity.X -= actionLeft * (movementScale + 1) * seconds;
                 velocity.X += actionRight * (movementScale + 1) * seconds;
-                velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
+                velocity.X = MathHelper.Clamp( velocity.X, -maxSpeed, +maxSpeed );
+                //velocity.X = MathHelper.Clamp( velocity.X, -MAX_RUN_SPEED, +MAX_RUN_SPEED );
             }
             #endregion
             UpdateRunningAnimations( gameTime, velocity );
