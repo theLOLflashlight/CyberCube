@@ -50,7 +50,9 @@ namespace CyberCube
 
         public bool Achieved( Dictionary< Stat, int > stats )
         {
-            // TODO: Implement this
+            foreach( Requirement requirement in Requirements )
+                if( !stats.ContainsKey( requirement.AssociatedStat ) || stats[ requirement.AssociatedStat ] < requirement.Goal )
+                    return false;
             return true;
         }
     }
@@ -72,10 +74,6 @@ namespace CyberCube
         }
         private AchievementManager()
         {
-            foreach( Stat stat in Enum.GetValues( typeof( Stat ) ) )
-            {
-                this[ stat ] = 0;
-            }
         }
 
         /// <summary>
@@ -86,7 +84,6 @@ namespace CyberCube
 
         public void Initialize()
         {
-
         }
 
         /// <summary>
@@ -96,7 +93,7 @@ namespace CyberCube
         {
             get
             {
-                return stats[ index ];
+                return ( stats.ContainsKey( index ) ) ? stats[ index ] : stats[ index ] = 0;
             }
             set
             {
@@ -122,6 +119,16 @@ namespace CyberCube
             this.stats = new Dictionary<Stat, int>();
         }
 
+        public int GetCurrentScore()
+        {
+            int score = 0;
+
+            var achieved = Achievements.Where( a => a.Achieved( stats ) );
+            foreach( Achievement achievement in achieved )
+                score += achievement.Value;
+            return score;
+        }
+
         /// <summary>
         /// Gets the achievements that the player accomplished and reset the stats.
         /// Meant to be called at the end of a level.
@@ -129,7 +136,8 @@ namespace CyberCube
         /// <returns></returns>
         public List<Achievement> GetAchieved()
         {
-            List<Achievement> achieved = (List<Achievement>)Achievements.Where( a => a.Achieved( stats ) );
+            List<Achievement> achieved = Achievements.Where( a => a.Achieved( stats ) ).ToList();
+
             this.ResetStats();
             return achieved;
         }

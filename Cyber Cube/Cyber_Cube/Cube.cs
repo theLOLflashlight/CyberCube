@@ -61,6 +61,12 @@ namespace CyberCube
         protected Face mLeftFace;
         protected Face mRightFace;
 
+        public string Name
+        {
+            get;
+            private set;
+        }
+
         public CubeEffect Effect
         {
             get; protected set;
@@ -293,6 +299,8 @@ namespace CyberCube
 
         internal void Load( string name )
         {
+            this.Name = name;
+
             CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
             StartPosition = file.StartPosition;
             EnemyPositions = file.EnemyPositions;

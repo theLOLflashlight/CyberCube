@@ -23,10 +23,18 @@ namespace CyberCube.Screens
             sFont = content.Load<SpriteFont>("MessageFontLarge");
         }
 
-        public EndLevelScreen(CubeGame game)
+        public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName )
             : base(game)
         {
+            SaveData saveData = SaveData.Load( levelName );
 
+            int newScore = 0;
+            foreach( Achievement achievement in achieved )
+                newScore += achievement.Value;
+
+            // TODO: Replace Tester with user's name
+            saveData.AddScore( newScore, "Tester" );
+            saveData.Save( levelName );
         }
 
         public override void Update(GameTime gameTime)
