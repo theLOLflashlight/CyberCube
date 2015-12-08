@@ -4,7 +4,7 @@
     <!-- List of achievements in the entire game -->
     <Achievement>
       <!-- Value in points of the achievement -->
-      <Value>1</Value>
+      <Value>5</Value>
       <!-- Title of the achievement in-game -->
       <Title>Jump 10 Times</Title>
       <!-- List of requirements to fulfill to accomplish the achievement -->

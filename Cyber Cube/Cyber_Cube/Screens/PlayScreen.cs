@@ -199,7 +199,7 @@ namespace CyberCube.Screens
             playCube.Load( filename ?? Cube.NextLevel );
             PlayScreen playScreen = new PlayScreen( Game, playCube );
             ScreenManager.PushScreen( playScreen );
-            EndLevelScreen endLevelScreen = new EndLevelScreen( Game );
+            EndLevelScreen endLevelScreen = new EndLevelScreen( Game, AchievementManager.Instance.GetAchieved(), Cube.Name );
             // Pass information?
             ScreenManager.PushScreen( endLevelScreen );
         }

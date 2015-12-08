@@ -18,7 +18,6 @@ using System.Xml.Schema;
 
 namespace CyberCube
 {
-
     /// <summary>
     /// Manager singleton for opening and closing the storage container and files.
     /// 
