@@ -18,7 +18,7 @@ namespace CyberCube.Actors
 {
 	public partial class Enemy : Actor
     {
-        public const float MOVEMENT_SCALE = 20;
+        public const float MOVEMENT_SCALE = 30;
 
         public const float MODEL_SCALE = 0.04f;
         
@@ -32,6 +32,9 @@ namespace CyberCube.Actors
         private Direction mMovementDirection;
         private float mMoveTimeDelay;
         private float mDirectionTimeDelay;
+
+        private VertexPositionNormalTextureColor[] visionVertices;
+        private Texture2D visionTexture;
 
         public Enemy( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation ) 
             : base ( cube.Game, screen, cube, worldPos, (Direction) rotation )
@@ -58,6 +61,11 @@ namespace CyberCube.Actors
 
             sTexture = new Texture2D( GraphicsDevice, 1, 1 );
             sTexture.SetData( new Color[] { ENEMY_COLOR } );
+
+            visionTexture = new Texture2D(GraphicsDevice, 1, 1);
+            Color color = Color.White;
+            color.A = 150;
+            visionTexture.SetData(new Color[] { color });
         }
 
         protected override Body CreateBody( World world )
@@ -71,8 +79,6 @@ namespace CyberCube.Actors
                 5.ToUnits(),
                 0 );
             var head = FixtureFactory.AttachPolygon( verts, 1, body, "enemy" );
-            
-           
             
             return body;
         }
@@ -92,8 +98,13 @@ namespace CyberCube.Actors
             Body.AdHocGravity = Vector2.Zero;
 
             Body.CollisionCategories = Constants.Categories.ENEMY;
-            Body.CollidesWith = Category.All;
+            Body.CollidesWith = Category.All ^ Constants.Categories.ENEMY;
             Body.Mass = 1000000;
+
+            visionVertices = new VertexPositionNormalTextureColor[3];
+            visionVertices[0] = new VertexPositionNormalTextureColor(WorldPosition, CubeFace.Normal, new Vector2(0, 0), Color.LightGoldenrodYellow);
+            visionVertices[1] = new VertexPositionNormalTextureColor(WorldPosition + new Vector3(0.3f, -0.2f, 0), CubeFace.Normal, new Vector2(0.5f, 0), Color.LightGoldenrodYellow);
+            visionVertices[2] = new VertexPositionNormalTextureColor(WorldPosition + new Vector3(0.3f, 0.2f, 0), CubeFace.Normal, new Vector2(0.5f, 0.5f), Color.LightGoldenrodYellow);
         }
 
         public override void Update( GameTime gameTime )
@@ -101,6 +112,23 @@ namespace CyberCube.Actors
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             mMoveTimeDelay -= seconds;
             mDirectionTimeDelay -= seconds;
+
+            
+
+            if ( Screen is PlayScreen && SeePlayer( ((PlayScreen)Screen).Player ) )
+            {
+                Color color = Color.DarkRed;
+                color.A = 150;
+                visionTexture.SetData(new Color[] { color });
+            }
+            else
+            {
+                Color color = Color.LightGoldenrodYellow;
+                color.A = 150;
+                visionTexture.SetData(new Color[] { color });
+            }
+
+
             if (mMoveTimeDelay < 0)
             {
                 if (mDirectionTimeDelay < 0)
@@ -122,22 +150,41 @@ namespace CyberCube.Actors
                 }
                 else
                 {
+
+                    visionVertices[0].Position = WorldPosition;
+
                     Vector2 velocity = velocityCopy.Rotate( -Rotation );
                     if (mMovementDirection == Direction.Left)
                     { 
                         velocity.X = -movementScale * seconds;
+
+                        // update vision
+                        visionVertices[1].Position = WorldPosition + new Vector3(-0.3f, 0.2f, 0);
+                        visionVertices[2].Position = WorldPosition + new Vector3(-0.3f, -0.2f, 0);
                     }
                     else if (mMovementDirection == Direction.Right)
                     {
                         velocity.X = movementScale * seconds;
+
+                        // update vision
+                        visionVertices[1].Position = WorldPosition + new Vector3(0.3f, -0.2f, 0);
+                        visionVertices[2].Position = WorldPosition + new Vector3(0.3f, 0.2f, 0);
                     }
                     else if (mMovementDirection == Direction.Up)
                     {
                         velocity.Y = movementScale * seconds;
+
+                        // update vision
+                        visionVertices[1].Position = WorldPosition + new Vector3(-0.2f, -0.3f, 0);
+                        visionVertices[2].Position = WorldPosition + new Vector3(0.2f, -0.3f,  0);
                     }
                     else if (mMovementDirection == Direction.Down)
                     {
                         velocity.Y = -movementScale * seconds;
+
+                        // update vision
+                        visionVertices[1].Position = WorldPosition + new Vector3(0.2f, 0.3f, 0);
+                        visionVertices[2].Position = WorldPosition + new Vector3(-0.2f, 0.3f, 0);
                     }
 
                     Velocity = velocity.Rotate( Rotation );
@@ -147,6 +194,32 @@ namespace CyberCube.Actors
 
             base.Update( gameTime );
             UpdateAnimations( gameTime );
+
+        
+        }
+
+        // we determine if we see the player by using the triangle vision and see if it contains the player 
+        private bool SeePlayer(Player player)
+        {
+            Vector2 playerPosition = Transform3dTo2d(player.CubePosition);
+            Vector2 pointA = Cube.ComputeFacePosition(visionVertices[0].Position, CubeFace);
+            Vector2 pointB = Cube.ComputeFacePosition(visionVertices[1].Position, CubeFace);
+            Vector2 pointC = Cube.ComputeFacePosition(visionVertices[2].Position, CubeFace);
+            
+            return PointInTriangle(playerPosition, pointA, pointB, pointC);
+        }
+
+        private bool SameSide(Vector2 point1, Vector2 point2, Vector2 pointA, Vector2 pointB)
+        {
+
+            Vector3 cp1 = Vector3.Cross(new Vector3(pointB - pointA, 0), new Vector3(point1 - pointA, 0));
+            Vector3 cp2 = Vector3.Cross(new Vector3(pointB - pointA, 0), new Vector3(point2 - pointA, 0));
+            return Vector3.Dot(cp1, cp2) >= 0;
+        }
+
+        private bool PointInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
+        {
+            return SameSide(p, a, b, c) && SameSide(p, b, c, a) && SameSide(p, c, a, b);
         }
 
         private bool PreviewFallOffCubeFace(float movementScale)
@@ -204,30 +277,40 @@ namespace CyberCube.Actors
 
         public override void Draw( GameTime gameTime )
         {
-            Matrix[] bones = EnemyAnimation.GetSkinTransforms();
-
-            Matrix worldTransformation = Matrix.Identity
-                * Matrix.CreateScale( MODEL_SCALE )
-                * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
-                * Matrix.CreateTranslation( CubePosition );
-
-            // Draw the model. A model can have multiple meshes, so loop.
-            foreach ( ModelMesh mesh in model3D.Meshes )
+            if (Cube.CurrentFace == CubeFace)
             {
-                // This is where the mesh orientation is set, as well 
-                // as our camera and projection.
-                foreach ( SkinnedEffect effect in mesh.Effects )
+                Cube.Effect.ForeTexture = visionTexture;
+                foreach (EffectPass pass in Cube.Effect.CurrentTechnique.Passes)
                 {
-                    effect.EnableDefaultLighting();
-                    effect.AmbientLightColor = Color.White.ToVector3();
-                    effect.Texture = sTexture;
-
-                    effect.SetBoneTransforms(bones);
-                    effect.World = bones[ mesh.ParentBone.Index ] * worldTransformation;
-
-                    Screen.Camera.Apply( effect );
+                    pass.Apply();
+                    GraphicsDevice.DrawUserPrimitives(PrimitiveType.TriangleList, visionVertices, 0, 1);
                 }
-                mesh.Draw();
+                
+                Matrix[] bones = EnemyAnimation.GetSkinTransforms();
+
+                Matrix worldTransformation = Matrix.Identity
+                    * Matrix.CreateScale(MODEL_SCALE)
+                    * Matrix.CreateFromAxisAngle(Vector3.UnitY, MovementRotation)
+                    * Matrix.CreateTranslation(CubePosition);
+
+                // Draw the model. A model can have multiple meshes, so loop.
+                foreach (ModelMesh mesh in model3D.Meshes)
+                {
+                    // This is where the mesh orientation is set, as well 
+                    // as our camera and projection.
+                    foreach (SkinnedEffect effect in mesh.Effects)
+                    {
+                        effect.EnableDefaultLighting();
+                        effect.AmbientLightColor = Color.White.ToVector3();
+                        effect.Texture = sTexture;
+
+                        effect.SetBoneTransforms(bones);
+                        effect.World = bones[mesh.ParentBone.Index] * worldTransformation;
+
+                        Screen.Camera.Apply(effect);
+                    }
+                    mesh.Draw();
+                }
             }
         }
     }   
