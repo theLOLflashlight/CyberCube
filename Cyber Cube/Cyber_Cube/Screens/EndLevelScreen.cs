@@ -17,24 +17,37 @@ namespace CyberCube.Screens
     public class EndLevelScreen : GameScreen
     {
         private static SpriteFont sFont;
+        private static Texture2D sLevelClear;
+        private static Texture2D sScoreTitle;
+        private static Texture2D sHighScores;
+
+        private SaveData pSaveData;
+        private List<Achievement> pAchievements;
+        private int pScore;
 
         public static void LoadContent(ContentManager content)
         {
-            sFont = content.Load<SpriteFont>("MessageFontLarge");
+            sFont = content.Load<SpriteFont>("EndLevelScreenFont");
+            sLevelClear = content.Load <Texture2D>("NavigationItems\\levelClear");
+            sScoreTitle = content.Load<Texture2D>("NavigationItems\\scoreBreakdown");
+            sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
+
         }
 
         public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName )
             : base(game)
         {
-            SaveData saveData = SaveData.Load( levelName );
+            pSaveData = SaveData.Load( levelName );
 
-            int newScore = 0;
-            foreach( Achievement achievement in achieved )
-                newScore += achievement.Value;
+            pAchievements = achieved;
+            pScore = 0;
+
+            foreach( Achievement a in pAchievements )
+                pScore += a.Value;
 
             // TODO: Replace Tester with user's name
-            saveData.AddScore( newScore, "Tester" );
-            saveData.Save( levelName );
+            pSaveData.AddScore( pScore, "The World's #1" );
+            pSaveData.Save( levelName );
         }
 
         public override void Update(GameTime gameTime)
@@ -47,20 +60,74 @@ namespace CyberCube.Screens
 
         public override void Draw(GameTime gameTime)
         {
+            int delta = 0;
+
             GraphicsDevice.Clear(Color.Black);
 
             mSpriteBatch.Begin();
+
+            mSpriteBatch.Draw( sLevelClear, 
+                               new Vector2( GraphicsDevice.Viewport.Width / 2 - ( sLevelClear.Width / 2 ), 50 ), 
+                               Color.White );
+
+            mSpriteBatch.Draw( sScoreTitle,
+                               new Vector2( GraphicsDevice.Viewport.Width / 4 - ( sScoreTitle.Width / 2 ), 150 ),
+                               Color.White );
+
+            mSpriteBatch.Draw( sHighScores,
+                               new Vector2( GraphicsDevice.Viewport.Width * 3 / 4 - ( sHighScores.Width / 2 ), 150 ),
+                               Color.White );
+
+
+            // Level Scoring segment
+            foreach (Achievement a in pAchievements)
+            {
+                mSpriteBatch.DrawString(sFont,
+                                    a.Title,
+                                    new Vector2(GraphicsDevice.Viewport.Width / 7, 225 + delta),
+                                    Color.White);
+
+                mSpriteBatch.DrawString(sFont,
+                                    a.Value.ToString(),
+                                    new Vector2(GraphicsDevice.Viewport.Width / 3, 225 + delta),
+                                    Color.White);
+
+                delta += 25;
+            }
+
             mSpriteBatch.DrawString(sFont,
-                                    "Level Clear, woohoo",
-                                    new Vector2(GraphicsDevice.Viewport.Width / 3,
-                                                GraphicsDevice.Viewport.Height / 3),
+                                    "Total Score:",
+                                    new Vector2(GraphicsDevice.Viewport.Width / 7, 225 + delta),
                                     Color.White);
 
             mSpriteBatch.DrawString(sFont,
-                                    "Press Enter to continue",
-                                    new Vector2(GraphicsDevice.Viewport.Width / 3,
-                                                GraphicsDevice.Viewport.Height * 2 / 3),
+                                    pScore.ToString(),
+                                    new Vector2(GraphicsDevice.Viewport.Width / 3, 225 + delta),
                                     Color.White);
+
+            // High score segment
+            delta = 0;
+
+            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ).OrderBy( s => s.name ))
+            {
+                mSpriteBatch.DrawString(sFont,
+                                    s.name,
+                                    new Vector2(GraphicsDevice.Viewport.Width / 7 + GraphicsDevice.Viewport.Width / 2, 225 + delta),
+                                    Color.White);
+
+                mSpriteBatch.DrawString(sFont,
+                                    s.score.ToString(),
+                                    new Vector2(GraphicsDevice.Viewport.Width / 3 + GraphicsDevice.Viewport.Width / 2, 225 + delta),
+                                    Color.White);
+
+                delta += 25;
+            }
+
+            mSpriteBatch.DrawString( sFont,
+                                    "A (GamePad) or Enter (Keyboard) to Continue",
+                                    new Vector2( GraphicsDevice.Viewport.Width * 5 / 9, GraphicsDevice.Viewport.Height - 50 ),
+                                    Color.White );
+
             mSpriteBatch.End();
         }
     }
