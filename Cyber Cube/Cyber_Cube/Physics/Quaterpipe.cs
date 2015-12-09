@@ -170,20 +170,16 @@ namespace CyberCube.Physics
                 mQuarterpipeTex.Width,
                 mQuarterpipeTex.Height ) / 2;
 
-            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
-
             batch.Draw(
                 mQuarterpipeTex,
                 position,
                 null,
-                BodyType == BodyType.Static ? Color.Black : Color.White,
+                SOLID_COLOR,
                 Body.Rotation,
                 origin,
                 Vector2.One,
                 SpriteEffects.None,
                 0 );
-            
-            //mSpriteBatch.End();
         }
     }
 }

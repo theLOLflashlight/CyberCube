@@ -233,11 +233,19 @@ namespace CyberCube
                 RenderTarget.SetData( data );*/
             }
 
-            public void Render3D( CubeEffect effect )
+            public void Render3D( CubeEffect effect, Texture2D tex = null )
             {
-                effect.ForeTexture = RenderTarget;
-                effect.BackTexture = sBgTexture;
-                effect.TransparentColor = Solid.SOLID_COLOR.ToVector4();
+                if ( tex == null )
+                {
+                    effect.ForeTexture = RenderTarget;
+                    effect.BackTexture = sBgTexture;
+                    effect.TransparentColor = Solid.SOLID_COLOR.ToVector4();
+                }
+                else
+                {
+                    effect.ForeTexture = tex;
+                    effect.BackTexture = tex;
+                }
 
                 foreach ( EffectPass pass in effect.CurrentTechnique.Passes )
                 {

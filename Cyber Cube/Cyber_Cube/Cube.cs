@@ -25,7 +25,7 @@ namespace CyberCube
     {
         internal static void LoadContent( ContentManager content )
         {
-            sBG = content.Load<Texture2D>( @"Textures\Background" );
+            sBG = content.Load<Texture2D>( @"Textures\cubeFace" );
             //sSkybox = content.Load<TextureCube>( @"Textures\cubeFaceBackground" );
             Face.LoadContent( content );
 
@@ -340,7 +340,7 @@ namespace CyberCube
             //Effect.LightingEnabled = true;
 
             Effect = new CubeEffect( Game.Content );
-            Effect.LightColor = Color.White.ToVector4();
+            Effect.LightColor = Color.Gray.ToVector4();
             Effect.LightDirection = Vector3.Normalize( -Vector3.One );
             Effect.AmbientColor = Color.Gray.ToVector4();
 
@@ -366,7 +366,6 @@ namespace CyberCube
             Matrix S = Matrix.CreateScale( Scale );
             Matrix R = Matrix.CreateFromYawPitchRoll( Rotation.Y, Rotation.X, Rotation.Z );
             Matrix T = Matrix.CreateTranslation( Position );
-            Effect.World = S * R * T;
 
             Vector3 cameraPos = Screen.Camera.Position;
             Vector3 cameraTgt = Screen.Camera.Target;
@@ -393,6 +392,13 @@ namespace CyberCube
             RasterizerState rs = new RasterizerState();
             rs.CullMode = CullMode.CullClockwiseFace;
             GraphicsDevice.RasterizerState = rs;
+
+            Effect.World = Matrix.CreateScale( Scale * 1.015f ) * R * T;
+
+            foreach ( Face face in Faces )
+                face.Render3D( Effect, sBG );
+
+            Effect.World = S * R * T;
 
             foreach ( Face face in Faces )
                 face.Render3D( Effect );

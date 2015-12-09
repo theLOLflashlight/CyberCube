@@ -75,61 +75,26 @@ namespace CyberCube.Physics
             Body.CollisionCategories = categories;
         }
 
-        public override void Draw(GameTime gameTime, SpriteBatch batch )
+        public override void Draw( GameTime gameTime, SpriteBatch batch )
         {
             Vector2 position = Body.Position.ToPixels();
 
             Vector2 scale = new Vector2(
-                mWidth / mWhiteBox.Width,
-                mHeight / mWhiteBox.Height);
+                mWidth / Texture.Width,
+                mHeight / Texture.Height);
 
-            //Vector2 scale = new Vector2(0, 0);
-
-            //if (mWidth < mHeight)
-            //{
-            //    scale.X = mWidth / mWhiteBox.Width;
-            //    scale.Y = mWidth / mWhiteBox.Width;
-            //}
-            //else
-            //{
-            //    scale.X = mHeight / mWhiteBox.Height;
-            //    scale.Y = mHeight / mWhiteBox.Height;
-            //}
-            
-            //mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
-
-            if (BodyType == BodyType.Static)
-            {
-                batch.Draw(
-                    mWhiteBox,
-                    position,
-                    null,
-                    SOLID_COLOR,
-                    Body.Rotation,
-                    new Vector2(
-                        mWhiteBox.Width / 2.0f,
-                        mWhiteBox.Height / 2.0f),
-                    scale,
-                    SpriteEffects.None,
-                    0);
-            }
-            else
-            {
-                batch.Draw(
-                    mRedBox,
-                    position,
-                    null,
-                    Color.White,
-                    Body.Rotation,
-                    new Vector2(
-                        mRedBox.Width / 2.0f,
-                        mRedBox.Height / 2.0f),
-                    scale,
-                    SpriteEffects.None,
-                    0);
-            }
-
-            //mSpriteBatch.End();
+            batch.Draw(
+                Texture,
+                position,
+                null,
+                SOLID_COLOR,
+                Body.Rotation,
+                new Vector2(
+                    Texture.Width / 2.0f,
+                    Texture.Height / 2.0f),
+                scale,
+                SpriteEffects.None,
+                0);
         }
 
     }
