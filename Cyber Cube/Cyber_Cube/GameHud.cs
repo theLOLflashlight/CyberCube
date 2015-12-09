@@ -43,8 +43,8 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            mSpriteBatch.Begin();
 #if DEBUG
+            mSpriteBatch.Begin();
             double drawRate = 1 / gameTime.ElapsedGameTime.TotalSeconds;
             if ( double.IsInfinity( drawRate ) )
                 drawRate = 60;
@@ -60,6 +60,7 @@ namespace CyberCube
 
             mSpriteBatch.DrawString( mFont, strUpdateRate,
                 new Vector2( GraphicsDevice.Viewport.Width - posUpdateRate.X, posDrawRate.Y ), Color.White );
+            mSpriteBatch.End();
 #endif
             //mSpriteBatch.DrawString( mFont, Screen.Camera.Position.ToString(), Vector2.Zero, Color.White );
             //mSpriteBatch.DrawString( mFont, Screen.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
@@ -68,7 +69,6 @@ namespace CyberCube
             //mSpriteBatch.DrawString( mFont, "Y: " + Screen.Player.WorldPosition.Y.ToString( "F6" ), new Vector2( 0, 90 ), Color.White );
             //mSpriteBatch.DrawString( mFont, "Z: " + Screen.Player.WorldPosition.Z.ToString( "F6" ), new Vector2( 0, 120 ), Color.White );
 
-            mSpriteBatch.End();
         }
 
     }

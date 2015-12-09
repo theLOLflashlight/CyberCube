@@ -272,6 +272,8 @@ namespace CyberCube.Screens
 #if XBOX
             mLoadThread.SetProcessorAffinity( 3 );
 #endif
+            if ( Cube.NextLevel == null )
+                return;
             PlayableCube playCube = new PlayableCube( Game );
             playCube.Load( Cube.NextLevel );
             mNextPlayScreen = new PlayScreen( Game, playCube );
@@ -405,17 +407,5 @@ namespace CyberCube.Screens
                 MathTools.TransformRange( biasB - biasA, -1, 1, 0, 1 ) );
         }
 
-        public override void Draw( GameTime gameTime )
-        {
-            
-            base.Draw( gameTime );
-
-            mSpriteBatch.Begin();
-            
-#if DEBUG
-            //mSpriteBatch.DrawString( sFont, $"collisions: {Player?.NumFootContacts}", new Vector2( 0, 60 ), Color.White );
-#endif
-            mSpriteBatch.End();
-        }
     }
 }
