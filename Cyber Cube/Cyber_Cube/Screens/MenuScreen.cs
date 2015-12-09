@@ -64,7 +64,7 @@ namespace CyberCube.Screens
 
             sVersionFont = content.Load<SpriteFont>("ConsoleFont");
 
-            mSong = content.Load<Song>("Audio\\GameplayTrack");
+            mSong = content.Load<Song>("Audio\\theme");
             sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
             sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
 
