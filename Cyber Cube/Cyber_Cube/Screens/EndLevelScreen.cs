@@ -66,12 +66,16 @@ namespace CyberCube.Screens
             newKeyState = Keyboard.GetState();
             newPadState = GamePad.GetState(PlayerIndex.One);
 
+
+#if XBOX
             if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
             {
-                if (asyncState == 0) asyncState = 1;
+                if (asyncState == 0)
+                    asyncState = 1;
             }
-#if XBOX
-            switch (asyncState) {
+
+            switch (asyncState)
+            {
                 case 1:
                     result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
                     asyncState = 2; 
@@ -84,16 +88,17 @@ namespace CyberCube.Screens
                         asyncState = 0;
                     }
                     break;
-                }
-
+                default:
+                    break;
+            }
             GamerServicesDispatcher.Update();
 #endif
 
 #if WINDOWS
 
 #endif
-                if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
-                    this.Back();
+            if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+                this.Back();
 
             oldPadState = newPadState;
             oldKeyState = newKeyState;
