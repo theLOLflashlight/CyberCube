@@ -230,7 +230,7 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
-        private List<GameTime> mTimes = new List<GameTime>();
+        private List<double> mTimes = new List<double>();
 
         public double PlayTimeSeconds
         {
@@ -238,8 +238,7 @@ namespace CyberCube.Screens
                 double totalTime = 0;
 
                 for ( int i = 1; i < mTimes.Count; i += 2 )
-                    totalTime += mTimes[ i - 1 ].TotalGameTime.TotalSeconds
-                        - mTimes[ i ].TotalGameTime.TotalSeconds;
+                    totalTime += mTimes[ i ] - mTimes[ i - 1 ];
 
                 return totalTime;
             }
@@ -248,19 +247,19 @@ namespace CyberCube.Screens
         public override void Resume( GameTime gameTime )
         {
             base.Resume( gameTime );
-            mTimes.Add( gameTime );
+            mTimes.Add( gameTime.TotalGameTime.TotalSeconds );
         }
 
         public override void Pause( GameTime gameTime )
         {
             base.Pause( gameTime );
-            mTimes.Add( gameTime );
+            mTimes.Add( gameTime.TotalGameTime.TotalSeconds );
         }
 
         public override void Destroy( GameTime gameTime )
         {
             base.Destroy( gameTime );
-            mTimes.Add( gameTime );
+            mTimes.Add( gameTime.TotalGameTime.TotalSeconds );
         }
 
         internal PlayScreen mNextPlayScreen = null;
@@ -291,7 +290,8 @@ namespace CyberCube.Screens
             //mLoadThread.Join();
             //ScreenManager.PushScreen( mNextPlayScreen );
             EndLevelScreen endLevelScreen = new EndLevelScreen(
-                Game, AchievementManager.Instance.GetAchieved(), Cube.Name, this );
+                Game, Cube.Name, this );
+
             // Pass information?
             ScreenManager.PushScreen( endLevelScreen );
         }

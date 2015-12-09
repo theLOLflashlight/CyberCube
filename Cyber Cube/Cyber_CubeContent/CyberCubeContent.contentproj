@@ -247,15 +247,8 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="gridSkyBox512.dds">
-      <Name>gridSkyBox512</Name>
-      <Importer>TextureImporter</Importer>
-      <Processor>TextureProcessor</Processor>
-    </Compile>
-  </ItemGroup>
-  <ItemGroup>
-    <Compile Include="gridSkyBox1024.dds">
-      <Name>gridSkyBox1024</Name>
+    <Compile Include="gridSkyBox.dds">
+      <Name>gridSkyBox</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
@@ -319,6 +312,48 @@
   <ItemGroup>
     <Compile Include="NavigationItems\scoreBreakdown.png">
       <Name>scoreBreakdown</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="Textures\WhiteBackground.png">
+      <Name>WhiteBackground</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NavigationItems\button_NewGame.png">
+      <Name>button_NewGame</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NavigationItems\button_Continue.png">
+      <Name>button_Continue</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NavigationItems\button_Controls.png">
+      <Name>button_Controls</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="NavigationItems\button_Exit.png">
+      <Name>button_Exit</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gameSkyBox.dds">
+      <Name>gameSkyBox</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>

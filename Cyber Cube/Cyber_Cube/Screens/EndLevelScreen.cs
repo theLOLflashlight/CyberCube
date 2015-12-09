@@ -52,7 +52,7 @@ namespace CyberCube.Screens
 
         private PlayScreen mLevel;
 
-        public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName, PlayScreen level )
+        public EndLevelScreen(CubeGame game, string levelName, PlayScreen level )
             : base(game)
         {
             pLevelName = levelName;
@@ -60,11 +60,7 @@ namespace CyberCube.Screens
 
             mLevel = level;
 
-            pAchievements = achieved;
-            pScore = 0;
 
-            foreach( Achievement a in pAchievements )
-                pScore += a.Value;
 
             bSentScore = false;
 
@@ -78,6 +74,12 @@ namespace CyberCube.Screens
         {
             base.Resume( gameTime );
             AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
+            var achieved = AchievementManager.Instance.GetAchieved();
+            pAchievements = achieved;
+            pScore = 0;
+
+            foreach( Achievement a in pAchievements )
+                pScore += a.Value;
         }
 
 
@@ -116,7 +118,7 @@ namespace CyberCube.Screens
                     break;
             }
             GamerServicesDispatcher.Update();
-                bSentScore = false;
+                bSentScore = true;
             }
 #endif
 
@@ -205,6 +207,8 @@ namespace CyberCube.Screens
                                Color.White );
 #endif
 
+            if(!bSentScore)
+            {
             mSpriteBatch.Draw( sButtonY,
                                new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
                                Color.White);
@@ -213,6 +217,7 @@ namespace CyberCube.Screens
                                      "- Submit Score",
                                      new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
                                      Color.White);
+            }
 
             mSpriteBatch.Draw( sButtonA,
                                new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),
