@@ -163,13 +163,15 @@ namespace CyberCube.Screens
         {
             base.Update( gameTime );
 
-            foreach ( GameScreen screen in mPendingScreens )
+            var pendingScreens = mPendingScreens.ToList();
+            mPendingScreens.Clear();
+
+            foreach ( GameScreen screen in pendingScreens )
                 if ( screen == null )
                     PopScreen( gameTime );
                 else
                     PushScreen( screen, gameTime );
 
-            mPendingScreens.Clear();
             TopScreen?.Update( gameTime );
         }
 
