@@ -25,31 +25,31 @@ namespace CyberCube
     {
         internal static void LoadContent( ContentManager content )
         {
-            mBG = content.Load<Texture2D>( @"Textures\Background" );
+            sBG = content.Load<Texture2D>( @"Textures\Background" );
             //sSkybox = content.Load<TextureCube>( @"Textures\cubeFaceBackground" );
             Face.LoadContent( content );
 
-            SkySphereEffect = content.Load<Effect>( "SkySphere" );
+            sSkySphereEffect = content.Load<Effect>( "SkySphere" );
             TextureCube SkyboxTexture = content.Load<TextureCube>( "gridSkyBox1024" );
-            SkySphere = content.Load<Model>( "SphereHighPoly" );
+            sSkySphere = content.Load<Model>( "SphereHighPoly" );
 
             // Set the parameters of the effect
-            SkySphereEffect.Parameters[ "SkyboxTexture" ].SetValue(
+            sSkySphereEffect.Parameters[ "SkyboxTexture" ].SetValue(
                 SkyboxTexture );
             // Set the Skysphere Effect to each part of the Skysphere model
-            foreach ( ModelMesh mesh in SkySphere.Meshes )
+            foreach ( ModelMesh mesh in sSkySphere.Meshes )
             {
                 foreach ( ModelMeshPart part in mesh.MeshParts )
                 {
-                    part.Effect = SkySphereEffect;
+                    part.Effect = sSkySphereEffect;
                 }
             }
         }
 
-        private static Effect SkySphereEffect;
-        private static Model SkySphere;
+        private static Effect sSkySphereEffect;
+        private static Model sSkySphere;
 
-        private static Texture2D mBG;
+        private static Texture2D sBG;
         //private static TextureCube sSkybox;
 
         public readonly BoundingBox BoundingBox = new BoundingBox( -Vector3.One, Vector3.One );
@@ -399,12 +399,12 @@ namespace CyberCube
         private void RenderSkybox()
         {
             // Set the View and Projection matrix for the effect
-            SkySphereEffect.Parameters[ "ViewMatrix" ].SetValue(
+            sSkySphereEffect.Parameters[ "ViewMatrix" ].SetValue(
                 Effect.View );
-            SkySphereEffect.Parameters[ "ProjectionMatrix" ].SetValue(
+            sSkySphereEffect.Parameters[ "ProjectionMatrix" ].SetValue(
                 Effect.Projection );
             // Draw the sphere model that the effect projects onto
-            foreach ( ModelMesh mesh in SkySphere.Meshes )
+            foreach ( ModelMesh mesh in sSkySphere.Meshes )
             {
                 mesh.Draw();
             }

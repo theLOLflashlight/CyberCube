@@ -18,8 +18,8 @@ namespace CyberCube.Screens
     {
         private static SpriteFont sFont;
 
-        private static Song mSong;
-        private static SoundEffectInstance mSfxAlarm;
+        private static Song sSong;
+        private static SoundEffectInstance sSfxAlarm;
         private float mVolume = 0.2f;
 
 
@@ -27,11 +27,11 @@ namespace CyberCube.Screens
         {
             sFont = content.Load<SpriteFont>( "MessageFont" );
 
-            mSong = content.Load<Song>("Audio\\GameplayTrack");
+            sSong = content.Load<Song>("Audio\\GameplayTrack");
 
             SoundEffect alarm = content.Load<SoundEffect>("Audio\\alarm");
-            mSfxAlarm = alarm.CreateInstance();
-            mSfxAlarm.Volume = 0.1f;
+            sSfxAlarm = alarm.CreateInstance();
+            sSfxAlarm.Volume = 0.1f;
 
         }
 
@@ -113,7 +113,7 @@ namespace CyberCube.Screens
 
         public void PlayAlarm()
         {
-            mSfxAlarm.Play();
+            sSfxAlarm.Play();
         }
 
         public void ResetLevel()
