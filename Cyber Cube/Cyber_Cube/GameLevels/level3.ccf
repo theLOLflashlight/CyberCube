@@ -8,6 +8,7 @@
     </Position>
     <Rotation>0</Rotation>
   </StartPosition>
+  <EnemyPositions />
   <NextLevel>level4</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
@@ -41,7 +42,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="3142"&gt;
+    &lt;Fixture Id="161"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -58,7 +59,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="3143"&gt;
+    &lt;Fixture Id="162"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -75,7 +76,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="3144"&gt;
+    &lt;Fixture Id="163"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -219,7 +220,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="3149"&gt;
+    &lt;Fixture Id="168"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -236,7 +237,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="3150"&gt;
+    &lt;Fixture Id="169"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -253,7 +254,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="3151"&gt;
+    &lt;Fixture Id="170"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -270,7 +271,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="4651"&gt;
+    &lt;Fixture Id="171"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -443,7 +444,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="3155"&gt;
+    &lt;Fixture Id="174"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -460,7 +461,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="3156"&gt;
+    &lt;Fixture Id="175"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
