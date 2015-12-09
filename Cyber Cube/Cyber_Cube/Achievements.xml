@@ -93,69 +93,25 @@
         </Requirement>
       </Requirements>
     </Achievement>
-    <!-- Jump 100 Times Achievement-->
-    <Achievement>
-      <Value>5</Value>
-      <Title>Hop-A-Lot</Title>
-      <Requirements>
-        <Requirement>
-          <AssociatedStat>Jump</AssociatedStat>
-          <Goal>>100</Goal>
-        </Requirement>
-      </Requirements>
-    </Achievement>
-    <!-- Don't Die Achievement -->
-    <Achievement>
-      <Value>2</Value>
-      <Title>Don't Die</Title>
-      <Requirements>
-        <Requirement>
-          <AssociatedStat>Die</AssociatedStat>
-          <Goal>=0</Goal>
-        </Requirement>
-      </Requirements>
-    </Achievement>
-    <!-- Die 50 Times Achievement-->
-    <Achievement>
-      <Value>4</Value>
-      <Title>Get Overkilled</Title>
-      <Requirements>
-        <Requirement>
-          <AssociatedStat>Die</AssociatedStat>
-          <Goal>>50</Goal>
-        </Requirement>
-      </Requirements>
-    </Achievement>
-    <!-- Die 9 Times Achievement -->
+    <!-- Take Over A Minute-And-A-Half Achievement -->
     <Achievement>
       <Value>3</Value>
-      <Title>Cat's Death</Title>
+      <Title>Take Your Time</Title>
       <Requirements>
         <Requirement>
-          <AssociatedStat>Die</AssociatedStat>
-          <Goal>=9</Goal>
+          <AssociatedStat>Second</AssociatedStat>
+          <Goal>>90</Goal>
         </Requirement>
       </Requirements>
     </Achievement>
-    <!-- Clone 1 Time Achievement -->
+    <!-- Complete The Level In Under 5 Seconds Achievement -->
     <Achievement>
-      <Value>1</Value>
-      <Title>Seeing Doubles</Title>
+      <Value>3</Value>
+      <Title>Speedrunner</Title>
       <Requirements>
         <Requirement>
-          <AssociatedStat>Clone</AssociatedStat>
-          <Goal>=1</Goal>
-        </Requirement>
-      </Requirements>
-    </Achievement>
-    <!-- Clone Over 50 Times Achievement -->
-    <Achievement>
-      <Value>1</Value>
-      <Title>Seeing Doubles</Title>
-      <Requirements>
-        <Requirement>
-          <AssociatedStat>Clone</AssociatedStat>
-          <Goal>=1</Goal>
+          <AssociatedStat>Second</AssociatedStat>
+          <Goal>>5</Goal>
         </Requirement>
       </Requirements>
     </Achievement>

@@ -18,6 +18,7 @@ using FarseerPhysics.Collision;
 using CyberCube.Physics;
 using FarseerPhysics.Common;
 using SkinnedModel;
+using System.Threading;
 
 namespace CyberCube.Actors
 {
@@ -98,7 +99,7 @@ namespace CyberCube.Actors
 
         private InputState<Action>.ActionState GetPlayerAction( Action action )
         {
-            return IsActive ? Game.Input.GetAction( action, this )
+            return IsActive && !mPlayerDying ? Game.Input.GetAction( action, this )
                 : default( InputState<Action>.ActionState );
         }
 
@@ -202,11 +203,31 @@ namespace CyberCube.Actors
             Body.ApplyLinearImpulse( impulse.Rotate( Rotation ) );
         }
 
-        public void KillPlayer()
+        private bool mPlayerDying = false;
+        private bool mPlayerDead = false;
+
+        private void DelayedPlayerDie()
+        {
+#if XBOX
+            mLoadThread.SetProcessorAffinity( 3 );
+#endif
+            Thread.Sleep( 300 );
+            mPlayerDead = true;
+        }
+
+        private void PlayerDie()
         {
             Screen.RemovePlayer( this );
-
             AchievementManager.Instance[ Stat.Die ]++;
+        }
+
+        public void KillPlayer()
+        {
+            if ( !mPlayerDying )
+                new Thread(
+                    new ThreadStart( DelayedPlayerDie ) )
+                    .Start();
+            mPlayerDying = true;
         }
 
         public void ClonePlayer()
@@ -301,6 +322,9 @@ namespace CyberCube.Actors
 
             if ( GetPlayerAction( Action.DeleteClone ) )
                 KillPlayer();
+
+            if ( mPlayerDead )
+                PlayerDie();
         }
 
         public override void Draw( GameTime gameTime )

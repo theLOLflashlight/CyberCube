@@ -8,32 +8,6 @@
     </Position>
     <Rotation>0</Rotation>
   </StartPosition>
-  <EnemyPositions>
-    <CubePosition>
-      <Position>
-        <X>1</X>
-        <Y>0.424999982</Y>
-        <Z>-0.0750000253</Z>
-      </Position>
-      <Rotation>0</Rotation>
-    </CubePosition>
-    <CubePosition>
-      <Position>
-        <X>1</X>
-        <Y>0.424999982</Y>
-        <Z>-0.0750000253</Z>
-      </Position>
-      <Rotation>0</Rotation>
-    </CubePosition>
-    <CubePosition>
-      <Position>
-        <X>1</X>
-        <Y>0.55</Y>
-        <Z>-0.05000003</Z>
-      </Position>
-      <Rotation>0</Rotation>
-    </CubePosition>
-  </EnemyPositions>
   <NextLevel>level14</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
@@ -283,7 +257,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="12"&gt;
+    &lt;Fixture Id="2190"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -300,7 +274,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="13"&gt;
+    &lt;Fixture Id="2191"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -317,7 +291,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="14"&gt;
+    &lt;Fixture Id="2192"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -334,7 +308,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="15"&gt;
+    &lt;Fixture Id="2193"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -351,7 +325,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="16"&gt;
+    &lt;Fixture Id="2194"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;0&lt;/MaskBits&gt;
@@ -362,7 +336,7 @@
       &lt;IsSensor&gt;False&lt;/IsSensor&gt;
       &lt;Restitution&gt;0&lt;/Restitution&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="39"&gt;
+    &lt;Fixture Id="2217"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -379,7 +353,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="40"&gt;
+    &lt;Fixture Id="2218"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -396,7 +370,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="34"&gt;
+    &lt;Fixture Id="2212"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -413,7 +387,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="35"&gt;
+    &lt;Fixture Id="2213"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -430,7 +404,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="36"&gt;
+    &lt;Fixture Id="2214"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -447,7 +421,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="37"&gt;
+    &lt;Fixture Id="2215"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -464,7 +438,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="38"&gt;
+    &lt;Fixture Id="2216"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1031,7 +1005,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="50"&gt;
+    &lt;Fixture Id="2228"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1048,7 +1022,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="51"&gt;
+    &lt;Fixture Id="2229"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1065,7 +1039,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="52"&gt;
+    &lt;Fixture Id="2230"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1082,7 +1056,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="53"&gt;
+    &lt;Fixture Id="2231"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1099,7 +1073,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="54"&gt;
+    &lt;Fixture Id="2232"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1116,7 +1090,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="55"&gt;
+    &lt;Fixture Id="2233"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;0&lt;/MaskBits&gt;
@@ -1127,7 +1101,7 @@
       &lt;IsSensor&gt;False&lt;/IsSensor&gt;
       &lt;Restitution&gt;0&lt;/Restitution&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="74"&gt;
+    &lt;Fixture Id="2252"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1144,7 +1118,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="75"&gt;
+    &lt;Fixture Id="2253"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1161,7 +1135,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="73"&gt;
+    &lt;Fixture Id="2251"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1461,7 +1435,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="81"&gt;
+    &lt;Fixture Id="2259"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1478,7 +1452,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="82"&gt;
+    &lt;Fixture Id="2260"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1495,7 +1469,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="83"&gt;
+    &lt;Fixture Id="2261"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1512,7 +1486,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="84"&gt;
+    &lt;Fixture Id="2262"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483633&lt;/MaskBits&gt;
@@ -1529,7 +1503,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="85"&gt;
+    &lt;Fixture Id="2263"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;14&lt;/MaskBits&gt;
@@ -1692,9 +1666,18 @@
       &lt;/Vertices&gt;
       &lt;Centroid&gt;0 0&lt;/Centroid&gt;
     &lt;/Shape&gt;
+    &lt;Shape Type="Polygon" Density="1"&gt;
+      &lt;Vertices&gt;
+        &lt;Vertex&gt;0.625 -1.25&lt;/Vertex&gt;
+        &lt;Vertex&gt;0.625 1.25&lt;/Vertex&gt;
+        &lt;Vertex&gt;-0.625 1.25&lt;/Vertex&gt;
+        &lt;Vertex&gt;-0.625 -1.25&lt;/Vertex&gt;
+      &lt;/Vertices&gt;
+      &lt;Centroid&gt;0 0&lt;/Centroid&gt;
+    &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="89"&gt;
+    &lt;Fixture Id="2267"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1711,7 +1694,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="90"&gt;
+    &lt;Fixture Id="2268"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1728,7 +1711,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="91"&gt;
+    &lt;Fixture Id="2269"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1742,6 +1725,42 @@
         &lt;Type&gt;CyberCube.Physics.Flat, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
         &lt;Value&gt;
           &lt;Flat /&gt;
+        &lt;/Value&gt;
+      &lt;/UserData&gt;
+    &lt;/Fixture&gt;
+    &lt;Fixture Id="2270"&gt;
+      &lt;FilterData&gt;
+        &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
+        &lt;MaskBits&gt;2147483633&lt;/MaskBits&gt;
+        &lt;GroupIndex&gt;0&lt;/GroupIndex&gt;
+        &lt;CollisionIgnores /&gt;
+      &lt;/FilterData&gt;
+      &lt;Friction&gt;0.2&lt;/Friction&gt;
+      &lt;IsSensor&gt;False&lt;/IsSensor&gt;
+      &lt;Restitution&gt;0&lt;/Restitution&gt;
+      &lt;UserData&gt;
+        &lt;Type&gt;CyberCube.Physics.Flat, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
+        &lt;Value&gt;
+          &lt;Flat /&gt;
+        &lt;/Value&gt;
+      &lt;/UserData&gt;
+    &lt;/Fixture&gt;
+    &lt;Fixture Id="2271"&gt;
+      &lt;FilterData&gt;
+        &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
+        &lt;MaskBits&gt;14&lt;/MaskBits&gt;
+        &lt;GroupIndex&gt;0&lt;/GroupIndex&gt;
+        &lt;CollisionIgnores /&gt;
+      &lt;/FilterData&gt;
+      &lt;Friction&gt;0.2&lt;/Friction&gt;
+      &lt;IsSensor&gt;True&lt;/IsSensor&gt;
+      &lt;Restitution&gt;0&lt;/Restitution&gt;
+      &lt;UserData&gt;
+        &lt;Type&gt;CyberCube.Physics.Hazard, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
+        &lt;Value&gt;
+          &lt;Hazard&gt;
+            &lt;UserData&gt;killbox&lt;/UserData&gt;
+          &lt;/Hazard&gt;
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
@@ -1826,6 +1845,34 @@
       &lt;/UserData&gt;
       &lt;Bindings&gt;
         &lt;Pair FixtureId="2" ShapeId="2" /&gt;
+      &lt;/Bindings&gt;
+    &lt;/Body&gt;
+    &lt;Body Type="Static"&gt;
+      &lt;Active&gt;True&lt;/Active&gt;
+      &lt;AllowSleep&gt;True&lt;/AllowSleep&gt;
+      &lt;Angle&gt;0&lt;/Angle&gt;
+      &lt;AngularDamping&gt;0&lt;/AngularDamping&gt;
+      &lt;AngularVelocity&gt;0&lt;/AngularVelocity&gt;
+      &lt;Awake&gt;True&lt;/Awake&gt;
+      &lt;Bullet&gt;False&lt;/Bullet&gt;
+      &lt;FixedRotation&gt;False&lt;/FixedRotation&gt;
+      &lt;LinearDamping&gt;0&lt;/LinearDamping&gt;
+      &lt;LinearVelocity&gt;0 0&lt;/LinearVelocity&gt;
+      &lt;Position&gt;7.375 5&lt;/Position&gt;
+      &lt;AdHocGravity&gt;0 -9.8&lt;/AdHocGravity&gt;
+      &lt;UseAdHocGravity&gt;True&lt;/UseAdHocGravity&gt;
+      &lt;UserData&gt;
+        &lt;Type&gt;CyberCube.Physics.HazardBox+HazardBoxMaker, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
+        &lt;Value&gt;
+          &lt;HazardBoxMaker&gt;
+            &lt;Width&gt;125&lt;/Width&gt;
+            &lt;Height&gt;250&lt;/Height&gt;
+          &lt;/HazardBoxMaker&gt;
+        &lt;/Value&gt;
+      &lt;/UserData&gt;
+      &lt;Bindings&gt;
+        &lt;Pair FixtureId="3" ShapeId="3" /&gt;
+        &lt;Pair FixtureId="4" ShapeId="3" /&gt;
       &lt;/Bindings&gt;
     &lt;/Body&gt;
   &lt;/Bodies&gt;
