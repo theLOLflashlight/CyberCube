@@ -21,7 +21,7 @@ namespace CyberCube
     /// <summary>
     /// All of the actions 
     /// </summary>
-    public enum Stat { Jump, Second, Clone, Die }
+    public enum Stat { Jump, Second, Clone, Die, Swap }
 
     public class Achievement
     {
