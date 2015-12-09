@@ -23,11 +23,15 @@ namespace CyberCube.Screens
         private static Texture2D sScoreTitle;
         private static Texture2D sHighScores;
         private static Texture2D sButtonA;
+        private static Texture2D sButtonY;
+        private static Texture2D sKeyEnter;
 
         private string pLevelName;
         private SaveData pSaveData;
         private List<Achievement> pAchievements;
         private int pScore;
+
+        private Boolean bSentScore;
 
         KeyboardState newKeyState, oldKeyState;
         GamePadState newPadState, oldPadState;
@@ -42,6 +46,8 @@ namespace CyberCube.Screens
             sScoreTitle = content.Load<Texture2D>("NavigationItems\\scoreBreakdown");
             sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
             sButtonA = content.Load<Texture2D>("NavigationItems\\graphic_ButtonA");
+            sButtonY = content.Load<Texture2D>("NavigationItems\\graphic_ButtonY");
+            sKeyEnter = content.Load<Texture2D>("NavigationItems\\graphic_KeyEnter");
         }
 
         private PlayScreen mLevel;
@@ -60,6 +66,8 @@ namespace CyberCube.Screens
             foreach( Achievement a in pAchievements )
                 pScore += a.Value;
 
+            bSentScore = false;
+
             // TODO: Replace Tester with user's name
             // pSaveData.AddScore( pScore, "The World's #1" );
             // pSaveData.Save( pLevelName );
@@ -72,13 +80,6 @@ namespace CyberCube.Screens
             AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
         }
 
-        public override void Destroy( GameTime gameTime )
-        {
-            base.Destroy( gameTime );
-
-            mLevel.mLoadThread.Join();
-            ScreenManager.PushScreen( mLevel.mNextPlayScreen );
-        }
 
         public override void Update(GameTime gameTime)
         {
@@ -89,6 +90,8 @@ namespace CyberCube.Screens
 
 
 #if XBOX
+            if (!bSentScore)
+            {
             if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
             {
                 if (asyncState == 0)
@@ -102,10 +105,10 @@ namespace CyberCube.Screens
                     asyncState = 2; 
                     break; 
                 case 2:
-                    if (result.IsCompleted && !Guide.IsVisible ) 
+                        if (result.IsCompleted && !Guide.IsVisible)
                     { 
-                        pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
-                        pSaveData.Save( pLevelName );
+                            pSaveData.AddScore(pScore, Guide.EndShowKeyboardInput(result));
+                            pSaveData.Save(pLevelName);
                         asyncState = 0;
                     }
                     break;
@@ -113,13 +116,19 @@ namespace CyberCube.Screens
                     break;
             }
             GamerServicesDispatcher.Update();
+                bSentScore = false;
+            }
 #endif
 
 #if WINDOWS
 
 #endif
             if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+            {
+                mLevel.mLoadThread.Join();
                 this.Back();
+                ScreenManager.PushScreen( mLevel.mNextPlayScreen );
+            }
 
             oldPadState = newPadState;
             oldKeyState = newKeyState;
@@ -190,13 +199,28 @@ namespace CyberCube.Screens
                 delta += 25;
             }
 
+#if WINDOWS
+            mSpriteBatch.Draw( sKeyEnter,
+                               new Vector2( GraphicsDevice.Viewport.Width - 370, GraphicsDevice.Viewport.Height - 50 ),
+                               Color.White );
+#endif
+
+            mSpriteBatch.Draw( sButtonY,
+                               new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
+                               Color.White);
+
+            mSpriteBatch.DrawString( sFont,
+                                     "- Submit Score",
+                                     new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
+                                     Color.White);
+
             mSpriteBatch.Draw( sButtonA,
-                               new Vector2( GraphicsDevice.Viewport.Width - 50, GraphicsDevice.Viewport.Height - 50 ),
+                               new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),
                                Color.White );
 
             mSpriteBatch.DrawString( sFont,
                                     "- Continue",
-                                    new Vector2( GraphicsDevice.Viewport.Width * 5 / 9, GraphicsDevice.Viewport.Height - 50 ),
+                                     new Vector2( GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 45 ),
                                     Color.White );
 
             mSpriteBatch.End();
