@@ -74,14 +74,6 @@ namespace CyberCube.Screens
             
         }
 
-        public override void Destroy( GameTime gameTime )
-        {
-            base.Destroy( gameTime );
-
-            mLevel.mLoadThread.Join();
-            ScreenManager.PushScreen( mLevel.mNextPlayScreen );
-        }
-
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -125,7 +117,11 @@ namespace CyberCube.Screens
 
 #endif
             if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+            {
+                mLevel.mLoadThread.Join();
                 this.Back();
+                ScreenManager.PushScreen( mLevel.mNextPlayScreen );
+            }
 
             oldPadState = newPadState;
             oldKeyState = newKeyState;
