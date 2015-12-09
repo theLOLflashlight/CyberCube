@@ -129,6 +129,8 @@ namespace CyberCube.Screens
 
         private void OnCloneChanged( Player player )
         {
+            AchievementManager.Instance[ Stat.Swap ]++;
+
             float dist = Vector3.Distance( player.WorldPosition, Player.WorldPosition );
 
             Camera.AnimateTarget( player.WorldPosition, dist * 4 );

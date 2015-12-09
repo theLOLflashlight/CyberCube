@@ -205,11 +205,15 @@ namespace CyberCube.Actors
         public void KillPlayer()
         {
             Screen.RemovePlayer( this );
+
+            AchievementManager.Instance[ Stat.Die ]++;
         }
 
         public void ClonePlayer()
         {
             Screen.AddPlayer( CubePosition, Rotation );
+
+            AchievementManager.Instance[ Stat.Clone ]++;
         }
 
         private void Jump( ref Vector2 velocity )
