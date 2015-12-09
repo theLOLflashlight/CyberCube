@@ -269,7 +269,7 @@ namespace CyberCube.Screens
         private void LoadNextLevelAsync()
         {
 #if XBOX
-            mLoadThread.SetProcessorAffinity( 3 );
+            //mLoadThread.SetProcessorAffinity( 3 );
 #endif
             if ( Cube.NextLevel == null )
                 return;
