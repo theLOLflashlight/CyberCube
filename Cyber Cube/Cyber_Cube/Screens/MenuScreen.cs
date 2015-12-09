@@ -49,7 +49,7 @@ namespace CyberCube.Screens
 
         public static void LoadContent(ContentManager content)
         {
-            sTitleCard = content.Load<Texture2D>("NavigationItems\\TitleCard");
+            sTitleCard = content.Load<Texture2D>("NavigationItems\\logo");
 
             sNewGame = content.Load<Texture2D>("NavigationItems\\menuNewGame");
             sLoadGame = content.Load<Texture2D>("NavigationItems\\menuLoadGame");
