@@ -51,8 +51,8 @@ namespace CyberCube.Screens
                 pScore += a.Value;
 
             // TODO: Replace Tester with user's name
-            pSaveData.AddScore( pScore, "The World's #1" );
-            pSaveData.Save( pLevelName );
+            // pSaveData.AddScore( pScore, "The World's #1" );
+            // pSaveData.Save( pLevelName );
             
         }
 
@@ -81,6 +81,9 @@ namespace CyberCube.Screens
                     }
 
                 GamerServicesDispatcher.Update();
+#endif
+
+#if WINDOWS
 
 #endif
             }
