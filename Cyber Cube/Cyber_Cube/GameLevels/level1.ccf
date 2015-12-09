@@ -8,6 +8,8 @@
     </Position>
     <Rotation>0</Rotation>
   </StartPosition>
+  <EnemyPositions />
+  <NextLevel>level2</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
   &lt;Shapes&gt;
@@ -40,7 +42,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="732"&gt;
+    &lt;Fixture Id="5"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -57,7 +59,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="733"&gt;
+    &lt;Fixture Id="6"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -74,7 +76,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="734"&gt;
+    &lt;Fixture Id="7"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -91,7 +93,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="736"&gt;
+    &lt;Fixture Id="8"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -108,7 +110,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="737"&gt;
+    &lt;Fixture Id="9"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
