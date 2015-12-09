@@ -53,11 +53,7 @@ namespace CyberCube.Screens
             // TODO: Replace Tester with user's name
             pSaveData.AddScore( pScore, "The World's #1" );
             pSaveData.Save( pLevelName );
-
-#if XBOX
-            this.Components.Add(new GamerServicesComponent(Game));
-#endif
-
+            
         }
 
         public override void Update(GameTime gameTime)
