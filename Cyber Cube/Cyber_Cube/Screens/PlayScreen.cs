@@ -8,6 +8,7 @@ using System.Collections.Generic;
 using System;
 using CyberCube.Tools;
 using Microsoft.Xna.Framework.Audio;
+using System.Threading;
 
 namespace CyberCube.Screens
 {
@@ -227,14 +228,32 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
+
+        private PlayScreen mNextPlayScreen = null;
+
+        private Thread mLoadThread;
+
+        private void LoadNextLevelAsync()
+        {
+#if XBOX
+            Thread.SetProcessorAffinity( 3 ); // see note below
+#endif
+            PlayableCube playCube = new PlayableCube( Game );
+            playCube.Load( Cube.NextLevel );
+            mNextPlayScreen = new PlayScreen( Game, playCube );
+            /* your code goes here */
+        }
+
         public void NextLevel( string filename = null )
         {
             EndLevel();
 
-            PlayableCube playCube = new PlayableCube( Game );
-            playCube.Load( filename ?? Cube.NextLevel );
-            PlayScreen playScreen = new PlayScreen( Game, playCube );
-            ScreenManager.PushScreen( playScreen );
+            //PlayableCube playCube = new PlayableCube( Game );
+            //playCube.Load( filename ?? Cube.NextLevel );
+            //PlayScreen playScreen = new PlayScreen( Game, playCube );
+
+            mLoadThread.Join();
+            ScreenManager.PushScreen( mNextPlayScreen );
             EndLevelScreen endLevelScreen = new EndLevelScreen( Game, AchievementManager.Instance.GetAchieved(), Cube.Name );
             // Pass information?
             ScreenManager.PushScreen( endLevelScreen );
@@ -244,6 +263,9 @@ namespace CyberCube.Screens
         {
             base.Initialize();
 
+            mLoadThread = new Thread(
+            new ThreadStart( LoadNextLevelAsync ) );
+            mLoadThread.Start();
 
             CubePosition start = Cube.StartPosition;
             List<CubePosition> enemyPositions = Cube.EnemyPositions;
