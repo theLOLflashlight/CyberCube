@@ -56,7 +56,7 @@ namespace CyberCube.IO
             }
         }
 
-        private SpriteFont mFont;
+        private static SpriteFont sFont;
 
         private TextBox mTextBox;
         private int mHeight;
@@ -97,8 +97,8 @@ namespace CyberCube.IO
         protected override void LoadContent()
         {
             base.LoadContent();
-            mFont = Game.Content.Load<SpriteFont>( "ConsoleFont" );
-            mTextBox.Font = mFont;
+            sFont = Game.Content.Load<SpriteFont>( "ConsoleFont" );
+            mTextBox.Font = sFont;
         }
 
         public void AddMessage( ConsoleMessage item )
@@ -202,19 +202,19 @@ namespace CyberCube.IO
             Rectangle line = consoleRect;
             line.Height = 1;
 
-            Vector2 pos = mFont.MeasureString( InputPrompt );
+            Vector2 pos = sFont.MeasureString( InputPrompt );
             line.Y = consoleRect.Bottom - (int) pos.Y;
 
             mSpriteBatch.DrawRect( consoleRect, new Color( 0, 0, 0, 128 ) );
             mSpriteBatch.DrawRect( line, new Color( 0, 0, 0, 96 ) );
-            mSpriteBatch.DrawString( mFont, InputPrompt, new Vector2( 0, line.Y ), Color.White );
+            mSpriteBatch.DrawString( sFont, InputPrompt, new Vector2( 0, line.Y ), Color.White );
 
             float yOffset = line.Y;
             mHistory.Reverse();
             foreach ( ConsoleMessage msg in mHistory )
             {
-                yOffset -= mFont.MeasureString( msg.ToString() ).Y;
-                mSpriteBatch.DrawString( mFont, msg.ToString(), new Vector2( 0, yOffset ), msg.TextColor );
+                yOffset -= sFont.MeasureString( msg.ToString() ).Y;
+                mSpriteBatch.DrawString( sFont, msg.ToString(), new Vector2( 0, yOffset ), msg.TextColor );
             }
             mHistory.Reverse();
 

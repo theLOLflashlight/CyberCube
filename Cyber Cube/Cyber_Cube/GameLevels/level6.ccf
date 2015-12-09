@@ -8,6 +8,8 @@
     </Position>
     <Rotation>0</Rotation>
   </StartPosition>
+  <EnemyPositions />
+  <NextLevel>level7</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
   &lt;Shapes&gt;
@@ -1169,7 +1171,7 @@
     &lt;/Shape&gt;
   &lt;/Shapes&gt;
   &lt;Fixtures&gt;
-    &lt;Fixture Id="751"&gt;
+    &lt;Fixture Id="366"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1186,7 +1188,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="752"&gt;
+    &lt;Fixture Id="367"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1203,7 +1205,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="753"&gt;
+    &lt;Fixture Id="368"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1220,7 +1222,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="755"&gt;
+    &lt;Fixture Id="369"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;0&lt;/MaskBits&gt;
@@ -1231,7 +1233,7 @@
       &lt;IsSensor&gt;False&lt;/IsSensor&gt;
       &lt;Restitution&gt;0&lt;/Restitution&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="915"&gt;
+    &lt;Fixture Id="531"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1248,7 +1250,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="763"&gt;
+    &lt;Fixture Id="378"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1265,7 +1267,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="862"&gt;
+    &lt;Fixture Id="477"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1282,7 +1284,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="916"&gt;
+    &lt;Fixture Id="532"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1299,7 +1301,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="917"&gt;
+    &lt;Fixture Id="533"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1316,7 +1318,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="918"&gt;
+    &lt;Fixture Id="534"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1333,7 +1335,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="919"&gt;
+    &lt;Fixture Id="535"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1350,7 +1352,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="920"&gt;
+    &lt;Fixture Id="536"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1367,7 +1369,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="908"&gt;
+    &lt;Fixture Id="523"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1384,7 +1386,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="909"&gt;
+    &lt;Fixture Id="524"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1401,7 +1403,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="910"&gt;
+    &lt;Fixture Id="525"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;14&lt;/MaskBits&gt;
@@ -1420,7 +1422,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="911"&gt;
+    &lt;Fixture Id="526"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1439,7 +1441,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="912"&gt;
+    &lt;Fixture Id="527"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483633&lt;/MaskBits&gt;
@@ -1456,7 +1458,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="913"&gt;
+    &lt;Fixture Id="528"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483633&lt;/MaskBits&gt;
@@ -1473,7 +1475,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="914"&gt;
+    &lt;Fixture Id="529"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;14&lt;/MaskBits&gt;
@@ -1492,7 +1494,7 @@
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
-    &lt;Fixture Id="921"&gt;
+    &lt;Fixture Id="530"&gt;
       &lt;FilterData&gt;
         &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
         &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
@@ -1505,9 +1507,7 @@
       &lt;UserData&gt;
         &lt;Type&gt;CyberCube.Physics.Door, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
         &lt;Value&gt;
-          &lt;Door&gt;
-            &lt;UserData&gt;andrew1&lt;/UserData&gt;
-          &lt;/Door&gt;
+          &lt;Door /&gt;
         &lt;/Value&gt;
       &lt;/UserData&gt;
     &lt;/Fixture&gt;
