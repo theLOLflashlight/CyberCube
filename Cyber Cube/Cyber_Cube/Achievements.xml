@@ -16,6 +16,17 @@
         </Requirement>
       </Requirements>
     </Achievement>
+    <!-- Jump 3 Times Achievement -->
+    <Achievement>
+      <Value>1</Value>
+      <Title>Hop, Skip, Jump</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Jump</AssociatedStat>
+          <Goal>=3</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
     <!-- Don't Jump Achievement -->
     <Achievement>
       <Value>3</Value>
@@ -41,7 +52,7 @@
     <!-- Don't Die Achievement -->
     <Achievement>
       <Value>2</Value>
-      <Title>Don't Die</Title>
+      <Title>Survivalist</Title>
       <Requirements>
         <Requirement>
           <AssociatedStat>Die</AssociatedStat>
@@ -63,7 +74,7 @@
     <!-- Die 9 Times Achievement -->
     <Achievement>
       <Value>3</Value>
-      <Title>Cat's Death</Title>
+      <Title>Curiousity</Title>
       <Requirements>
         <Requirement>
           <AssociatedStat>Die</AssociatedStat>
@@ -104,6 +115,17 @@
         </Requirement>
       </Requirements>
     </Achievement>
+    <!-- Take 4 Minutes and 20 Seconds Achievement -->
+    <Achievement>
+      <Value>5</Value>
+      <Title>Got a Minute?</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Second</AssociatedStat>
+          <Goal>=260</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
     <!-- Complete The Level In Under 5 Seconds Achievement -->
     <Achievement>
       <Value>3</Value>
@@ -111,7 +133,7 @@
       <Requirements>
         <Requirement>
           <AssociatedStat>Second</AssociatedStat>
-          <Goal>>5</Goal>
+          <Goal>&lt;5</Goal>
         </Requirement>
       </Requirements>
     </Achievement>

@@ -52,7 +52,7 @@ namespace CyberCube.Screens
 
         private PlayScreen mLevel;
 
-        public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName, PlayScreen level )
+        public EndLevelScreen(CubeGame game, string levelName, PlayScreen level )
             : base(game)
         {
             pLevelName = levelName;
@@ -60,11 +60,7 @@ namespace CyberCube.Screens
 
             mLevel = level;
 
-            pAchievements = achieved;
-            pScore = 0;
-
-            foreach( Achievement a in pAchievements )
-                pScore += a.Value;
+            
 
             bSentScore = false;
 
@@ -78,6 +74,12 @@ namespace CyberCube.Screens
         {
             base.Resume( gameTime );
             AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
+            var achieved = AchievementManager.Instance.GetAchieved();
+            pAchievements = achieved;
+            pScore = 0;
+
+            foreach( Achievement a in pAchievements )
+                pScore += a.Value;
         }
 
 
