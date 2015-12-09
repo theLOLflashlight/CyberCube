@@ -48,9 +48,13 @@ namespace CyberCube.Screens
             sButtonA = content.Load<Texture2D>("NavigationItems\\graphic_ButtonA");
             sButtonY = content.Load<Texture2D>("NavigationItems\\graphic_ButtonY");
             sKeyEnter = content.Load<Texture2D>("NavigationItems\\graphic_KeyEnter");
+            sFont2 = content.Load<SpriteFont>( "ConsoleFont" );
         }
 
         private PlayScreen mLevel;
+
+        private TextBox mTextBox;
+        private static SpriteFont sFont2;
 
         public EndLevelScreen(CubeGame game, string levelName, PlayScreen level )
             : base(game)
@@ -59,7 +63,9 @@ namespace CyberCube.Screens
             pSaveData = SaveData.Load( pLevelName );
 
             mLevel = level;
-
+#if WINDOWS
+            mTextBox = new TextBox( game, game );
+#endif
 
 
             bSentScore = false;
@@ -68,6 +74,16 @@ namespace CyberCube.Screens
             // pSaveData.AddScore( pScore, "The World's #1" );
             // pSaveData.Save( pLevelName );
             
+        }
+
+        public override void Initialize()
+        {
+            base.Initialize();
+
+            mTextBox.Initialize();
+
+            mTextBox.Font = sFont2;
+            Game.Input.Focus = mTextBox;
         }
 
         public override void Resume( GameTime gameTime )
@@ -82,6 +98,11 @@ namespace CyberCube.Screens
                 pScore += a.Value;
         }
 
+        public override void Destroy( GameTime gameTime )
+        {
+            base.Destroy( gameTime );
+            Game.Input.Focus = null;
+        }
 
         public override void Update(GameTime gameTime)
         {
@@ -124,9 +145,18 @@ namespace CyberCube.Screens
 
 #if WINDOWS
 
+            mTextBox.Update( gameTime );
+
 #endif
             if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
             {
+#if WINDOWS
+                if ( !string.IsNullOrEmpty( mTextBox.Text ) )
+                {
+                    pSaveData.AddScore( pScore, mTextBox.Text );
+                    pSaveData.Save( pLevelName );
+                }
+#endif
                 mLevel.mLoadThread.Join();
                 this.Back();
                 ScreenManager.PushScreen( mLevel.mNextPlayScreen );
@@ -229,6 +259,14 @@ namespace CyberCube.Screens
                                     Color.White );
 
             mSpriteBatch.End();
+
+#if WINDOWS
+            mTextBox.Position = new Vector2( Game.Window.ClientBounds.Width / 2,
+                Game.Window.ClientBounds.Height / 2 );
+
+            if ( mTextBox.Visible )
+                mTextBox.Draw( gameTime );
+#endif
         }
     }
 }
