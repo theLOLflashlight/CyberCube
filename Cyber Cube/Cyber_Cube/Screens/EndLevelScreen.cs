@@ -81,7 +81,7 @@ namespace CyberCube.Screens
                     asyncState = 2; 
                     break; 
                 case 2:
-                    if (result.IsCompleted) 
+                    if (result.IsCompleted && !Guide.IsVisible ) 
                     { 
                         pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
                         pSaveData.Save( pLevelName );
