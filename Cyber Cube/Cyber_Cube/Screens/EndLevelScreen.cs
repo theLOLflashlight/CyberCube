@@ -68,30 +68,30 @@ namespace CyberCube.Screens
 
             if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
             {
-#if XBOX
                 if (asyncState == 0) asyncState = 1;
-                switch (asyncState) {
-                    case 1:
-                        result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
-                        asyncState = 2; 
-                        break; 
-                    case 2:
-                        if (result.IsCompleted) 
-                        { 
-                            pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
-                            pSaveData.Save( pLevelName );
-                            asyncState = 0;
-                        }
-                        break;
+            }
+#if XBOX
+            switch (asyncState) {
+                case 1:
+                    result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
+                    asyncState = 2; 
+                    break; 
+                case 2:
+                    if (result.IsCompleted) 
+                    { 
+                        pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
+                        pSaveData.Save( pLevelName );
+                        asyncState = 0;
                     }
+                    break;
+                }
 
-                GamerServicesDispatcher.Update();
+            GamerServicesDispatcher.Update();
 #endif
 
 #if WINDOWS
 
 #endif
-            }
                 if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
                     this.Back();
 
