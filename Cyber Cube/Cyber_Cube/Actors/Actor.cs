@@ -15,6 +15,8 @@ namespace CyberCube.Actors
     {
         protected Vector3 mCubePosition;
 
+        protected bool mRotated;
+
         public Vector3 CubePosition
         {
             get {
@@ -213,6 +215,8 @@ namespace CyberCube.Actors
 
         protected virtual void ApplyRotation( CompassDirection dir )
         {
+            mRotated = true;
+
             Cube.Face nextFace = CubeFace.AdjacentFace( dir );
             var backDir = nextFace.BackwardsDirectionFrom( CubeFace );
 

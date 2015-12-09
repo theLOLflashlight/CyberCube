@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="ActionEnum.cs" />
     <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\Projectile.cs" />
     <Compile Include="Actors\EnemyAnimation.cs" />
     <Compile Include="Actors\PlayerAnimation.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />
