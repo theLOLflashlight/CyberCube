@@ -22,7 +22,7 @@ namespace CyberCube
         /// <summary>
         /// Name of the file that the highscore data is saved to.
         /// </summary>
-        public static string SaveFileAppend = "save.sav";
+        public static string SaveFileAppend = "saves.sav";
 
         /// <summary>
         /// Get a SaveData object from memory or create a new one with default scores.
