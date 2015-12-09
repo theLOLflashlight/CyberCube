@@ -66,6 +66,12 @@ namespace CyberCube.Screens
             
         }
 
+        public override void Resume( GameTime gameTime )
+        {
+            base.Resume( gameTime );
+            AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
+        }
+
         public override void Destroy( GameTime gameTime )
         {
             base.Destroy( gameTime );
