@@ -19,7 +19,7 @@ namespace CyberCube.Screens
         private static Texture2D sTitleCard;
         private static Texture2D sNewGame;
         private static Texture2D sLoadGame;
-        private static Texture2D sLevelEdit;
+        //private static Texture2D sLevelEdit;
         private static Texture2D sControls;
         private static Texture2D sExit;
         private static SpriteFont sVersionFont;
@@ -32,7 +32,7 @@ namespace CyberCube.Screens
         {
             NewGame,
             LoadGame,
-            LevelEditor,
+            //LevelEditor,
             Controls,
             Credits,
             Exit,
@@ -41,7 +41,8 @@ namespace CyberCube.Screens
         private Highlight currentHighlight;
 
         private Color cSelected;
-        private Color cNewGame, cLoadGame, cLevelEdit, cControls, cExit;
+        private Color cNewGame, cLoadGame, cControls, cExit;
+        //private Color cLevelEdit;
         private Boolean isFading;
 
         private GamePadState OldPadState;
@@ -51,11 +52,11 @@ namespace CyberCube.Screens
         {
             sTitleCard = content.Load<Texture2D>("NavigationItems\\logo");
 
-            sNewGame = content.Load<Texture2D>("NavigationItems\\menuNewGame");
-            sLoadGame = content.Load<Texture2D>("NavigationItems\\menuLoadGame");
-            sLevelEdit = content.Load<Texture2D>("NavigationItems\\menuLevelEditor");
-            sControls = content.Load<Texture2D>("NavigationItems\\menuControls");
-            sExit = content.Load<Texture2D>("NavigationItems\\menuExit");
+            sNewGame = content.Load<Texture2D>("NavigationItems\\button_NewGame");
+            sLoadGame = content.Load<Texture2D>("NavigationItems\\button_Continue");
+            //sLevelEdit = content.Load<Texture2D>("NavigationItems\\menuLevelEditor");
+            sControls = content.Load<Texture2D>("NavigationItems\\button_Controls");
+            sExit = content.Load<Texture2D>("NavigationItems\\button_Exit");
 
             sVersionFont = content.Load<SpriteFont>("ConsoleFont");
 
@@ -69,15 +70,15 @@ namespace CyberCube.Screens
         public MenuScreen( CubeGame game )
             : base( game )
         {
-            verString = "v0.9 beta";
+            verString = "v1.0";
 
             currentHighlight = Highlight.NewGame;
 
-            cSelected = new Color(255, 255, 255, 255);
+            cSelected = new Color(0, 240, 255, 255);
             isFading = true;
             cNewGame = Color.White;
             cLoadGame = Color.White;
-            cLevelEdit = Color.White;
+            //cLevelEdit = Color.White;
             cControls = Color.White;
             cExit = Color.White;
         }
@@ -112,11 +113,12 @@ namespace CyberCube.Screens
                     case Highlight.LoadGame:
                         currentHighlight = Highlight.NewGame;
                         break;
-                    case Highlight.LevelEditor:
-                        currentHighlight = Highlight.LoadGame;
-                        break;
+                    //case Highlight.LevelEditor:
+                    //    currentHighlight = Highlight.LoadGame;
+                    //    break;
                     case Highlight.Controls:
-                        currentHighlight = Highlight.LevelEditor;
+                        //currentHighlight = Highlight.LevelEditor;
+                        currentHighlight = Highlight.LoadGame;
                         break;
                     case Highlight.Exit:
                         currentHighlight = Highlight.Controls;
@@ -124,6 +126,13 @@ namespace CyberCube.Screens
                     default:
                         break;
                 }
+            }
+
+            // Level editor is not accessible by normal means:
+            // L + E on keyboard, or left and right bumper on the gamepad
+            if ((NewKeyState.IsKeyDown(Keys.L) && NewKeyState.IsKeyDown(Keys.E)) || (NewPadState.IsButtonDown(Buttons.LeftShoulder) && NewPadState.IsButtonDown(Buttons.RightShoulder)))
+            {
+                ScreenManager.PushScreen(new EditScreen(Game));
             }
 
             // Change highlighted button on "down"
@@ -136,11 +145,12 @@ namespace CyberCube.Screens
                         currentHighlight = Highlight.LoadGame;
                         break;
                     case Highlight.LoadGame:
-                        currentHighlight = Highlight.LevelEditor;
-                        break;
-                    case Highlight.LevelEditor:
+                        //currentHighlight = Highlight.LevelEditor;
                         currentHighlight = Highlight.Controls;
                         break;
+                    //case Highlight.LevelEditor:
+                    //    currentHighlight = Highlight.Controls;
+                    //    break;
                     case Highlight.Controls:
                         currentHighlight = Highlight.Exit;
                         break;
@@ -173,9 +183,9 @@ namespace CyberCube.Screens
                         StorageManager.Instance.Finish();
 
                         break;
-                    case Highlight.LevelEditor:
-                        ScreenManager.PushScreen(new EditScreen(Game));
-                        break;
+                    //case Highlight.LevelEditor:
+                    //    ScreenManager.PushScreen(new EditScreen(Game));
+                    //    break;
                     case Highlight.Controls:
 
                         break;
@@ -193,48 +203,48 @@ namespace CyberCube.Screens
 
         public override void Draw( GameTime gameTime )
         {
-            Vector2 buttonPos = new Vector2(GraphicsDevice.Viewport.Width / 2 - (sNewGame.Width / 2), 200);
+            Vector2 buttonPos = new Vector2(GraphicsDevice.Viewport.Width / 2 - (sNewGame.Width / 2), 250);
 
             mSpriteBatch.Begin();
 
             GraphicsDevice.Clear( Color.White );
 
-            mSpriteBatch.Draw(sTitleCard, new Vector2(GraphicsDevice.Viewport.Width / 2 - (sTitleCard.Width / 2), 50), Color.White);
+            mSpriteBatch.Draw(sTitleCard, new Vector2(GraphicsDevice.Viewport.Width / 2 - (sTitleCard.Width / 2), 70), Color.White);
 
             switch (currentHighlight)
             {
                 case Highlight.NewGame:
                     cNewGame = cSelected;
                     cLoadGame = Color.White;
-                    cLevelEdit = Color.White;
+                    //cLevelEdit = Color.White;
                     cControls = Color.White;
                     cExit = Color.White;
                     break;
                 case Highlight.LoadGame:
                     cNewGame = Color.White;
                     cLoadGame = cSelected;
-                    cLevelEdit = Color.White;
+                    //cLevelEdit = Color.White;
                     cControls = Color.White;
                     cExit = Color.White;
                     break;
-                case Highlight.LevelEditor:
-                    cNewGame = Color.White;
-                    cLoadGame = Color.White;
-                    cLevelEdit = cSelected;
-                    cControls = Color.White;
-                    cExit = Color.White;
-                    break;
+                //case Highlight.LevelEditor:
+                //    cNewGame = Color.White;
+                //    cLoadGame = Color.White;
+                //    cLevelEdit = cSelected;
+                //    cControls = Color.White;
+                //    cExit = Color.White;
+                //    break;
                 case Highlight.Controls:
                     cNewGame = Color.White;
                     cLoadGame = Color.White;
-                    cLevelEdit = Color.White;
+                    //cLevelEdit = Color.White;
                     cControls = cSelected;
                     cExit = Color.White;
                     break;
                 case Highlight.Exit:
                     cNewGame = Color.White;
                     cLoadGame = Color.White;
-                    cLevelEdit = Color.White;
+                    //cLevelEdit = Color.White;
                     cControls = Color.White;
                     cExit = cSelected;
                     break;
@@ -243,13 +253,13 @@ namespace CyberCube.Screens
             }
 
             mSpriteBatch.Draw(sNewGame, buttonPos, cNewGame);
-            buttonPos.Y += 45;
+            buttonPos.Y += 60;
             mSpriteBatch.Draw(sLoadGame, buttonPos, cLoadGame);
-            buttonPos.Y += 45;
-            mSpriteBatch.Draw(sLevelEdit, buttonPos, cLevelEdit);
-            buttonPos.Y += 45;
+            buttonPos.Y += 60;
+            //mSpriteBatch.Draw(sLevelEdit, buttonPos, cLevelEdit);
+            //buttonPos.Y += 45;
             mSpriteBatch.Draw(sControls, buttonPos, cControls);
-            buttonPos.Y += 45;
+            buttonPos.Y += 60;
             mSpriteBatch.Draw(sExit, buttonPos, cExit);
 
             mSpriteBatch.DrawString(sVersionFont, verString, new Vector2(10, GraphicsDevice.Viewport.Height - 20), Color.Black);

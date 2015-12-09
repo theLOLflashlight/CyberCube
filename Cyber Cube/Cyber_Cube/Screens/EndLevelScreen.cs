@@ -109,7 +109,7 @@ namespace CyberCube.Screens
                         break;
                 }
                 GamerServicesDispatcher.Update();
-                bSentScore = false;
+                bSentScore = true;
             }
 #endif
 
@@ -198,14 +198,17 @@ namespace CyberCube.Screens
                                Color.White );
 #endif
 
-            mSpriteBatch.Draw( sButtonY,
-                               new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
-                               Color.White);
+            if(!bSentScore)
+            {
+                mSpriteBatch.Draw( sButtonY,
+                                   new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
+                                   Color.White);
 
-            mSpriteBatch.DrawString( sFont,
-                                     "- Submit Score",
-                                     new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
-                                     Color.White);
+                mSpriteBatch.DrawString( sFont,
+                                         "- Submit Score",
+                                         new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
+                                         Color.White);
+            }
 
             mSpriteBatch.Draw( sButtonA,
                                new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),
