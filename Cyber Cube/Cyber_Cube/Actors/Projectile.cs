@@ -19,7 +19,7 @@ namespace CyberCube.Actors
 {
 	public partial class Projectile : Actor
     {
-        public const float MOVEMENT_SCALE = 120;
+        public const float MOVEMENT_SCALE = 240;
         private const int BULLET_SIZE = 10;
         
         private static Texture2D sTexture;
