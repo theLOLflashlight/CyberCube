@@ -74,6 +74,13 @@ namespace CyberCube.Screens
             
         }
 
+        public override void Resume( GameTime gameTime )
+        {
+            base.Resume( gameTime );
+            AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
+        }
+
+
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
@@ -85,30 +92,30 @@ namespace CyberCube.Screens
 #if XBOX
             if (!bSentScore)
             {
-                if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
-                {
-                    if (asyncState == 0)
-                        asyncState = 1;
-                }
+            if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
+            {
+                if (asyncState == 0)
+                    asyncState = 1;
+            }
 
-                switch (asyncState)
-                {
-                    case 1:
-                        result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null);
-                        asyncState = 2;
-                        break;
-                    case 2:
+            switch (asyncState)
+            {
+                case 1:
+                    result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
+                    asyncState = 2; 
+                    break; 
+                case 2:
                         if (result.IsCompleted && !Guide.IsVisible)
-                        {
+                    { 
                             pSaveData.AddScore(pScore, Guide.EndShowKeyboardInput(result));
                             pSaveData.Save(pLevelName);
-                            asyncState = 0;
-                        }
-                        break;
-                    default:
-                        break;
-                }
-                GamerServicesDispatcher.Update();
+                        asyncState = 0;
+                    }
+                    break;
+                default:
+                    break;
+            }
+            GamerServicesDispatcher.Update();
                 bSentScore = false;
             }
 #endif
@@ -212,10 +219,10 @@ namespace CyberCube.Screens
                                Color.White );
 
             mSpriteBatch.DrawString( sFont,
-                                     "- Continue",
+                                    "- Continue",
                                      new Vector2( GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 45 ),
-                                     Color.White );
-            
+                                    Color.White );
+
             mSpriteBatch.End();
         }
     }

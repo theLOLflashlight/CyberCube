@@ -57,19 +57,20 @@ namespace CyberCube
 
                 char comparison = requirement.Goal.ToCharArray()[ 0 ];
                 int goal = int.Parse( requirement.Goal.Remove( 0, 1 ) );
+                int stat = stats[ requirement.AssociatedStat ];
 
                 switch( comparison )
                 {
                     case '>':
-                    if( stats[ requirement.AssociatedStat ] >= goal )
+                    if( stat >= goal )
                         return true;
                     break;
                     case '<':
-                    if( stats[ requirement.AssociatedStat ] < goal )
+                    if( stat < goal )
                         return true;
                     break;
                     default:
-                    if( stats[ requirement.AssociatedStat ] == goal )
+                    if( stat == goal )
                         return true;
                     break;
                 }
