@@ -121,7 +121,9 @@ namespace CyberCube.Screens
             mPlayerClones.Clear();
             mActivePlayerIndex = 0;
             CubePosition start = Cube.StartPosition;
+            
             AddPlayer( start.Position, start.Rotation );
+            Cube.CenterOnPlayer(mPlayerClones[0]);
         }
 
         private void OnCloneChanged( Player player )
