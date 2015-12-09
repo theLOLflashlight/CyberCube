@@ -11,6 +11,7 @@ using Microsoft.Xna.Framework.Media;
 
 using System.IO;
 using CyberCube.Levels;
+using Microsoft.Xna.Framework.Audio;
 
 namespace CyberCube.Screens
 {
@@ -23,6 +24,9 @@ namespace CyberCube.Screens
         private static Texture2D sControls;
         private static Texture2D sExit;
         private static SpriteFont sVersionFont;
+        private static SoundEffect sfxButtonPressed;
+        private static SoundEffect sfxButtonPressed2;
+
 
         private string verString;
 
@@ -61,6 +65,8 @@ namespace CyberCube.Screens
             sVersionFont = content.Load<SpriteFont>("ConsoleFont");
 
             mSong = content.Load<Song>("Audio\\GameplayTrack");
+            sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
+            sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
 
             MediaPlayer.Volume = 0.2f;
             MediaPlayer.Play(mSong);
@@ -106,6 +112,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Up) && OldKeyState.IsKeyUp(Keys.Up))
                 || (NewPadState.IsButtonDown(Buttons.DPadUp) && OldPadState.IsButtonUp(Buttons.DPadUp)))
             {
+                sfxButtonPressed.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
@@ -139,6 +146,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Down) && OldKeyState.IsKeyUp(Keys.Down))
                 || (NewPadState.IsButtonDown(Buttons.DPadDown) && OldPadState.IsButtonUp(Buttons.DPadDown)))
             {
+                sfxButtonPressed.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
@@ -164,6 +172,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Enter) && OldKeyState.IsKeyUp(Keys.Enter))
                 || (NewPadState.IsButtonDown(Buttons.A) && OldPadState.IsButtonUp(Buttons.A)))
             {
+                sfxButtonPressed2.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
