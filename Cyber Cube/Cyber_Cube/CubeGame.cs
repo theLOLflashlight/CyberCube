@@ -182,9 +182,8 @@ namespace CyberCube
 
             Input.AddPressedBinding( Action.ToggleCubeMode, Buttons.Start );
 
-            Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
-            Input.AddPressedBinding( Action.PauseGame, Keys.P );
-
+            //Input.AddPressedBinding( Action.PauseGame, Buttons.Y );
+            //Input.AddPressedBinding( Action.PauseGame, Keys.P );
 
             Input.AddBinding( Action.MoveLeft, i => -i.GamePad.ThumbSticks.Left.X );
             Input.AddBinding( Action.MoveRight, i => i.GamePad.ThumbSticks.Left.X );

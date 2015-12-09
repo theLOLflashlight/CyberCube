@@ -5,6 +5,7 @@ using System.Text;
 
 using Microsoft.Xna.Framework;
 using Microsoft.Xna.Framework.Content;
+using Microsoft.Xna.Framework.GamerServices;
 using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
@@ -21,9 +22,13 @@ namespace CyberCube.Screens
         private static Texture2D sScoreTitle;
         private static Texture2D sHighScores;
 
+        private string pLevelName;
         private SaveData pSaveData;
         private List<Achievement> pAchievements;
         private int pScore;
+
+        int asyncState = 0;
+        private IAsyncResult result;
 
         public static void LoadContent(ContentManager content)
         {
@@ -36,7 +41,8 @@ namespace CyberCube.Screens
         public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName )
             : base(game)
         {
-            pSaveData = SaveData.Load( levelName );
+            pLevelName = levelName;
+            pSaveData = SaveData.Load( pLevelName );
 
             pAchievements = achieved;
             pScore = 0;
@@ -46,15 +52,49 @@ namespace CyberCube.Screens
 
             // TODO: Replace Tester with user's name
             pSaveData.AddScore( pScore, "The World's #1" );
-            pSaveData.Save( levelName );
+            pSaveData.Save( pLevelName );
+
+#if XBOX
+            this.Components.Add(new GamerServicesComponent(Game));
+#endif
+
         }
 
         public override void Update(GameTime gameTime)
         {
             base.Update(gameTime);
 
-            if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
-                this.Back();
+            if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Y))
+            {
+#if XBOX
+
+                if (asyncState == 0) asyncState = 1;
+                switch (asyncState) {
+                    case 1:
+                        result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name:", "", null, null); 
+                        asyncState = 2; 
+                        break; 
+                    
+                    case 2:
+                        if (result.IsCompleted) 
+                        { 
+                            //PlayerName = Guide.EndShowKeyboardInput(result); 
+
+                            pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
+                            pSaveData.Save( pLevelName );
+                            asyncState = 0;
+                        }
+
+                        break;
+                    }
+
+                GamerServicesDispatcher.Update();
+
+#endif
+
+                if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+                    this.Back();
+                }
         }
 
         public override void Draw(GameTime gameTime)
