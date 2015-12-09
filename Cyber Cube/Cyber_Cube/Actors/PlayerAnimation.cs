@@ -5,6 +5,7 @@ using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
+using CyberCube.Physics;
 
 namespace CyberCube.Actors
 {
@@ -149,6 +150,8 @@ namespace CyberCube.Actors
             mIdlePlayer.Update( gameTime.ElapsedGameTime, true, Matrix.Identity );
         }
 
+        private AnimatedVariable<float> mHeadbob;
+
         private void UpdateRunningAnimations( GameTime gameTime, Vector2 velocity )
         {
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
@@ -168,9 +171,20 @@ namespace CyberCube.Actors
             TimeSpan t = new TimeSpan( (long) (ticks * RUN_ANIM_FACTOR * speed) );
             mRunPlayer.Update( t, true, Matrix.Identity );
 
-            float runFactor = velocity.X * MathHelper.PiOver2 / 8 / MAX_RUN_SPEED;
+            float runFactor = velocity.X * MathHelper.PiOver2 / 6 / MAX_RUN_SPEED;
             mModelRotation.AnimateValue( Rotation + runFactor );
             mModelRotation.Step( MathHelper.TwoPi * seconds );
+
+            if ( AnimSpeedState != AnimationSpeedState.Still
+                 && AnimAerialState == AnimationAerialState.Standing )
+                mHeadbob.AnimateValue( 0.2f * -Math.Cos( mRunPlayer.CurrentClip.Duration.Ticks / 4
+                    - MathTools.TransformRange( mRunPlayer.CurrentTime.Ticks,
+                        0, mRunPlayer.CurrentClip.Duration.Ticks,
+                        0, MathHelper.TwoPi ) * 2 ).ToUnits() );
+            else
+                mHeadbob.AnimateValue( 0 );
+
+            mHeadbob.Step( seconds );
         }
 
         private void UpdateJumpingAnimations( GameTime gameTime, Vector2 velocity )

@@ -68,6 +68,11 @@ namespace CyberCube.Actors
                     var diff = MathHelper.WrapAngle( f1 - f0 );
                     return f0.Tween( f0 + diff, step );
                 } );
+
+            mHeadbob = new AnimatedVariable<float>( //Utils.Lerp );
+                (f0, f1, step) => {
+                    return f0.Tween( f1, step );
+                } );
         }
 
         protected override void LoadContent()
@@ -304,6 +309,7 @@ namespace CyberCube.Actors
 
             Matrix worldTransformation = Matrix.CreateTranslation( 0, -1, 0 )
                 * Matrix.CreateScale( MODEL_SCALE )
+                * Matrix.CreateTranslation( 0, mHeadbob, 0 )
                 * Matrix.CreateFromAxisAngle( Vector3.UnitY, MovementRotation )
                 * Vector3.UnitZ.RotateOnto_M( CubeFace.Normal )
                 * Matrix.CreateFromAxisAngle( CubeFace.Normal, CubeFace.Rotation - mModelRotation )
