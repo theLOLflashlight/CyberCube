@@ -149,7 +149,7 @@ namespace CyberCube.Screens
             // High score segment
             delta = 0;
 
-            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ).OrderBy( s => s.name ))
+            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ))
             {
                 mSpriteBatch.DrawString(sFont,
                                     s.name,
