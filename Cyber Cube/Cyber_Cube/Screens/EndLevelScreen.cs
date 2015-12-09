@@ -87,10 +87,9 @@ namespace CyberCube.Screens
                 GamerServicesDispatcher.Update();
 
 #endif
-
-                if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
-                    this.Back();
-                }
+            }
+            if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+                this.Back();
         }
 
         public override void Draw(GameTime gameTime)

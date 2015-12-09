@@ -49,7 +49,7 @@ namespace CyberCube
 
             public bool AllowManualGravity { get; set; } = false;
 
-            public Color Background { get; set; } = Color.CornflowerBlue;
+            public Color Background { get; set; } = Color.White;
 
             public CubeGameProperties()
             {

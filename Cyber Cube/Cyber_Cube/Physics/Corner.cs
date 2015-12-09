@@ -159,20 +159,16 @@ namespace CyberCube.Physics
                 mCornerTex.Width,
                 mCornerTex.Height ) / 2;
 
-            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
-
             batch.Draw(
                 mCornerTex,
                 position,
                 null,
-                BodyType == BodyType.Static ? Color.Black : Color.White,
+                SOLID_COLOR,
                 Body.Rotation,
                 origin,
                 Vector2.One,
                 SpriteEffects.None,
                 0 );
-            
-            //mSpriteBatch.End();
         }
     }
 }
