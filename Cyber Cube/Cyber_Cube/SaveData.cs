@@ -53,7 +53,7 @@ namespace CyberCube
         /// </summary>
         public List<Score> Scores { get; set; }
 
-        private SaveData()
+        public SaveData()
         {
         }
 

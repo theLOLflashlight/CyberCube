@@ -21,7 +21,7 @@ namespace CyberCube
     /// <summary>
     /// All of the actions 
     /// </summary>
-    public enum Stat { Jump }
+    public enum Stat { Jump, Second, Clone, Die }
 
     public class Achievement
     {
@@ -45,15 +45,36 @@ namespace CyberCube
         public class Requirement
         {
             public Stat AssociatedStat { get; set; }
-            public int Goal { get; set; }
+            public string Goal { get; set; }
         }
 
         public bool Achieved( Dictionary< Stat, int > stats )
         {
             foreach( Requirement requirement in Requirements )
-                if( !stats.ContainsKey( requirement.AssociatedStat ) || stats[ requirement.AssociatedStat ] < requirement.Goal )
-                    return false;
-            return true;
+            {
+                if( !stats.ContainsKey( requirement.AssociatedStat ) )
+                    stats[ requirement.AssociatedStat ] = 0;
+
+                char comparison = requirement.Goal.ToCharArray()[ 0 ];
+                int goal = int.Parse( requirement.Goal.Remove( 0, 1 ) );
+
+                switch( comparison )
+                {
+                    case '>':
+                    if( stats[ requirement.AssociatedStat ] >= goal )
+                        return true;
+                    break;
+                    case '<':
+                    if( stats[ requirement.AssociatedStat ] < goal )
+                        return true;
+                    break;
+                    default:
+                    if( stats[ requirement.AssociatedStat ] == goal )
+                        return true;
+                    break;
+                }
+            }
+            return false;
         }
     }
 
@@ -72,7 +93,7 @@ namespace CyberCube
             catch( Exception e ) {
             }
         }
-        private AchievementManager()
+        public AchievementManager()
         {
         }
 

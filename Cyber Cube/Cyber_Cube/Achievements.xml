@@ -2,6 +2,7 @@
 <AchievementManager>
   <Achievements>
     <!-- List of achievements in the entire game -->
+    <!-- Jump 10 Times Achievement -->
     <Achievement>
       <!-- Value in points of the achievement -->
       <Value>5</Value>
@@ -11,7 +12,18 @@
       <Requirements>
         <Requirement>
           <AssociatedStat>Jump</AssociatedStat>
-          <Goal>10</Goal>
+          <Goal>>10</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Don't Jump Achievement -->
+    <Achievement>
+      <Value>3</Value>
+      <Title>Don't Jump</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Jump</AssociatedStat>
+          <Goal>=0</Goal>
         </Requirement>
       </Requirements>
     </Achievement>

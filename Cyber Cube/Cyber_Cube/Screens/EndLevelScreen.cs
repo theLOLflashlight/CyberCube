@@ -27,6 +27,9 @@ namespace CyberCube.Screens
         private List<Achievement> pAchievements;
         private int pScore;
 
+        KeyboardState newKeyState, oldKeyState;
+        GamePadState newPadState, oldPadState;
+
         int asyncState = 0;
         private IAsyncResult result;
 
@@ -51,8 +54,8 @@ namespace CyberCube.Screens
                 pScore += a.Value;
 
             // TODO: Replace Tester with user's name
-            pSaveData.AddScore( pScore, "The World's #1" );
-            pSaveData.Save( pLevelName );
+            // pSaveData.AddScore( pScore, "The World's #1" );
+            // pSaveData.Save( pLevelName );
             
         }
 
@@ -60,36 +63,41 @@ namespace CyberCube.Screens
         {
             base.Update(gameTime);
 
-            if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Y))
-            {
-#if XBOX
+            newKeyState = Keyboard.GetState();
+            newPadState = GamePad.GetState(PlayerIndex.One);
 
+            if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
+            {
                 if (asyncState == 0) asyncState = 1;
+            }
+#if XBOX
                 switch (asyncState) {
                     case 1:
-                        result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name:", "", null, null); 
+                    result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
                         asyncState = 2; 
                         break; 
-                    
                     case 2:
                         if (result.IsCompleted) 
                         { 
-                            //PlayerName = Guide.EndShowKeyboardInput(result); 
-
                             pSaveData.AddScore( pScore, Guide.EndShowKeyboardInput(result));
                             pSaveData.Save( pLevelName );
                             asyncState = 0;
                         }
-
                         break;
                     }
 
                 GamerServicesDispatcher.Update();
+#endif
+
+#if WINDOWS
 
 #endif
-            }
-            if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
-                this.Back();
+
+                if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+                    this.Back();
+
+            oldPadState = newPadState;
+            oldKeyState = newKeyState;
         }
 
         public override void Draw(GameTime gameTime)
@@ -142,7 +150,7 @@ namespace CyberCube.Screens
             // High score segment
             delta = 0;
 
-            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ).OrderBy( s => s.name ))
+            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ))
             {
                 mSpriteBatch.DrawString(sFont,
                                     s.name,
