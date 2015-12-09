@@ -230,21 +230,38 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
+        private List<GameTime> mTimes = new List<GameTime>();
+
+        public double PlayTimeSeconds
+        {
+            get {
+                double totalTime = 0;
+
+                for ( int i = 1; i < mTimes.Count; i += 2 )
+                    totalTime += mTimes[ i ].TotalGameTime.TotalSeconds
+                        - mTimes[ i - 1 ].TotalGameTime.TotalSeconds;
+
+                return totalTime;
+            }
+        }
+
         public override void Resume( GameTime gameTime )
         {
             base.Resume( gameTime );
+            mTimes.Add( gameTime );
         }
 
         public override void Pause( GameTime gameTime )
         {
             base.Pause( gameTime );
+            mTimes.Add( gameTime );
         }
 
         public override void Destroy( GameTime gameTime )
         {
             base.Destroy( gameTime );
+            mTimes.Add( gameTime );
         }
-
 
         internal PlayScreen mNextPlayScreen = null;
 
