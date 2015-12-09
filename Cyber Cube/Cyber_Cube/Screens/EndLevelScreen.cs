@@ -31,7 +31,6 @@ namespace CyberCube.Screens
             sLevelClear = content.Load <Texture2D>("NavigationItems\\levelClear");
             sScoreTitle = content.Load<Texture2D>("NavigationItems\\scoreBreakdown");
             sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
-
         }
 
         public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName )
