@@ -68,6 +68,7 @@ namespace CyberCube.Screens
             pSaveData = SaveData.Load( pLevelName );
 
             mLevel = level;
+            //mLevel.mLoadThread.Start();
 #if WINDOWS
             mTextBox = new TextBox( game, game );
 #endif

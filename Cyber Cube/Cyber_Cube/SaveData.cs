@@ -64,15 +64,14 @@ namespace CyberCube
 
         public void AddScore( int newScore, string newName )
         {
-            if( newScore > Scores.First().score )
+            if( Scores.Count == 0 || newScore > Scores.First().score )
             {
                 // Remove the lowest score, add the new score, then sort.
-                Scores.RemoveAt( 0 );
                 Scores.Add( new Score { score = newScore, name = newName } );
                 Scores.Sort();
 
                 if( Scores.Count() > 10 )
-                    throw new Exception( "Too many highscores recorded " );
+                    Scores.RemoveAt( 0 );
             }
         }
 
