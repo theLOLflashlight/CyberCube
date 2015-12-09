@@ -151,9 +151,11 @@ namespace CyberCube
             Input.AddPressedBinding( Action.Jump, Keys.Up );
             Input.AddReleasedBinding( Action.JumpStop, Keys.Up );
 
+#if DEBUG
             Input.AddPressedBinding( Action.PlaceClone, Keys.C );
             Input.AddPressedBinding( Action.CycleClone, Keys.V );
             Input.AddPressedBinding( Action.DeleteClone, Keys.X );
+#endif
 
             Input.AddPressedBinding( Action.RotateLeft, Keys.Left );
             Input.AddPressedBinding( Action.RotateRight, Keys.Right );
