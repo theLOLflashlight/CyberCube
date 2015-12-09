@@ -128,7 +128,8 @@ namespace CyberCube.Screens
                         currentHighlight = Highlight.LoadGame;
                         break;
                     case Highlight.Exit:
-                        currentHighlight = Highlight.Controls;
+                        //currentHighlight = Highlight.Controls;
+                        currentHighlight = Highlight.NewGame;
                         break;
                     default:
                         break;
@@ -150,7 +151,8 @@ namespace CyberCube.Screens
                 switch (currentHighlight)
                 {
                     case Highlight.NewGame:
-                        currentHighlight = Highlight.LoadGame;
+                        //currentHighlight = Highlight.LoadGame;
+                        currentHighlight = Highlight.Exit;
                         break;
                     case Highlight.LoadGame:
                         //currentHighlight = Highlight.LevelEditor;
@@ -262,13 +264,13 @@ namespace CyberCube.Screens
             }
 
             mSpriteBatch.Draw(sNewGame, buttonPos, cNewGame);
-            buttonPos.Y += 60;
-            mSpriteBatch.Draw(sLoadGame, buttonPos, cLoadGame);
-            buttonPos.Y += 60;
+            buttonPos.Y += 80;
+            //mSpriteBatch.Draw(sLoadGame, buttonPos, cLoadGame);
+            //buttonPos.Y += 60;
             //mSpriteBatch.Draw(sLevelEdit, buttonPos, cLevelEdit);
             //buttonPos.Y += 45;
-            mSpriteBatch.Draw(sControls, buttonPos, cControls);
-            buttonPos.Y += 60;
+            //mSpriteBatch.Draw(sControls, buttonPos, cControls);
+            //buttonPos.Y += 60;
             mSpriteBatch.Draw(sExit, buttonPos, cExit);
 
             mSpriteBatch.DrawString(sVersionFont, verString, new Vector2(10, GraphicsDevice.Viewport.Height - 20), Color.Black);
