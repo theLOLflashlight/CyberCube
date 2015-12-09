@@ -238,8 +238,8 @@ namespace CyberCube.Screens
                 double totalTime = 0;
 
                 for ( int i = 1; i < mTimes.Count; i += 2 )
-                    totalTime += mTimes[ i ].TotalGameTime.TotalSeconds
-                        - mTimes[ i - 1 ].TotalGameTime.TotalSeconds;
+                    totalTime += mTimes[ i - 1 ].TotalGameTime.TotalSeconds
+                        - mTimes[ i ].TotalGameTime.TotalSeconds;
 
                 return totalTime;
             }
