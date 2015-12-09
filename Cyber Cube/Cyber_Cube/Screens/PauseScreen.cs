@@ -9,6 +9,7 @@ using Microsoft.Xna.Framework.Graphics;
 using Microsoft.Xna.Framework.Input;
 
 using System.IO;
+using Microsoft.Xna.Framework.Audio;
 
 namespace CyberCube.Screens
 {
@@ -18,6 +19,8 @@ namespace CyberCube.Screens
         private static Texture2D sSaveGame;
         private static Texture2D sControls;
         private static Texture2D sQuitMenu;
+        private static SoundEffect sfxButtonPressed;
+        private static SoundEffect sfxButtonPressed2;
 
         enum Highlight
         {
@@ -46,6 +49,8 @@ namespace CyberCube.Screens
             sSaveGame = content.Load<Texture2D>("NavigationItems\\pauseSaveGame");
             sControls = content.Load<Texture2D>("NavigationItems\\menuControls");
             sQuitMenu = content.Load<Texture2D>("NavigationItems\\pauseQuitMenu");
+            sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
+            sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
         }
 
         public PauseScreen( CubeGame game )
@@ -92,6 +97,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Up) && OldKeyState.IsKeyUp(Keys.Up))
                 || (NewPadState.IsButtonDown(Buttons.DPadUp) && OldPadState.IsButtonUp(Buttons.DPadUp)))
             {
+                sfxButtonPressed.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.ResumeGame:
@@ -114,6 +120,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Down) && OldKeyState.IsKeyUp(Keys.Down))
                 || (NewPadState.IsButtonDown(Buttons.DPadDown) && OldPadState.IsButtonUp(Buttons.DPadDown)))
             {
+                sfxButtonPressed.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.ResumeGame:
@@ -135,6 +142,7 @@ namespace CyberCube.Screens
             if ((NewKeyState.IsKeyDown(Keys.Enter) && OldKeyState.IsKeyUp(Keys.Enter))
                 || (NewPadState.IsButtonDown(Buttons.A) && OldPadState.IsButtonUp(Buttons.A)))
             {
+                sfxButtonPressed2.Play();
                 switch (currentHighlight)
                 {
                     case Highlight.ResumeGame:

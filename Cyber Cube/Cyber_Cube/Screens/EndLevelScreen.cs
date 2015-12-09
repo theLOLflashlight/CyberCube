@@ -13,6 +13,7 @@ using CyberCube.IO;
 
 using System.IO;
 using System.Threading;
+using Microsoft.Xna.Framework.Audio;
 
 namespace CyberCube.Screens
 {
@@ -25,6 +26,8 @@ namespace CyberCube.Screens
         private static Texture2D sButtonA;
         private static Texture2D sButtonY;
         private static Texture2D sKeyEnter;
+        private static SoundEffect sfxButtonPressed;
+        private static SoundEffect sfxButtonPressed2;
 
         private string pLevelName;
         private SaveData pSaveData;
@@ -48,6 +51,8 @@ namespace CyberCube.Screens
             sButtonA = content.Load<Texture2D>("NavigationItems\\graphic_ButtonA");
             sButtonY = content.Load<Texture2D>("NavigationItems\\graphic_ButtonY");
             sKeyEnter = content.Load<Texture2D>("NavigationItems\\graphic_KeyEnter");
+            sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
+            sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
             sFont2 = content.Load<SpriteFont>( "ConsoleFont" );
         }
 
@@ -150,6 +155,8 @@ namespace CyberCube.Screens
 #endif
             if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
             {
+                
+                sfxButtonPressed2.Play();
 #if WINDOWS
                 if ( !string.IsNullOrEmpty( mTextBox.Text ) )
                 {

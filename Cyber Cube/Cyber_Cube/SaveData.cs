@@ -22,7 +22,7 @@ namespace CyberCube
         /// <summary>
         /// Name of the file that the highscore data is saved to.
         /// </summary>
-        public static string SaveFileAppend = "saves.sav";
+        public static string SaveFileAppend = "save1.sav";
 
         /// <summary>
         /// Get a SaveData object from memory or create a new one with default scores.
@@ -59,17 +59,7 @@ namespace CyberCube
 
         public void Initialize()
         {
-            Scores = new List<Score>( 10 ) {
-                new Score() { name = "User1", score = 0 },
-                new Score() { name = "User2", score = 0 },
-                new Score() { name = "User3", score = 0 },
-                new Score() { name = "User4", score = 0 },
-                new Score() { name = "User5", score = 0 },
-                new Score() { name = "User6", score = 0 },
-                new Score() { name = "User7", score = 0 },
-                new Score() { name = "User8", score = 0 },
-                new Score() { name = "User9", score = 0 },
-                new Score() { name = "User10", score = 0 } };
+            Scores = new List<Score>( 10 );
         }
 
         public void AddScore( int newScore, string newName )

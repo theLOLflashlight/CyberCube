@@ -45,8 +45,9 @@ namespace CyberCube.Actors
 
         private static Texture2D sTexture;
 
-        private SoundEffect sfxJump;
-        private SoundEffect sfxLand;
+        private static SoundEffect sfxJump;
+        private static SoundEffect sfxLand;
+        private static SoundEffect sfxDie;
 
         public new PlayScreen Screen
         {
@@ -85,6 +86,7 @@ namespace CyberCube.Actors
 
             sfxJump = Game.Content.Load<SoundEffect>( @"Audio\jump" );
             sfxLand = Game.Content.Load<SoundEffect>( @"Audio\land" );
+            sfxDie = Game.Content.Load<SoundEffect>( @"Audio\die" );
 
             sTexture = new Texture2D( GraphicsDevice, 1, 1 );
             sTexture.SetData( new Color[] { PLAYER_COLOR } );
@@ -209,7 +211,7 @@ namespace CyberCube.Actors
         private void DelayedPlayerDie()
         {
 #if XBOX
-            mLoadThread.SetProcessorAffinity( 3 );
+            Thread.CurrentThread.SetProcessorAffinity( 3 );
 #endif
             Thread.Sleep( 300 );
             mPlayerDead = true;
@@ -228,6 +230,7 @@ namespace CyberCube.Actors
                     new ThreadStart( DelayedPlayerDie ) )
                     .Start();
             mPlayerDying = true;
+            sfxDie.Play();
         }
 
         public void ClonePlayer()
