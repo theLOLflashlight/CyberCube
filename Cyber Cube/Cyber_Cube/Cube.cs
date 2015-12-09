@@ -304,6 +304,10 @@ namespace CyberCube
             CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
             StartPosition = file.StartPosition;
             EnemyPositions = file.EnemyPositions;
+            if (EnemyPositions == null)
+            {
+                EnemyPositions = new List<CubePosition>();
+            }
             NextLevel = file.NextLevel;
 
             foreach ( Face face in Faces )
