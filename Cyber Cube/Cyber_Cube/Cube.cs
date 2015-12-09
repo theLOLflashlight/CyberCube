@@ -30,7 +30,7 @@ namespace CyberCube
             Face.LoadContent( content );
 
             sSkySphereEffect = content.Load<Effect>( "SkySphere" );
-            TextureCube SkyboxTexture = content.Load<TextureCube>( "gridSkyBox1024" );
+            TextureCube SkyboxTexture = content.Load<TextureCube>( "gameSkyBox" );
             sSkySphere = content.Load<Model>( "SphereHighPoly" );
 
             // Set the parameters of the effect

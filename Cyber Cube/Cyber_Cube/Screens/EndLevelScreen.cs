@@ -60,7 +60,7 @@ namespace CyberCube.Screens
 
             mLevel = level;
 
-            
+
 
             bSentScore = false;
 
@@ -118,7 +118,7 @@ namespace CyberCube.Screens
                     break;
             }
             GamerServicesDispatcher.Update();
-                bSentScore = false;
+                bSentScore = true;
             }
 #endif
 
@@ -207,6 +207,8 @@ namespace CyberCube.Screens
                                Color.White );
 #endif
 
+            if(!bSentScore)
+            {
             mSpriteBatch.Draw( sButtonY,
                                new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
                                Color.White);
@@ -215,6 +217,7 @@ namespace CyberCube.Screens
                                      "- Submit Score",
                                      new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
                                      Color.White);
+            }
 
             mSpriteBatch.Draw( sButtonA,
                                new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),
