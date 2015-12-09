@@ -7,7 +7,7 @@
       <!-- Value in points of the achievement -->
       <Value>5</Value>
       <!-- Title of the achievement in-game -->
-      <Title>Jump 10 Times</Title>
+      <Title>Kangaroo</Title>
       <!-- List of requirements to fulfill to accomplish the achievement -->
       <Requirements>
         <Requirement>
@@ -24,6 +24,138 @@
         <Requirement>
           <AssociatedStat>Jump</AssociatedStat>
           <Goal>=0</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Jump 100 Times Achievement-->
+    <Achievement>
+      <Value>5</Value>
+      <Title>Hop-A-Lot</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Jump</AssociatedStat>
+          <Goal>>100</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Don't Die Achievement -->
+    <Achievement>
+      <Value>2</Value>
+      <Title>Don't Die</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>=0</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Die 50 Times Achievement-->
+    <Achievement>
+      <Value>4</Value>
+      <Title>Get Overkilled</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>>50</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Die 9 Times Achievement -->
+    <Achievement>
+      <Value>3</Value>
+      <Title>Cat's Death</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>=9</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Clone 1 Time Achievement -->
+    <Achievement>
+      <Value>1</Value>
+      <Title>Seeing Doubles</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Clone</AssociatedStat>
+          <Goal>=1</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Clone Over 10 Times Achievement-->
+    <Achievement>
+      <Value>2</Value>
+      <Title>Leader</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Clone</AssociatedStat>
+          <Goal>>10</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Jump 100 Times Achievement-->
+    <Achievement>
+      <Value>5</Value>
+      <Title>Hop-A-Lot</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Jump</AssociatedStat>
+          <Goal>>100</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Don't Die Achievement -->
+    <Achievement>
+      <Value>2</Value>
+      <Title>Don't Die</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>=0</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Die 50 Times Achievement-->
+    <Achievement>
+      <Value>4</Value>
+      <Title>Get Overkilled</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>>50</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Die 9 Times Achievement -->
+    <Achievement>
+      <Value>3</Value>
+      <Title>Cat's Death</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Die</AssociatedStat>
+          <Goal>=9</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Clone 1 Time Achievement -->
+    <Achievement>
+      <Value>1</Value>
+      <Title>Seeing Doubles</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Clone</AssociatedStat>
+          <Goal>=1</Goal>
+        </Requirement>
+      </Requirements>
+    </Achievement>
+    <!-- Clone Over 50 Times Achievement -->
+    <Achievement>
+      <Value>1</Value>
+      <Title>Seeing Doubles</Title>
+      <Requirements>
+        <Requirement>
+          <AssociatedStat>Clone</AssociatedStat>
+          <Goal>=1</Goal>
         </Requirement>
       </Requirements>
     </Achievement>
