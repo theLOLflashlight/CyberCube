@@ -229,14 +229,14 @@ namespace CyberCube.Screens
         }
 
 
-        private PlayScreen mNextPlayScreen = null;
+        internal PlayScreen mNextPlayScreen = null;
 
-        private Thread mLoadThread;
+        internal Thread mLoadThread;
 
         private void LoadNextLevelAsync()
         {
 #if XBOX
-            Thread.SetProcessorAffinity( 3 ); // see note below
+            mLoadThread.SetProcessorAffinity( 3 );
 #endif
             PlayableCube playCube = new PlayableCube( Game );
             playCube.Load( Cube.NextLevel );
@@ -252,9 +252,10 @@ namespace CyberCube.Screens
             //playCube.Load( filename ?? Cube.NextLevel );
             //PlayScreen playScreen = new PlayScreen( Game, playCube );
 
-            mLoadThread.Join();
-            ScreenManager.PushScreen( mNextPlayScreen );
-            EndLevelScreen endLevelScreen = new EndLevelScreen( Game, AchievementManager.Instance.GetAchieved(), Cube.Name );
+            //mLoadThread.Join();
+            //ScreenManager.PushScreen( mNextPlayScreen );
+            EndLevelScreen endLevelScreen = new EndLevelScreen(
+                Game, AchievementManager.Instance.GetAchieved(), Cube.Name, this );
             // Pass information?
             ScreenManager.PushScreen( endLevelScreen );
         }

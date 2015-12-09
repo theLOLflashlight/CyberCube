@@ -12,6 +12,7 @@ using Microsoft.Xna.Framework.Input;
 using CyberCube.IO;
 
 using System.IO;
+using System.Threading;
 
 namespace CyberCube.Screens
 {
@@ -41,11 +42,15 @@ namespace CyberCube.Screens
             sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
         }
 
-        public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName )
+        private PlayScreen mLevel;
+
+        public EndLevelScreen(CubeGame game, List<Achievement> achieved, string levelName, PlayScreen level )
             : base(game)
         {
             pLevelName = levelName;
             pSaveData = SaveData.Load( pLevelName );
+
+            mLevel = level;
 
             pAchievements = achieved;
             pScore = 0;
@@ -57,6 +62,14 @@ namespace CyberCube.Screens
             // pSaveData.AddScore( pScore, "The World's #1" );
             // pSaveData.Save( pLevelName );
             
+        }
+
+        public override void Destroy( GameTime gameTime )
+        {
+            base.Destroy( gameTime );
+
+            mLevel.mLoadThread.Join();
+            ScreenManager.PushScreen( mLevel.mNextPlayScreen );
         }
 
         public override void Update(GameTime gameTime)
