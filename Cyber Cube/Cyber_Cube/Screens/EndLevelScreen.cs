@@ -27,6 +27,9 @@ namespace CyberCube.Screens
         private List<Achievement> pAchievements;
         private int pScore;
 
+        KeyboardState newKeyState, oldKeyState;
+        GamePadState newPadState, oldPadState;
+
         int asyncState = 0;
         private IAsyncResult result;
 
@@ -60,7 +63,10 @@ namespace CyberCube.Screens
         {
             base.Update(gameTime);
 
-            if (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.Y))
+            newKeyState = Keyboard.GetState();
+            newPadState = GamePad.GetState(PlayerIndex.One);
+
+            if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
             {
 #if XBOX
                 if (asyncState == 0) asyncState = 1;
@@ -69,7 +75,6 @@ namespace CyberCube.Screens
                         result = Guide.BeginShowKeyboardInput(PlayerIndex.One, "Player Name", "Enter your name for the high score:", "", null, null); 
                         asyncState = 2; 
                         break; 
-                    
                     case 2:
                         if (result.IsCompleted) 
                         { 
@@ -89,6 +94,9 @@ namespace CyberCube.Screens
             }
                 if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
                     this.Back();
+
+            oldPadState = newPadState;
+            oldKeyState = newKeyState;
         }
 
         public override void Draw(GameTime gameTime)
