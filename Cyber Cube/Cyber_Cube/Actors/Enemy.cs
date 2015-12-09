@@ -35,10 +35,21 @@ namespace CyberCube.Actors
         private Direction mMovementDirection;
         private float mMoveTimeDelay;
         private float mDirectionTimeDelay;
+        private float mAttackTimeDelay;
+        private bool mPlayerSpotted;
 
         private VertexPositionColor[] mVisionVertices;
-        private Texture2D mVisionTexture;
         private BasicEffect mEffect;
+
+        public new PlayScreen Screen
+        {
+            get {
+                return (PlayScreen) base.Screen;
+            }
+            set {
+                base.Screen = value;
+            }
+        }
 
         public Enemy( PlayScreen screen, PlayableCube cube, Vector3 worldPos, float rotation ) 
             : base ( cube.Game, screen, cube, worldPos, (Direction) rotation )
@@ -126,18 +137,20 @@ namespace CyberCube.Actors
             float seconds = (float) gameTime.ElapsedGameTime.TotalSeconds;
             mMoveTimeDelay -= seconds;
             mDirectionTimeDelay -= seconds;
+            mAttackTimeDelay -= seconds;
 
-            
 
-            if ( Screen is PlayScreen && SeePlayer( ((PlayScreen)Screen).Player ) )
+            if ( SeePlayer( Screen.Player ) )
             {
+                Screen.PlayAlarm();
+                mPlayerSpotted = true;
                 mVisionVertices[0].Color = Color.Red;
                 mVisionVertices[1].Color = Color.Red;
                 mVisionVertices[2].Color = Color.Red;
             }
             else
             {
-                
+                mPlayerSpotted = false;
                 mVisionVertices[0].Color = Color.LightGoldenrodYellow;
                 mVisionVertices[1].Color = Color.LightGoldenrodYellow;
                 mVisionVertices[2].Color = Color.LightGoldenrodYellow;
@@ -148,8 +161,8 @@ namespace CyberCube.Actors
             {
                 if (mDirectionTimeDelay < 0)
                 {
-                    mMovementDirection = ~mMovementDirection;
                     mDirectionTimeDelay = 10;
+                    mMovementDirection = ~mMovementDirection;
                 }
 
                 float movementScale = MOVEMENT_SCALE;
@@ -158,10 +171,20 @@ namespace CyberCube.Actors
             
                 if ( fallOff )
                 {
-                    Velocity = Vector2.Zero;
                     mMoveTimeDelay = 3;
                     mDirectionTimeDelay = 10;
+                    Velocity = Vector2.Zero;
                     mMovementDirection = ~mMovementDirection;
+                }
+                else if ( mPlayerSpotted )
+                {
+                    if ( mAttackTimeDelay < 0 )
+                    {
+                        mAttackTimeDelay = 3;
+                        mMoveTimeDelay = 3;
+                        Velocity = Vector2.Zero;
+                        ShootProjectile( Screen.Player );
+                    }
                 }
                 else
                 {
@@ -271,6 +294,14 @@ namespace CyberCube.Actors
         private bool PointInTriangle(Vector2 p, Vector2 a, Vector2 b, Vector2 c)
         {
             return SameSide(p, a, b, c) && SameSide(p, b, c, a) && SameSide(p, c, a, b);
+        }
+
+        private void ShootProjectile(Player player)
+        {
+            Vector2 playerPosition = Transform3dTo2d( player.CubePosition );
+            Vector3 direction = Vector3.Normalize( player.CubePosition - CubePosition );
+            direction.Y = -direction.Y;
+            Screen.AddProjectile( CubePosition, direction, Rotation );
         }
 
         private bool PreviewFallOffCubeFace(float movementScale)

@@ -158,7 +158,7 @@ namespace CyberCube.Screens
                 {
                     case Highlight.NewGame:
                         PlayableCube playCube = new PlayableCube( Game );
-                        playCube.Load( "level1" );
+                        playCube.Load( "enemy" );
                         PlayScreen playScreen = new PlayScreen( Game, playCube );
                         ScreenManager.PushScreen( playScreen );
                         break;

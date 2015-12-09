@@ -233,6 +233,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\alarm.wav">
+      <Name>alarm</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+	</Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="NavigationItems\levelClear.png">
       <Name>levelClear</Name>
       <Importer>TextureImporter</Importer>

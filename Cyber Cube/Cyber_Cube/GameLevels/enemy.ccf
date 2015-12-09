@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<CubeFile xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:xsd="http://www.w3.org/2001/XMLSchema">
+  <StartPosition>
+    <Position>
+      <X>0</X>
+      <Y>0</Y>
+      <Z>1</Z>
+    </Position>
+    <Rotation>0</Rotation>
+  </StartPosition>
+  <EnemyPositions>
+    <CubePosition>
+      <Position>
+        <X>-0.5</X>
+        <Y>0.1</Y>
+        <Z>1</Z>
+      </Position>
+      <Rotation>0</Rotation>
+    </CubePosition>
+  </EnemyPositions>
+  <FrontFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes&gt;
+    &lt;Shape Type="Polygon" Density="1"&gt;
+      &lt;Vertices&gt;
+        &lt;Vertex&gt;1.375 -0.375&lt;/Vertex&gt;
+        &lt;Vertex&gt;1.375 0.375&lt;/Vertex&gt;
+        &lt;Vertex&gt;-1.375 0.375&lt;/Vertex&gt;
+        &lt;Vertex&gt;-1.375 -0.375&lt;/Vertex&gt;
+      &lt;/Vertices&gt;
+      &lt;Centroid&gt;0 0&lt;/Centroid&gt;
+    &lt;/Shape&gt;
+  &lt;/Shapes&gt;
+  &lt;Fixtures&gt;
+    &lt;Fixture Id="0"&gt;
+      &lt;FilterData&gt;
+        &lt;CategoryBits&gt;1&lt;/CategoryBits&gt;
+        &lt;MaskBits&gt;2147483647&lt;/MaskBits&gt;
+        &lt;GroupIndex&gt;0&lt;/GroupIndex&gt;
+        &lt;CollisionIgnores /&gt;
+      &lt;/FilterData&gt;
+      &lt;Friction&gt;0.2&lt;/Friction&gt;
+      &lt;IsSensor&gt;False&lt;/IsSensor&gt;
+      &lt;Restitution&gt;0&lt;/Restitution&gt;
+      &lt;UserData&gt;
+        &lt;Type&gt;CyberCube.Physics.Flat, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
+        &lt;Value&gt;
+          &lt;Flat /&gt;
+        &lt;/Value&gt;
+      &lt;/UserData&gt;
+    &lt;/Fixture&gt;
+  &lt;/Fixtures&gt;
+  &lt;Bodies&gt;
+    &lt;Body Type="Static"&gt;
+      &lt;Active&gt;True&lt;/Active&gt;
+      &lt;AllowSleep&gt;True&lt;/AllowSleep&gt;
+      &lt;Angle&gt;0&lt;/Angle&gt;
+      &lt;AngularDamping&gt;0&lt;/AngularDamping&gt;
+      &lt;AngularVelocity&gt;0&lt;/AngularVelocity&gt;
+      &lt;Awake&gt;True&lt;/Awake&gt;
+      &lt;Bullet&gt;False&lt;/Bullet&gt;
+      &lt;FixedRotation&gt;False&lt;/FixedRotation&gt;
+      &lt;LinearDamping&gt;0&lt;/LinearDamping&gt;
+      &lt;LinearVelocity&gt;0 0&lt;/LinearVelocity&gt;
+      &lt;Position&gt;5.125 5.625&lt;/Position&gt;
+      &lt;AdHocGravity&gt;0 9.8&lt;/AdHocGravity&gt;
+      &lt;UseAdHocGravity&gt;True&lt;/UseAdHocGravity&gt;
+      &lt;UserData&gt;
+        &lt;Type&gt;CyberCube.Physics.Box+BoxMaker, CyberCube, Version=1.0.0.0, Culture=neutral, PublicKeyToken=null&lt;/Type&gt;
+        &lt;Value&gt;
+          &lt;BoxMaker&gt;
+            &lt;Width&gt;275&lt;/Width&gt;
+            &lt;Height&gt;75&lt;/Height&gt;
+          &lt;/BoxMaker&gt;
+        &lt;/Value&gt;
+      &lt;/UserData&gt;
+      &lt;Bindings&gt;
+        &lt;Pair FixtureId="0" ShapeId="0" /&gt;
+      &lt;/Bindings&gt;
+    &lt;/Body&gt;
+  &lt;/Bodies&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</FrontFace>
+  <BackFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</BackFace>
+  <TopFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</TopFace>
+  <BottomFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</BottomFace>
+  <LeftFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</LeftFace>
+  <RightFace>&lt;World Version="3"&gt;
+  &lt;Gravity&gt;0 0&lt;/Gravity&gt;
+  &lt;Shapes /&gt;
+  &lt;Fixtures /&gt;
+  &lt;Bodies /&gt;
+  &lt;Joints /&gt;
+&lt;/World&gt;</RightFace>
+</CubeFile>
