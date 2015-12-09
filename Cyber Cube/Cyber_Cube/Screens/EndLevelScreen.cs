@@ -68,12 +68,12 @@ namespace CyberCube.Screens
             pSaveData = SaveData.Load( pLevelName );
 
             mLevel = level;
-            //mLevel.mLoadThread.Start();
 #if WINDOWS
             mTextBox = new TextBox( game, game );
+
+#if XBOX
+            mTextBox.Visible = false;
 #endif
-
-
             bSentScore = false;
 
             // TODO: Replace Tester with user's name
@@ -119,8 +119,8 @@ namespace CyberCube.Screens
 
 
 #if XBOX
-            if (!bSentScore)
-            {
+            //if (!bSentScore)
+            //{
             if ((newPadState.IsButtonUp(Buttons.Y) && oldPadState.IsButtonDown(Buttons.Y)))
             {
                 if (asyncState == 0)
@@ -146,7 +146,7 @@ namespace CyberCube.Screens
             }
             GamerServicesDispatcher.Update();
                 bSentScore = true;
-            }
+            //}
 #endif
 
 #if WINDOWS
@@ -245,8 +245,8 @@ namespace CyberCube.Screens
                                Color.White );
 #endif
 
-            if(!bSentScore)
-            {
+            //if(!bSentScore)
+            //{
             mSpriteBatch.Draw( sButtonY,
                                new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
                                Color.White);
@@ -255,7 +255,7 @@ namespace CyberCube.Screens
                                      "- Submit Score",
                                      new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
                                      Color.White);
-            }
+            //}
 
             mSpriteBatch.Draw( sButtonA,
                                new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),

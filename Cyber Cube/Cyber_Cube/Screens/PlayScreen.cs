@@ -28,7 +28,7 @@ namespace CyberCube.Screens
         {
             sFont = content.Load<SpriteFont>( "MessageFont" );
 
-            sSong = content.Load<Song>("Audio\\GameplayTrack");
+            sSong = content.Load<Song>("Audio\\theme");
 
             SoundEffect alarm = content.Load<SoundEffect>("Audio\\alarm");
             sSfxAlarm = alarm.CreateInstance();
