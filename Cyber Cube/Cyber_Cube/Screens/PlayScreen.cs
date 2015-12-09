@@ -230,6 +230,21 @@ namespace CyberCube.Screens
             mEndLevel = true;
         }
 
+        public override void Resume( GameTime gameTime )
+        {
+            base.Resume( gameTime );
+        }
+
+        public override void Pause( GameTime gameTime )
+        {
+            base.Pause( gameTime );
+        }
+
+        public override void Destroy( GameTime gameTime )
+        {
+            base.Destroy( gameTime );
+        }
+
 
         private PlayScreen mNextPlayScreen = null;
 
@@ -238,7 +253,7 @@ namespace CyberCube.Screens
         private void LoadNextLevelAsync()
         {
 #if XBOX
-            Thread.SetProcessorAffinity( 3 ); // see note below
+            mLoadThread.SetProcessorAffinity( 3 ); // see note below
 #endif
             PlayableCube playCube = new PlayableCube( Game );
             playCube.Load( Cube.NextLevel );
