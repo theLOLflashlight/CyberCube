@@ -31,6 +31,7 @@ namespace CyberCube.Actors
         public readonly Color ENEMY_COLOR = Color.White;
 
         private static Texture2D sTexture;
+        private static Random sRand;
 
         private Direction mMovementDirection;
         private float mMoveTimeDelay;
@@ -64,7 +65,13 @@ namespace CyberCube.Actors
                 } );
             
             mMovementDirection = (Direction) rotation;
-            mMovementDirection--;
+
+            sRand = new Random();
+            if (sRand.Next() % 2 == 0) {
+                mMovementDirection++;
+            } else {
+                mMovementDirection--;
+            }
         }
 
         protected override void LoadContent()

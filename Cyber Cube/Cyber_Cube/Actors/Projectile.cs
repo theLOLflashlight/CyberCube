@@ -13,6 +13,7 @@ using System.Text;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Common;
 using FarseerPhysics.Factories;
+using FarseerPhysics.Dynamics.Contacts;
 
 namespace CyberCube.Actors
 {
@@ -65,6 +66,11 @@ namespace CyberCube.Actors
             
             return body;
         }
+        protected override void ReconstructBody()
+        {
+            base.ReconstructBody();
+            Body.FindFixture( "bullet" ).OnCollision += Projectile_OnCollision;
+        }
 
         public override void Initialize()
         {
@@ -93,10 +99,17 @@ namespace CyberCube.Actors
             
             base.Update( gameTime );
 
-            if (mRotated) Screen.RemoveProjectile( this );
+            if ( mRotated ) Screen.RemoveProjectile( this );
         }
         
-
+        private bool Projectile_OnCollision( Fixture fixtureA, Fixture fixtureB, Contact contact )
+        {
+            if ( !fixtureB.IsSensor && fixtureB.UserData is Flat )
+            {
+                 Screen.RemoveProjectile( this );
+            }
+            return contact.IsTouching;
+        }
 
 
         public override void Draw( GameTime gameTime )
