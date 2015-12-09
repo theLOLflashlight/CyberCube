@@ -282,15 +282,15 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="Textures\door.png">
-      <Name>door</Name>
+    <Compile Include="NavigationItems\logo.png">
+      <Name>logo</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
   </ItemGroup>
   <ItemGroup>
-    <Compile Include="NavigationItems\logo.png">
-      <Name>logo</Name>
+    <Compile Include="Textures\door.png">
+      <Name>door</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
