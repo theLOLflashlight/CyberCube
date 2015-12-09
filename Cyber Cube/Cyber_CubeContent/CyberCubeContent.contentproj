@@ -237,6 +237,7 @@
       <Name>alarm</Name>
       <Importer>WavImporter</Importer>
       <Processor>SoundEffectProcessor</Processor>
+	</Compile>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="NavigationItems\levelClear.png">
