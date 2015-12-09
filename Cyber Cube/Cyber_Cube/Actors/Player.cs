@@ -208,6 +208,9 @@ namespace CyberCube.Actors
 
         private void DelayedPlayerDie()
         {
+#if XBOX
+            mLoadThread.SetProcessorAffinity( 3 );
+#endif
             Thread.Sleep( 300 );
             mPlayerDead = true;
         }
