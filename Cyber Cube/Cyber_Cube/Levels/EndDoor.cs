@@ -3,6 +3,7 @@ using CyberCube.Tools;
 using FarseerPhysics.Dynamics;
 using FarseerPhysics.Factories;
 using Microsoft.Xna.Framework;
+using Microsoft.Xna.Framework.Content;
 using Microsoft.Xna.Framework.Graphics;
 using System;
 using System.Collections.Generic;
@@ -13,12 +14,19 @@ namespace CyberCube.Levels
 {
     public class EndDoor : Solid
     {
+        private static Texture2D sDoorTexture;
+
         public struct EndDoorMaker : ISolidMaker
         {
             public Solid MakeSolid( CubeGame game, World world, Body body )
             {
                 return new EndDoor( game, world, body );
             }
+        }
+
+        public static void LoadContent(ContentManager content)
+        {
+            sDoorTexture = content.Load<Texture2D>("Textures\\door");
         }
 
         public EndDoor( CubeGame game, World world, Body body )
@@ -63,18 +71,18 @@ namespace CyberCube.Levels
 
             Vector2 position = Body.Position.ToPixels();
             Vector2 scale = new Vector2(
-                WIDTH / Texture.Width,
-                HEIGHT / Texture.Height );
+                WIDTH / sDoorTexture.Width,
+                HEIGHT / sDoorTexture.Height );
 
             batch.Draw(
-                Texture,
+                sDoorTexture,
                 position,
                 null,
                 Color.White,
                 Body.Rotation,
                 new Vector2(
-                    Texture.Width / 2.0f,
-                    Texture.Height / 2.0f ),
+                    sDoorTexture.Width / 2.0f,
+                    sDoorTexture.Height / 2.0f ),
                 scale,
                 SpriteEffects.None,
                 0 );
