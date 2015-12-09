@@ -13,7 +13,7 @@
     <TargetFrameworkProfile>Client</TargetFrameworkProfile>
     <XnaFrameworkVersion>v4.0</XnaFrameworkVersion>
     <XnaPlatform>Windows</XnaPlatform>
-    <XnaProfile>Reach</XnaProfile>
+    <XnaProfile>HiDef</XnaProfile>
     <XnaCrossPlatformGroupID>d2c70703-d152-4910-9869-d3b1d7c08d06</XnaCrossPlatformGroupID>
     <XnaOutputType>Game</XnaOutputType>
     <ApplicationIcon>Game.ico</ApplicationIcon>
@@ -78,6 +78,7 @@
   <ItemGroup>
     <Compile Include="ActionEnum.cs" />
     <Compile Include="Actors\Actor.cs" />
+    <Compile Include="Actors\Projectile.cs" />
     <Compile Include="Actors\EnemyAnimation.cs" />
     <Compile Include="Actors\PlayerAnimation.cs" />
     <Compile Include="Actors\PlayerDebug.cs" />

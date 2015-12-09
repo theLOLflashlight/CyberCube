@@ -7,6 +7,7 @@ using Microsoft.Xna.Framework.Media;
 using System.Collections.Generic;
 using System;
 using CyberCube.Tools;
+using Microsoft.Xna.Framework.Audio;
 
 namespace CyberCube.Screens
 {
@@ -18,6 +19,7 @@ namespace CyberCube.Screens
         private static SpriteFont sFont;
 
         private static Song mSong;
+        private static SoundEffectInstance mSfxAlarm;
         private float mVolume = 0.2f;
 
 
@@ -26,6 +28,11 @@ namespace CyberCube.Screens
             sFont = content.Load<SpriteFont>( "MessageFont" );
 
             mSong = content.Load<Song>("Audio\\GameplayTrack");
+
+            SoundEffect alarm = content.Load<SoundEffect>("Audio\\alarm");
+            mSfxAlarm = alarm.CreateInstance();
+            mSfxAlarm.Volume = 0.1f;
+
         }
 
         public delegate void CloneChangedHandler( Player player );
@@ -78,13 +85,35 @@ namespace CyberCube.Screens
             }
         }
 
-        public void AddEnemy( Vector3 pos, float rotation)
+        public void AddEnemy( Vector3 pos, float rotation )
         {
             Enemy enemy = new Enemy( this, Cube, pos, rotation );
             Enemies.Add( enemy );
             Components.Add( enemy );
 
             enemy.Initialize();
+        }
+
+        public void AddProjectile( Vector3 pos, Vector3 direction, float rotation )
+        {
+            Projectile projectile = new Projectile( this, Cube, pos, direction, rotation );
+            Projectiles.Add( projectile );
+            Components.Add( projectile );
+
+            projectile.Initialize();
+        }
+
+        public void RemoveProjectile( Projectile projectile )
+        {
+            Components.Remove( projectile );
+            Projectiles.Remove( projectile );
+
+            projectile.Dispose();
+        }
+
+        public void PlayAlarm()
+        {
+            mSfxAlarm.Play();
         }
 
         public void ResetLevel()
@@ -124,6 +153,11 @@ namespace CyberCube.Screens
         }
 
         public List<Enemy> Enemies
+        {
+            get; set;
+        }
+        
+        public List<Projectile> Projectiles
         {
             get; set;
         }
@@ -213,6 +247,7 @@ namespace CyberCube.Screens
             List<CubePosition> enemyPositions = Cube.EnemyPositions;
             
             Enemies = new List<Enemy>();
+            Projectiles = new List<Projectile>();
             foreach ( CubePosition pos in enemyPositions )
             {
                 AddEnemy( pos.Position, pos.Rotation );

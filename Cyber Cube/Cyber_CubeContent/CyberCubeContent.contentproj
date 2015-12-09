@@ -233,6 +233,13 @@
     </Compile>
   </ItemGroup>
   <ItemGroup>
+    <Compile Include="Audio\alarm.wav">
+      <Name>alarm</Name>
+      <Importer>WavImporter</Importer>
+      <Processor>SoundEffectProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
     <Compile Include="NavigationItems\levelClear.png">
       <Name>levelClear</Name>
       <Importer>TextureImporter</Importer>
@@ -256,6 +263,20 @@
   <ItemGroup>
     <Compile Include="NavigationItems\levelScores.png">
       <Name>levelScores</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gridSkyBox512.dds">
+      <Name>gridSkyBox512</Name>
+      <Importer>TextureImporter</Importer>
+      <Processor>TextureProcessor</Processor>
+    </Compile>
+  </ItemGroup>
+  <ItemGroup>
+    <Compile Include="gridSkyBox1024.dds">
+      <Name>gridSkyBox1024</Name>
       <Importer>TextureImporter</Importer>
       <Processor>TextureProcessor</Processor>
     </Compile>
