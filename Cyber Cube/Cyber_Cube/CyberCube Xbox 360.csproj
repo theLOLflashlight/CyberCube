@@ -142,7 +142,9 @@
     <Compile Include="VertexPositionNormalTextureColor.cs" />
   </ItemGroup>
   <ItemGroup>
-    <Content Include="Achievements.xml" />
+    <Content Include="Achievements.xml">
+      <CopyToOutputDirectory>Always</CopyToOutputDirectory>
+    </Content>
     <Content Include="Game.ico" />
     <Content Include="GameThumbnail.png">
       <XnaPlatformSpecific>true</XnaPlatformSpecific>
