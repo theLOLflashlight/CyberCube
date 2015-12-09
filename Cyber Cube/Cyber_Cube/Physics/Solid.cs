@@ -19,7 +19,7 @@ namespace CyberCube.Physics
 
     public abstract class Solid
     {
-        public static readonly Color SOLID_COLOR = Color.Black;//new Color( 255, 69, 0, 200 );
+        public static readonly Color SOLID_COLOR = Color.Magenta;//new Color( 255, 69, 0, 200 );
 
         public abstract void Draw( GameTime gameTime, SpriteBatch batch );
 

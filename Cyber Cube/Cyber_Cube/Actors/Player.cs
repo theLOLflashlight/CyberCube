@@ -37,7 +37,7 @@ namespace CyberCube.Actors
         public readonly float PLAYER_WIDTH = 15.ToUnits();
         public readonly float PLAYER_HEIGHT = 60.ToUnits();
 
-        public readonly Color PLAYER_COLOR = Color.OrangeRed;
+        public readonly Color PLAYER_COLOR = Color.White;//Color.OrangeRed;
 
         private Fixture mTorso;
         private Fixture mFeet;

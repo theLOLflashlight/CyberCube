@@ -77,8 +77,6 @@ namespace CyberCube.Physics
                 mWidth / Texture.Width,
                 mHeight / Texture.Height );
 
-            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
-
             batch.Draw(
                 Texture,
                 position,
@@ -91,8 +89,6 @@ namespace CyberCube.Physics
                 scale,
                 SpriteEffects.None,
                 0 );
-
-            //mSpriteBatch.End();
         }
 
     }

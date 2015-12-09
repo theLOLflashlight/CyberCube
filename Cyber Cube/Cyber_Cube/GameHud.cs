@@ -43,9 +43,11 @@ namespace CyberCube
 
         public override void Draw( GameTime gameTime )
         {
-            double drawRate = 1 / gameTime.ElapsedGameTime.TotalSeconds; 
-
             mSpriteBatch.Begin();
+#if DEBUG
+            double drawRate = 1 / gameTime.ElapsedGameTime.TotalSeconds;
+            if ( double.IsInfinity( drawRate ) )
+                drawRate = 60;
 
             string strDrawRate = drawRate.ToString( "0.0" ) + " FPS";
             var posDrawRate = mFont.MeasureString( strDrawRate );
@@ -58,7 +60,7 @@ namespace CyberCube
 
             mSpriteBatch.DrawString( mFont, strUpdateRate,
                 new Vector2( GraphicsDevice.Viewport.Width - posUpdateRate.X, posDrawRate.Y ), Color.White );
-
+#endif
             //mSpriteBatch.DrawString( mFont, Screen.Camera.Position.ToString(), Vector2.Zero, Color.White );
             //mSpriteBatch.DrawString( mFont, Screen.Camera.UpVector.ToString(), new Vector2( 0, 30 ), Color.White );
 

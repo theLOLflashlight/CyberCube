@@ -152,7 +152,7 @@ namespace CyberCube.Physics
             };
 
             mShadowTexture = new Texture2D( Game.GraphicsDevice, 1, 1 );
-            mShadowTexture.SetData( new Color[] { new Color( 0, 0, 0, 64 ) } );
+            mShadowTexture.SetData( new Color[] { new Color( 255, 255, 255, 64 ) } );
         }
 
         protected override void PostClone()
@@ -166,21 +166,12 @@ namespace CyberCube.Physics
 
         public override void Draw( GameTime gameTime, SpriteBatch batch )
         {
-            //mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
-
-            //if ( mExclusionCount > 0 )
-            //    mShadowTexture.SetData( new Color[] { new Color( 255, 255, 255, 64 ) } );
-            //else
-            //    mShadowTexture.SetData( new Color[] { new Color( 0, 0, 0, 64 ) } );
-
             Line2 line = mLine.Rotate( Body.Rotation );
             line += Body.Position.ToPixels();
 
             batch.DrawLine( line, mShadowTexture, Color.White, 30 );
             batch.DrawLine( line, mShadowTexture, Color.White, 20 );
-            batch.DrawLine( line, Texture, BodyType == BodyType.Static ? SOLID_COLOR : Color.White, 10 );
-
-            //mSpriteBatch.End();
+            batch.DrawLine( line, Texture, SOLID_COLOR, 10 );
         }
 
     }
