@@ -129,6 +129,8 @@ namespace CyberCube.Screens
 
         private void OnCloneChanged( Player player )
         {
+            AchievementManager.Instance[ Stat.Swap ]++;
+
             float dist = Vector3.Distance( player.WorldPosition, Player.WorldPosition );
 
             Camera.AnimateTarget( player.WorldPosition, dist * 4 );
@@ -226,6 +228,21 @@ namespace CyberCube.Screens
                 this.Back();
             }
             mEndLevel = true;
+        }
+
+        public override void Resume( GameTime gameTime )
+        {
+            base.Resume( gameTime );
+        }
+
+        public override void Pause( GameTime gameTime )
+        {
+            base.Pause( gameTime );
+        }
+
+        public override void Destroy( GameTime gameTime )
+        {
+            base.Destroy( gameTime );
         }
 
 

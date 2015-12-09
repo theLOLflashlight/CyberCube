@@ -18,7 +18,7 @@ namespace CyberCube.Actors
 {
 	public partial class Enemy : Actor
     {
-        public const float MOVEMENT_SCALE = 30;
+        public const float MOVEMENT_SCALE = 60;
 
         public const float MODEL_SCALE = 0.04f;
         
@@ -27,6 +27,7 @@ namespace CyberCube.Actors
 
         private const float VISION_LENGTH = 200;
         private const float VISION_WIDTH = 60;
+        private const float ATTACK_SPEED = 1.2f;
 
         public readonly Color ENEMY_COLOR = Color.White;
 
@@ -168,7 +169,7 @@ namespace CyberCube.Actors
             {
                 if (mDirectionTimeDelay < 0)
                 {
-                    mDirectionTimeDelay = 10;
+                    mDirectionTimeDelay = 8;
                     mMovementDirection = ~mMovementDirection;
                 }
 
@@ -178,8 +179,8 @@ namespace CyberCube.Actors
             
                 if ( fallOff )
                 {
-                    mMoveTimeDelay = 3;
-                    mDirectionTimeDelay = 10;
+                    mMoveTimeDelay = 2;
+                    mDirectionTimeDelay = 8;
                     Velocity = Vector2.Zero;
                     mMovementDirection = ~mMovementDirection;
                 }
@@ -187,8 +188,8 @@ namespace CyberCube.Actors
                 {
                     if ( mAttackTimeDelay < 0 )
                     {
-                        mAttackTimeDelay = 3;
-                        mMoveTimeDelay = 3;
+                        mAttackTimeDelay = ATTACK_SPEED;
+                        mMoveTimeDelay = 2;
                         Velocity = Vector2.Zero;
                         ShootProjectile( Screen.Player );
                     }

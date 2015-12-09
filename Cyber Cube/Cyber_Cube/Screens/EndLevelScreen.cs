@@ -22,6 +22,7 @@ namespace CyberCube.Screens
         private static Texture2D sLevelClear;
         private static Texture2D sScoreTitle;
         private static Texture2D sHighScores;
+        private static Texture2D sButtonA;
 
         private string pLevelName;
         private SaveData pSaveData;
@@ -40,6 +41,7 @@ namespace CyberCube.Screens
             sLevelClear = content.Load <Texture2D>("NavigationItems\\levelClear");
             sScoreTitle = content.Load<Texture2D>("NavigationItems\\scoreBreakdown");
             sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
+            sButtonA = content.Load<Texture2D>("NavigationItems\\graphic_ButtonA");
         }
 
         private PlayScreen mLevel;
@@ -182,8 +184,12 @@ namespace CyberCube.Screens
                 delta += 25;
             }
 
+            mSpriteBatch.Draw( sButtonA,
+                               new Vector2( GraphicsDevice.Viewport.Width - 50, GraphicsDevice.Viewport.Height - 50 ),
+                               Color.White );
+
             mSpriteBatch.DrawString( sFont,
-                                    "A (GamePad) or Enter (Keyboard) to Continue",
+                                    "- Continue",
                                     new Vector2( GraphicsDevice.Viewport.Width * 5 / 9, GraphicsDevice.Viewport.Height - 50 ),
                                     Color.White );
 
