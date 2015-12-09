@@ -152,7 +152,7 @@ namespace CyberCube.Physics
             };
 
             mShadowTexture = new Texture2D( Game.GraphicsDevice, 1, 1 );
-            mShadowTexture.SetData( new Color[] { new Color( 255, 255, 255, 64 ) } );
+            mShadowTexture.SetData( new Color[] { new Color( 64, 64, 64, 64 ) } );
         }
 
         protected override void PostClone()

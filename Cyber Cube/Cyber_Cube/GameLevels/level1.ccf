@@ -8,6 +8,7 @@
     </Position>
     <Rotation>0</Rotation>
   </StartPosition>
+  <NextLevel>level2</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
   &lt;Shapes&gt;
