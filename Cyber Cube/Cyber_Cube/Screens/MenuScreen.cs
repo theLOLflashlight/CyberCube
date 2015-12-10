@@ -51,6 +51,7 @@ namespace CyberCube.Screens
 
         private GamePadState OldPadState;
         private KeyboardState OldKeyState;
+        private float resetTime;
 
         public static void LoadContent(ContentManager content)
         {
@@ -87,11 +88,14 @@ namespace CyberCube.Screens
             //cLevelEdit = Color.White;
             cControls = Color.White;
             cExit = Color.White;
+
+            resetTime = 0.5f;
         }
 
         public override void Update( GameTime gameTime )
         {
             base.Update( gameTime );
+            resetTime -= (float)gameTime.ElapsedGameTime.TotalSeconds;
 
             // Fade effect for highlighed menu button
             if (isFading)
@@ -107,104 +111,106 @@ namespace CyberCube.Screens
 
             GamePadState NewPadState = GamePad.GetState(PlayerIndex.One);
             KeyboardState NewKeyState = Keyboard.GetState();
-
-            // Change highlighted button on "up"
-            if ((NewKeyState.IsKeyDown(Keys.Up) && OldKeyState.IsKeyUp(Keys.Up))
-                || (NewPadState.IsButtonDown(Buttons.DPadUp) && OldPadState.IsButtonUp(Buttons.DPadUp)))
+            if (resetTime < 0)
             {
-                sfxButtonPressed.Play();
-                switch (currentHighlight)
+                // Change highlighted button on "up"
+                if ((NewKeyState.IsKeyDown(Keys.Up) && OldKeyState.IsKeyUp(Keys.Up))
+                    || (NewPadState.IsButtonDown(Buttons.DPadUp) && OldPadState.IsButtonUp(Buttons.DPadUp)))
                 {
-                    case Highlight.NewGame:
-                        break;
-                    case Highlight.LoadGame:
-                        currentHighlight = Highlight.NewGame;
-                        break;
-                    //case Highlight.LevelEditor:
-                    //    currentHighlight = Highlight.LoadGame;
-                    //    break;
-                    case Highlight.Controls:
-                        //currentHighlight = Highlight.LevelEditor;
-                        currentHighlight = Highlight.LoadGame;
-                        break;
-                    case Highlight.Exit:
-                        //currentHighlight = Highlight.Controls;
-                        currentHighlight = Highlight.NewGame;
-                        break;
-                    default:
-                        break;
+                    sfxButtonPressed.Play();
+                    switch (currentHighlight)
+                    {
+                        case Highlight.NewGame:
+                            break;
+                        case Highlight.LoadGame:
+                            currentHighlight = Highlight.NewGame;
+                            break;
+                        //case Highlight.LevelEditor:
+                        //    currentHighlight = Highlight.LoadGame;
+                        //    break;
+                        case Highlight.Controls:
+                            //currentHighlight = Highlight.LevelEditor;
+                            currentHighlight = Highlight.LoadGame;
+                            break;
+                        case Highlight.Exit:
+                            //currentHighlight = Highlight.Controls;
+                            currentHighlight = Highlight.NewGame;
+                            break;
+                        default:
+                            break;
+                    }
                 }
-            }
 
-            // Level editor is not accessible by normal means:
-            // L + E on keyboard, or left and right bumper on the gamepad
-            if ((NewKeyState.IsKeyDown(Keys.L) && NewKeyState.IsKeyDown(Keys.E)) || (NewPadState.IsButtonDown(Buttons.LeftShoulder) && NewPadState.IsButtonDown(Buttons.RightShoulder)))
-            {
-                ScreenManager.PushScreen(new EditScreen(Game));
-            }
-
-            // Change highlighted button on "down"
-            if ((NewKeyState.IsKeyDown(Keys.Down) && OldKeyState.IsKeyUp(Keys.Down))
-                || (NewPadState.IsButtonDown(Buttons.DPadDown) && OldPadState.IsButtonUp(Buttons.DPadDown)))
-            {
-                sfxButtonPressed.Play();
-                switch (currentHighlight)
+                // Level editor is not accessible by normal means:
+                // L + E on keyboard, or left and right bumper on the gamepad
+                if ((NewKeyState.IsKeyDown(Keys.L) && NewKeyState.IsKeyDown(Keys.E)) || (NewPadState.IsButtonDown(Buttons.LeftShoulder) && NewPadState.IsButtonDown(Buttons.RightShoulder)))
                 {
-                    case Highlight.NewGame:
-                        //currentHighlight = Highlight.LoadGame;
-                        currentHighlight = Highlight.Exit;
-                        break;
-                    case Highlight.LoadGame:
-                        //currentHighlight = Highlight.LevelEditor;
-                        currentHighlight = Highlight.Controls;
-                        break;
-                    //case Highlight.LevelEditor:
-                    //    currentHighlight = Highlight.Controls;
-                    //    break;
-                    case Highlight.Controls:
-                        currentHighlight = Highlight.Exit;
-                        break;
-                    case Highlight.Exit:
-                        break;
-                    default:
-                        break;
+                    ScreenManager.PushScreen(new EditScreen(Game));
                 }
-            }
 
-            if ((NewKeyState.IsKeyDown(Keys.Enter) && OldKeyState.IsKeyUp(Keys.Enter))
-                || (NewPadState.IsButtonDown(Buttons.A) && OldPadState.IsButtonUp(Buttons.A)))
-            {
-                sfxButtonPressed2.Play();
-                switch (currentHighlight)
+                // Change highlighted button on "down"
+                if ((NewKeyState.IsKeyDown(Keys.Down) && OldKeyState.IsKeyUp(Keys.Down))
+                    || (NewPadState.IsButtonDown(Buttons.DPadDown) && OldPadState.IsButtonUp(Buttons.DPadDown)))
                 {
-                    case Highlight.NewGame:
-                        PlayableCube playCube = new PlayableCube( Game );
-                        playCube.Load("_level0");
-                        //playCube.Load( "enemy" );
-                        PlayScreen playScreen = new PlayScreen( Game, playCube );
-                        ScreenManager.PushScreen( playScreen );
-                        break;
-                    case Highlight.LoadGame:
-                        Stream saveStream = StorageManager.Instance.OpenWriteFile("CyberCube.sav");
-                        // Saving functionality here.
+                    sfxButtonPressed.Play();
+                    switch (currentHighlight)
+                    {
+                        case Highlight.NewGame:
+                            //currentHighlight = Highlight.LoadGame;
+                            currentHighlight = Highlight.Exit;
+                            break;
+                        case Highlight.LoadGame:
+                            //currentHighlight = Highlight.LevelEditor;
+                            currentHighlight = Highlight.Controls;
+                            break;
+                        //case Highlight.LevelEditor:
+                        //    currentHighlight = Highlight.Controls;
+                        //    break;
+                        case Highlight.Controls:
+                            currentHighlight = Highlight.Exit;
+                            break;
+                        case Highlight.Exit:
+                            break;
+                        default:
+                            break;
+                    }
+                }
 
-                        Stream loadStream = StorageManager.Instance.OpenReadFile("CyberCube.sav");
-                        // Loading functionality here.
+                if ((NewKeyState.IsKeyDown(Keys.Enter) && OldKeyState.IsKeyUp(Keys.Enter))
+                    || (NewPadState.IsButtonDown(Buttons.A) && OldPadState.IsButtonUp(Buttons.A)))
+                {
+                    sfxButtonPressed2.Play();
+                    switch (currentHighlight)
+                    {
+                        case Highlight.NewGame:
+                            PlayableCube playCube = new PlayableCube(Game);
+                            playCube.Load("_level0");
+                            //playCube.Load( "enemy" );
+                            PlayScreen playScreen = new PlayScreen(Game, playCube);
+                            ScreenManager.PushScreen(playScreen);
+                            break;
+                        case Highlight.LoadGame:
+                            Stream saveStream = StorageManager.Instance.OpenWriteFile("CyberCube.sav");
+                            // Saving functionality here.
 
-                        StorageManager.Instance.Finish();
+                            Stream loadStream = StorageManager.Instance.OpenReadFile("CyberCube.sav");
+                            // Loading functionality here.
 
-                        break;
-                    //case Highlight.LevelEditor:
-                    //    ScreenManager.PushScreen(new EditScreen(Game));
-                    //    break;
-                    case Highlight.Controls:
+                            StorageManager.Instance.Finish();
 
-                        break;
-                    case Highlight.Exit:
-                        Game.Exit();
-                        break;
-                    default:
-                        break;
+                            break;
+                        //case Highlight.LevelEditor:
+                        //    ScreenManager.PushScreen(new EditScreen(Game));
+                        //    break;
+                        case Highlight.Controls:
+
+                            break;
+                        case Highlight.Exit:
+                            Game.Exit();
+                            break;
+                        default:
+                            break;
+                    }
                 }
             }
 

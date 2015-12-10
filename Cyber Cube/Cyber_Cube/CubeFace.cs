@@ -183,12 +183,20 @@ namespace CyberCube
 
             public override void Draw( GameTime gameTime )
             {
-                mSpriteBatch.Begin( SpriteSortMode.Immediate, BlendState.AlphaBlend );
+                try
+                {
+                    mSpriteBatch.Begin(SpriteSortMode.Immediate, BlendState.AlphaBlend);
 
-                foreach ( Solid solid in mSolids )
-                    solid.Draw( gameTime, mSpriteBatch );
+                    foreach (Solid solid in mSolids)
+                        solid.Draw(gameTime, mSpriteBatch);
 
-                mSpriteBatch.End();
+                    mSpriteBatch.End();
+
+                }
+                catch (InvalidOperationException e)
+                {
+                    // something went wrong but not sure why
+                }
 
 #if WINDOWS
                 if ( Game.GameProperties.DebugView )

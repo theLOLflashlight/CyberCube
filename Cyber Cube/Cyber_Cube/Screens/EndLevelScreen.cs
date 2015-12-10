@@ -166,7 +166,15 @@ namespace CyberCube.Screens
 #endif
                 mLevel.mLoadThread.Join();
                 this.Back();
-                ScreenManager.PushScreen( mLevel.mNextPlayScreen );
+                if (mLevel.mNextPlayScreen == null)
+                {
+                    ScreenManager.ClearScreens();
+                    ScreenManager.PushScreen(new MenuScreen(Game));
+                }
+                else
+                {
+                    ScreenManager.PushScreen(mLevel.mNextPlayScreen);
+                }
             }
 
             oldPadState = newPadState;

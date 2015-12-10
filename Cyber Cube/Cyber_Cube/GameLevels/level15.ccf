@@ -26,7 +26,6 @@
       <Rotation>0</Rotation>
     </CubePosition>
   </EnemyPositions>
-  <NextLevel>level16</NextLevel>
   <FrontFace>&lt;World Version="3"&gt;
   &lt;Gravity&gt;0 0&lt;/Gravity&gt;
   &lt;Shapes&gt;
