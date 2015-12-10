@@ -26,6 +26,7 @@ namespace CyberCube.Screens
         private static Texture2D sButtonA;
         private static Texture2D sButtonY;
         private static Texture2D sKeyEnter;
+        private static Texture2D sKeySpace;
         private static SoundEffect sfxButtonPressed;
         private static SoundEffect sfxButtonPressed2;
 
@@ -34,7 +35,8 @@ namespace CyberCube.Screens
         private List<Achievement> pAchievements;
         private int pScore;
 
-        private Boolean bSentScore;
+        private bool bSentScore;
+        private bool bSendingScore;
 
         KeyboardState newKeyState, oldKeyState;
         GamePadState newPadState, oldPadState;
@@ -45,15 +47,16 @@ namespace CyberCube.Screens
         public static void LoadContent(ContentManager content)
         {
             sFont = content.Load<SpriteFont>("EndLevelScreenFont");
-            sLevelClear = content.Load <Texture2D>("NavigationItems\\levelClear");
+            sLevelClear = content.Load<Texture2D>("NavigationItems\\levelClear");
             sScoreTitle = content.Load<Texture2D>("NavigationItems\\scoreBreakdown");
             sHighScores = content.Load<Texture2D>("NavigationItems\\levelScores");
             sButtonA = content.Load<Texture2D>("NavigationItems\\graphic_ButtonA");
             sButtonY = content.Load<Texture2D>("NavigationItems\\graphic_ButtonY");
             sKeyEnter = content.Load<Texture2D>("NavigationItems\\graphic_KeyEnter");
+            sKeySpace = content.Load<Texture2D>("NavigationItems\\graphic_KeySpace");
             sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
             sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
-            sFont2 = content.Load<SpriteFont>( "ConsoleFont" );
+            sFont2 = content.Load<SpriteFont>("ConsoleFont");
         }
 
         private PlayScreen mLevel;
@@ -61,24 +64,23 @@ namespace CyberCube.Screens
         private TextBox mTextBox;
         private static SpriteFont sFont2;
 
-        public EndLevelScreen(CubeGame game, string levelName, PlayScreen level )
+        public EndLevelScreen(CubeGame game, string levelName, PlayScreen level)
             : base(game)
         {
             pLevelName = levelName;
-            pSaveData = SaveData.Load( pLevelName );
+            pSaveData = SaveData.Load(pLevelName);
 
             mLevel = level;
-            mTextBox = new TextBox( game, game );
+            mTextBox = new TextBox(game, game);
 
-#if XBOX
             mTextBox.Visible = false;
-#endif
+            bSendingScore = false;
             bSentScore = false;
 
             // TODO: Replace Tester with user's name
             // pSaveData.AddScore( pScore, "The World's #1" );
             // pSaveData.Save( pLevelName );
-            
+
         }
 
         public override void Initialize()
@@ -91,21 +93,21 @@ namespace CyberCube.Screens
             Game.Input.Focus = mTextBox;
         }
 
-        public override void Resume( GameTime gameTime )
+        public override void Resume(GameTime gameTime)
         {
-            base.Resume( gameTime );
-            AchievementManager.Instance[ Stat.Second ] = (int)mLevel.PlayTimeSeconds;
+            base.Resume(gameTime);
+            AchievementManager.Instance[Stat.Second] = (int)mLevel.PlayTimeSeconds;
             var achieved = AchievementManager.Instance.GetAchieved();
             pAchievements = achieved;
             pScore = 0;
 
-            foreach( Achievement a in pAchievements )
+            foreach (Achievement a in pAchievements)
                 pScore += a.Value;
         }
 
-        public override void Destroy( GameTime gameTime )
+        public override void Destroy(GameTime gameTime)
         {
-            base.Destroy( gameTime );
+            base.Destroy(gameTime);
             Game.Input.Focus = null;
         }
 
@@ -116,6 +118,16 @@ namespace CyberCube.Screens
             newKeyState = Keyboard.GetState();
             newPadState = GamePad.GetState(PlayerIndex.One);
 
+#if WINDOWS
+            if (!bSentScore)
+            {
+                if ((newKeyState.IsKeyUp(Keys.Space) && oldKeyState.IsKeyDown(Keys.Space)))
+                {
+                    bSendingScore = true;
+                    mTextBox.Visible = true;
+                }
+            }
+#endif
 
 #if XBOX
             //if (!bSentScore)
@@ -149,31 +161,39 @@ namespace CyberCube.Screens
 #endif
 
 #if WINDOWS
-
-            mTextBox.Update( gameTime );
+            if (bSendingScore)
+                mTextBox.Update(gameTime);
 
 #endif
-            if ((Keyboard.GetState().IsKeyDown(Keys.Enter)) || (GamePad.GetState(PlayerIndex.One).IsButtonDown(Buttons.A)))
+            if ((newKeyState.IsKeyUp(Keys.Enter) && oldKeyState.IsKeyDown(Keys.Enter)) || (newPadState.IsButtonUp(Buttons.A) && oldPadState.IsButtonDown(Buttons.A)))
             {
-                
                 sfxButtonPressed2.Play();
 #if WINDOWS
-                if ( !string.IsNullOrEmpty( mTextBox.Text ) )
+                if (bSendingScore)
                 {
-                    pSaveData.AddScore( pScore, mTextBox.Text );
-                    pSaveData.Save( pLevelName );
+                    if (!string.IsNullOrEmpty(mTextBox.Text))
+                    {
+                        pSaveData.AddScore(pScore, mTextBox.Text);
+                        pSaveData.Save(pLevelName);
+                    }
+                    bSendingScore = false;
+                    bSentScore = true;
+                    mTextBox.Visible = false;
                 }
 #endif
-                mLevel.mLoadThread.Join();
-                this.Back();
-                if (mLevel.mNextPlayScreen == null)
-                {
-                    ScreenManager.ClearScreens();
-                    ScreenManager.PushScreen(new MenuScreen(Game));
-                }
                 else
                 {
-                    ScreenManager.PushScreen(mLevel.mNextPlayScreen);
+                    mLevel.mLoadThread.Join();
+                    this.Back();
+                    if (mLevel.mNextPlayScreen == null)
+                    {
+                        ScreenManager.ClearScreens();
+                        ScreenManager.PushScreen(new MenuScreen(Game));
+                    }
+                    else
+                    {
+                        ScreenManager.PushScreen(mLevel.mNextPlayScreen);
+                    }
                 }
             }
 
@@ -189,17 +209,17 @@ namespace CyberCube.Screens
 
             mSpriteBatch.Begin();
 
-            mSpriteBatch.Draw( sLevelClear, 
-                               new Vector2( GraphicsDevice.Viewport.Width / 2 - ( sLevelClear.Width / 2 ), 50 ), 
-                               Color.White );
+            mSpriteBatch.Draw(sLevelClear,
+                               new Vector2(GraphicsDevice.Viewport.Width / 2 - (sLevelClear.Width / 2), 50),
+                               Color.White);
 
-            mSpriteBatch.Draw( sScoreTitle,
-                               new Vector2( GraphicsDevice.Viewport.Width / 4 - ( sScoreTitle.Width / 2 ), 150 ),
-                               Color.White );
+            mSpriteBatch.Draw(sScoreTitle,
+                               new Vector2(GraphicsDevice.Viewport.Width / 4 - (sScoreTitle.Width / 2), 150),
+                               Color.White);
 
-            mSpriteBatch.Draw( sHighScores,
-                               new Vector2( GraphicsDevice.Viewport.Width * 3 / 4 - ( sHighScores.Width / 2 ), 150 ),
-                               Color.White );
+            mSpriteBatch.Draw(sHighScores,
+                               new Vector2(GraphicsDevice.Viewport.Width * 3 / 4 - (sHighScores.Width / 2), 150),
+                               Color.White);
 
 
             // Level Scoring segment
@@ -231,7 +251,7 @@ namespace CyberCube.Screens
             // High score segment
             delta = 0;
 
-            foreach(Score s in pSaveData.Scores.OrderBy( s => -1* s.score ).OrderBy( s => s.name ))
+            foreach (Score s in pSaveData.Scores.OrderBy(s => -1 * s.score).OrderBy(s => s.name))
             {
                 mSpriteBatch.DrawString(sFont,
                                     s.name,
@@ -247,13 +267,34 @@ namespace CyberCube.Screens
             }
 
 #if WINDOWS
-            mSpriteBatch.Draw( sKeyEnter,
-                               new Vector2( GraphicsDevice.Viewport.Width - 370, GraphicsDevice.Viewport.Height - 50 ),
-                               Color.White );
+
+            if (!bSentScore)
+            {
+                mSpriteBatch.DrawString(sFont,
+                                        "Enter Name:",
+                                        new Vector2(GraphicsDevice.Viewport.Width / 7 + GraphicsDevice.Viewport.Width / 2, 475),
+                                        Color.White);
+            }
+
+            mTextBox.Position = new Vector2(GraphicsDevice.Viewport.Width / 3 + GraphicsDevice.Viewport.Width / 2, 480);
+
+            if (!bSendingScore)
+            {
+                mSpriteBatch.Draw(sKeyEnter,
+                                   new Vector2(GraphicsDevice.Viewport.Width - 370, GraphicsDevice.Viewport.Height - 50),
+                                   Color.White);
+
+                if(!bSentScore)
+                    mSpriteBatch.Draw(sKeySpace,
+                                       new Vector2(GraphicsDevice.Viewport.Width / 3 + GraphicsDevice.Viewport.Width / 2 - 40, 470),
+                                       Color.White);
+            }
+
 #endif
 
             //if(!bSentScore)
             //{
+#if XBOX
             mSpriteBatch.Draw( sButtonY,
                                new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 100),
                                Color.White);
@@ -262,26 +303,26 @@ namespace CyberCube.Screens
                                      "- Submit Score",
                                      new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 95),
                                      Color.White);
+#endif
             //}
 
-            mSpriteBatch.Draw( sButtonA,
-                               new Vector2( GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50 ),
-                               Color.White );
+            mSpriteBatch.Draw(sButtonA,
+                               new Vector2(GraphicsDevice.Viewport.Width - 250, GraphicsDevice.Viewport.Height - 50),
+                               Color.White);
 
-            mSpriteBatch.DrawString( sFont,
+            mSpriteBatch.DrawString(sFont,
                                     "- Continue",
-                                     new Vector2( GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 45 ),
-                                    Color.White );
-
-            mSpriteBatch.End();
+                                     new Vector2(GraphicsDevice.Viewport.Width - 200, GraphicsDevice.Viewport.Height - 45),
+                                    Color.White);
 
 #if WINDOWS
-            mTextBox.Position = new Vector2( Game.Window.ClientBounds.Width / 2,
-                Game.Window.ClientBounds.Height / 2 );
-
-            if ( mTextBox.Visible )
-                mTextBox.Draw( gameTime );
+            if (mTextBox.Visible)
+            {
+                mTextBox.Draw(gameTime);
+            }
 #endif
+
+            mSpriteBatch.End();
         }
     }
 }
