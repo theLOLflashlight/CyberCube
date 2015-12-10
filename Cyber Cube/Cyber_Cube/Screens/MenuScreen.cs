@@ -57,7 +57,7 @@ namespace CyberCube.Screens
         {
             sTitleCard = content.Load<Texture2D>("NavigationItems\\logo");
 
-            sNewGame = content.Load<Texture2D>("NavigationItems\\button_NewGame");
+            sNewGame = content.Load<Texture2D>("NavigationItems\\button_StartGame");
             sLoadGame = content.Load<Texture2D>("NavigationItems\\button_Continue");
             //sLevelEdit = content.Load<Texture2D>("NavigationItems\\menuLevelEditor");
             sControls = content.Load<Texture2D>("NavigationItems\\button_Controls");
