@@ -122,6 +122,7 @@
     <Compile Include="CubeGame.cs" />
     <Compile Include="RuntimeProperties.cs" />
     <Compile Include="SaveData.cs" />
+    <Compile Include="Screens\ControlsScreen.cs" />
     <Compile Include="Screens\EndLevelScreen.cs" />
     <Compile Include="Screens\GameScreen.cs" />
     <Compile Include="Screens\MenuScreen.cs" />

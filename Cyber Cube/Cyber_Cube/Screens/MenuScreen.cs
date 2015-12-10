@@ -47,7 +47,7 @@ namespace CyberCube.Screens
         private Color cSelected;
         private Color cNewGame, cLoadGame, cControls, cExit;
         //private Color cLevelEdit;
-        private Boolean isFading;
+        private bool isFading;
 
         private GamePadState OldPadState;
         private KeyboardState OldKeyState;
@@ -130,11 +130,11 @@ namespace CyberCube.Screens
                         //    break;
                         case Highlight.Controls:
                             //currentHighlight = Highlight.LevelEditor;
-                            currentHighlight = Highlight.LoadGame;
+                            currentHighlight = Highlight.NewGame;
                             break;
                         case Highlight.Exit:
                             //currentHighlight = Highlight.Controls;
-                            currentHighlight = Highlight.NewGame;
+                            currentHighlight = Highlight.Controls;
                             break;
                         default:
                             break;
@@ -157,7 +157,7 @@ namespace CyberCube.Screens
                     {
                         case Highlight.NewGame:
                             //currentHighlight = Highlight.LoadGame;
-                            currentHighlight = Highlight.Exit;
+                            currentHighlight = Highlight.Controls;
                             break;
                         case Highlight.LoadGame:
                             //currentHighlight = Highlight.LevelEditor;
@@ -203,7 +203,7 @@ namespace CyberCube.Screens
                         //    ScreenManager.PushScreen(new EditScreen(Game));
                         //    break;
                         case Highlight.Controls:
-
+                            ScreenManager.PushScreen( new ControlsScreen( Game ) );
                             break;
                         case Highlight.Exit:
                             Game.Exit();
@@ -270,13 +270,13 @@ namespace CyberCube.Screens
             }
 
             mSpriteBatch.Draw(sNewGame, buttonPos, cNewGame);
-            buttonPos.Y += 80;
+            buttonPos.Y += 70;
             //mSpriteBatch.Draw(sLoadGame, buttonPos, cLoadGame);
             //buttonPos.Y += 60;
             //mSpriteBatch.Draw(sLevelEdit, buttonPos, cLevelEdit);
             //buttonPos.Y += 45;
-            //mSpriteBatch.Draw(sControls, buttonPos, cControls);
-            //buttonPos.Y += 60;
+            mSpriteBatch.Draw(sControls, buttonPos, cControls);
+            buttonPos.Y += 70;
             mSpriteBatch.Draw(sExit, buttonPos, cExit);
 
             mSpriteBatch.DrawString(sVersionFont, verString, new Vector2(10, GraphicsDevice.Viewport.Height - 20), Color.Black);

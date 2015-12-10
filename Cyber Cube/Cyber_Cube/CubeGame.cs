@@ -229,6 +229,7 @@ namespace CyberCube
             PlayScreen.LoadContent( Content );
             EndLevelScreen.LoadContent( Content );
             EndDoor.LoadContent( Content );
+            ControlsScreen.LoadContent( Content );
 
             Cube.LoadContent( Content );
 

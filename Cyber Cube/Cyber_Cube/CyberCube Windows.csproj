@@ -109,6 +109,7 @@
     <Compile Include="Brushes\EndDoorBrush.cs" />
     <Compile Include="AchievementManager.cs" />
     <Compile Include="SaveData.cs" />
+    <Compile Include="Screens\ControlsScreen.cs" />
     <Compile Include="Screens\EndLevelScreen.cs" />
     <Compile Include="Tools\GfxUtils.cs" />
     <Compile Include="IO\ActionInputState.cs" />
