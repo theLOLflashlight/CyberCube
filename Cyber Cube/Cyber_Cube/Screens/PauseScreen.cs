@@ -36,19 +36,20 @@ namespace CyberCube.Screens
         private Vector2 bStart;
 
         private Color cSelected;
-        private Color cResumeGame, cSaveGame, cControls, cQuit;
+        private Color cResumeGame, cControls, cQuit;
+        //private Color cSaveGame;
 
-        private Boolean isFading;
+        private bool isFading;
 
         private GamePadState OldPadState;
         private KeyboardState OldKeyState;
 
         public static void LoadContent(ContentManager content)
         {
-            sResumeGame = content.Load<Texture2D>("NavigationItems\\pauseResume");
-            sSaveGame = content.Load<Texture2D>("NavigationItems\\pauseSaveGame");
-            sControls = content.Load<Texture2D>("NavigationItems\\menuControls");
-            sQuitMenu = content.Load<Texture2D>("NavigationItems\\pauseQuitMenu");
+            sResumeGame = content.Load<Texture2D>("NavigationItems\\button_Resume");
+            //sSaveGame = content.Load<Texture2D>("NavigationItems\\pauseSaveGame");
+            sControls = content.Load<Texture2D>("NavigationItems\\button_Controls");
+            sQuitMenu = content.Load<Texture2D>("NavigationItems\\button_QuitToMenu");
             sfxButtonPressed = content.Load<SoundEffect>("Audio\\buttonPressed");
             sfxButtonPressed2 = content.Load<SoundEffect>("Audio\\buttonPressed2");
         }
@@ -58,11 +59,11 @@ namespace CyberCube.Screens
         {
             currentHighlight = Highlight.ResumeGame;
 
-            cSelected = new Color(255, 255, 255, 255);
+            cSelected = new Color(0, 240, 255, 255);
             isFading = true;
 
             cResumeGame = Color.White;
-            cSaveGame = Color.White;
+            //cSaveGame = Color.White;
             cControls = Color.White;
             cQuit = Color.White;
 
@@ -102,11 +103,12 @@ namespace CyberCube.Screens
                 {
                     case Highlight.ResumeGame:
                         break;
-                    case Highlight.SaveGame:
-                        currentHighlight = Highlight.ResumeGame;
-                        break;
+                    //case Highlight.SaveGame:
+                    //    currentHighlight = Highlight.ResumeGame;
+                    //    break;
                     case Highlight.Controls:
-                        currentHighlight = Highlight.SaveGame;
+                        //currentHighlight = Highlight.SaveGame;
+                        currentHighlight = Highlight.ResumeGame;
                         break;
                     case Highlight.QuitToMenu:
                         currentHighlight = Highlight.Controls;
@@ -124,11 +126,12 @@ namespace CyberCube.Screens
                 switch (currentHighlight)
                 {
                     case Highlight.ResumeGame:
-                        currentHighlight = Highlight.SaveGame;
-                        break;
-                    case Highlight.SaveGame:
+                        //currentHighlight = Highlight.SaveGame;
                         currentHighlight = Highlight.Controls;
                         break;
+                    //case Highlight.SaveGame:
+                    //    currentHighlight = Highlight.Controls;
+                    //    break;
                     case Highlight.Controls:
                         currentHighlight = Highlight.QuitToMenu;
                         break;
@@ -151,6 +154,7 @@ namespace CyberCube.Screens
                     case Highlight.SaveGame:
                         break;
                     case Highlight.Controls:
+                        ScreenManager.PushScreen( new ControlsScreen( Game ) );
                         break;
                     case Highlight.QuitToMenu:
                         ScreenManager.PauseMenuToMainMenu(2);
@@ -179,25 +183,25 @@ namespace CyberCube.Screens
             {
                 case Highlight.ResumeGame:
                     cResumeGame = cSelected;
-                    cSaveGame = Color.White;
+                    //cSaveGame = Color.White;
                     cControls = Color.White;
                     cQuit = Color.White;
                     break;
                 case Highlight.SaveGame:
                     cResumeGame = Color.White;
-                    cSaveGame = cSelected;
+                    //cSaveGame = cSelected;
                     cControls = Color.White;
                     cQuit = Color.White;
                     break;
                 case Highlight.Controls:
                     cResumeGame = Color.White;
-                    cSaveGame = Color.White;
+                    //cSaveGame = Color.White;
                     cControls = cSelected;
                     cQuit = Color.White;
                     break;
                 case Highlight.QuitToMenu:
                     cResumeGame = Color.White;
-                    cSaveGame = Color.White;
+                    //cSaveGame = Color.White;
                     cControls = Color.White;
                     cQuit = cSelected;
                     break;
@@ -206,13 +210,13 @@ namespace CyberCube.Screens
             }
 
             mSpriteBatch.Draw(sResumeGame, bStart, cResumeGame);
-            bStart.Y += 45;
-            mSpriteBatch.Draw(sSaveGame, bStart, cSaveGame);
-            bStart.Y += 45;
+            bStart.Y += 60;
+            //mSpriteBatch.Draw(sSaveGame, bStart, cSaveGame);
+            //bStart.Y += 45;
             mSpriteBatch.Draw(sControls, bStart, cControls);
-            bStart.Y += 45;
+            bStart.Y += 60;
             mSpriteBatch.Draw(sQuitMenu, bStart, cQuit);
-            bStart.Y -= 135;
+            bStart.Y -= 120;
 
             mSpriteBatch.End();
         }
