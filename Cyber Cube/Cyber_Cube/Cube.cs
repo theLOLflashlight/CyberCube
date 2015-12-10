@@ -213,8 +213,14 @@ namespace CyberCube
 
             public static CubeFile Deserialize( string filename )
             {
-                using ( StreamReader reader = new StreamReader( TitleContainer.OpenStream( filename ) ) )
-                    return (CubeFile) new XmlSerializer( typeof( CubeFile ) ).Deserialize( reader );
+                try
+                {
+                    using (StreamReader reader = new StreamReader(TitleContainer.OpenStream(filename)))
+                        return (CubeFile)new XmlSerializer(typeof(CubeFile)).Deserialize(reader);
+                } catch (FileNotFoundException e)
+                {
+                    return null;
+                }
             }
 
             private static World StringToWorld( string str )
@@ -302,6 +308,9 @@ namespace CyberCube
             this.Name = name;
 
             CubeFile file = CubeFile.Deserialize( $@"GameLevels\{name}.ccf" );
+            if ( file == null )
+                return;
+
             StartPosition = file.StartPosition;
             EnemyPositions = file.EnemyPositions;
             if (EnemyPositions == null)
